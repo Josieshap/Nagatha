@@ -1,0 +1,147 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { streamText, type UIMessage } from "ai";
+import {
+  createLovableAiGatewayProvider,
+  getLovableAiGatewayResponseHeaders,
+  getLovableAiGatewayRunId,
+  withLovableAiGatewayRunIdHeader,
+} from "@/lib/ai-gateway.server";
+import { createUserSupabaseClient } from "@/lib/supabase-user.server";
+
+const SYSTEM_PROMPT = `You are Nagatha, the user's tough-love accountability buddy with a distinctly Gen X sense of humor. Your vibe: the sarcastic best friend who grew up on mixtapes, dial-up tones, Blockbuster late fees, and MTV back when it still played music. You were basically raised by a note on the fridge, so you don't do coddling — but you genuinely care and it shows.
+
+Your job: motivate the user to do work, housework, physical exercise, and generally get their life together.
+
+How you operate:
+- Roast the procrastination, never the person. Affectionate sarcasm, dry one-liners, and the occasional 80s/90s reference.
+- Always land on something concrete: break the task into a ridiculously small first step, suggest a time-boxed sprint (like 15 minutes), or ask one sharp question that forces a decision.
+- Celebrate wins with deadpan enthusiasm ("Look at you, doing laundry like a functioning adult. I'm not crying, you're crying.").
+- No toxic positivity, no "live laugh love", no corporate wellness-speak. If you catch yourself sounding like a motivational poster, stop.
+- Keep replies punchy — usually under 120 words unless the user asks for a real plan. Short markdown lists are fine.
+- If the user seems genuinely distressed or mentions something serious, drop the bit completely and be warm, direct, and helpful.`;
+
+type ChatRequestBody = {
+  messages?: UIMessage[];
+  threadId?: string;
+};
+
+function messageText(message: UIMessage): string {
+  return message.parts
+    .filter((part) => part.type === "text")
+    .map((part) => part.text)
+    .join("");
+}
+
+export const Route = createFileRoute("/api/chat")({
+  server: {
+    handlers: {
+      POST: async ({ request }) => {
+        const authHeader = request.headers.get("authorization");
+        if (!authHeader?.startsWith("Bearer ")) {
+          return new Response("Unauthorized", { status: 401 });
+        }
+        const token = authHeader.slice("Bearer ".length);
+
+        let supabase;
+        try {
+          supabase = createUserSupabaseClient(token);
+        } catch {
+          return new Response("Backend not configured", { status: 500 });
+        }
+
+        const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
+        if (claimsError || !claimsData?.claims?.sub) {
+          return new Response("Unauthorized", { status: 401 });
+        }
+
+        const body = (await request.json()) as ChatRequestBody;
+        const { messages, threadId } = body;
+        if (!Array.isArray(messages) || typeof threadId !== "string") {
+          return new Response("Messages and threadId are required", { status: 400 });
+        }
+
+        // Verify the thread belongs to this user (RLS also enforces this).
+        const { data: thread } = await supabase
+          .from("threads")
+          .select("id, title")
+          .eq("id", threadId)
+          .single();
+        if (!thread) {
+          return new Response("Thread not found", { status: 404 });
+        }
+
+        const lastMessage = messages[messages.length - 1];
+        if (!lastMessage || lastMessage.role !== "user") {
+          return new Response("Last message must be from the user", { status: 400 });
+        }
+        const userText = messageText(lastMessage).trim();
+        if (!userText) {
+          return new Response("Empty message", { status: 400 });
+        }
+
+        // Full history from the database — the source of truth.
+        const { data: history } = await supabase
+          .from("messages")
+          .select("role, content")
+          .eq("thread_id", threadId)
+          .order("created_at", { ascending: true });
+
+        // Persist the new user message.
+        const { error: insertError } = await supabase
+          .from("messages")
+          .insert({ thread_id: threadId, role: "user", content: userText });
+        if (insertError) {
+          return new Response("Could not save message", { status: 500 });
+        }
+
+        // Auto-title brand-new threads from the first message.
+        if (thread.title === "New chat") {
+          const title = userText.length > 48 ? `${userText.slice(0, 48)}…` : userText;
+          await supabase.from("threads").update({ title }).eq("id", threadId);
+        }
+
+        const key = process.env["LOVABLE_API_KEY"];
+        if (!key) {
+          return new Response("Missing LOVABLE_API_KEY", { status: 500 });
+        }
+
+        const gateway = createLovableAiGatewayProvider(key, getLovableAiGatewayRunId(request));
+        const result = streamText({
+          model: gateway("google/gemini-3.7-flash"),
+          system: SYSTEM_PROMPT,
+          messages: [
+            ...(history ?? []).map((m) => ({
+              role: m.role as "user" | "assistant",
+              content: m.content,
+            })),
+            { role: "user" as const, content: userText },
+          ],
+        });
+
+        const response = result.toUIMessageStreamResponse({
+          originalMessages: messages,
+          headers: getLovableAiGatewayResponseHeaders(undefined),
+          onFinish: async ({ responseMessage }) => {
+            const text = messageText(responseMessage).trim();
+            if (text) {
+              await supabase
+                .from("messages")
+                .insert({ thread_id: threadId, role: "assistant", content: text });
+              // Bump updated_at so the sidebar ordering stays fresh.
+              await supabase
+                .from("threads")
+                .update({ title: thread.title === "New chat" ? (userText.length > 48 ? `${userText.slice(0, 48)}…` : userText) : thread.title })
+                .eq("id", threadId);
+            }
+          },
+          onError: (error) => {
+            console.error("[chat] stream error:", error);
+            return "Nagatha dropped the whistle for a second — try that again.";
+          },
+        });
+
+        return withLovableAiGatewayRunIdHeader(response, gateway);
+      },
+    },
+  },
+});
