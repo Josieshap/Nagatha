@@ -111,7 +111,7 @@ export function ChatWindow({
               <Message key={message.id} from={message.role}>
                 <MessageContent className="group-[.is-user]:bg-primary group-[.is-user]:rounded-2xl group-[.is-user]:text-primary-foreground">
                   {message.role === "assistant" ? (
-                    <MessageResponse>{text}</MessageResponse>
+                    <MessageResponse className="chat-markdown">{text}</MessageResponse>
                   ) : (
                     <p className="whitespace-pre-wrap">{text}</p>
                   )}
