@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Briefcase, Sparkles as SparklesIcon, Dumbbell, Home } from "lucide-react";
+import { Briefcase, Flame, Dumbbell, Home } from "lucide-react";
 import { createThread } from "@/lib/chat.functions";
 import { PENDING_MESSAGE_KEY } from "@/components/chat-window";
 import {
@@ -31,7 +31,7 @@ const QUICK_PROMPTS = [
   { icon: Briefcase, label: "I can't start this work project", text: "I have a work project I keep putting off. Help me actually start it." },
   { icon: Home, label: "My place is a disaster", text: "My place is a mess and I don't know where to start. Roast me, then help me clean it." },
   { icon: Dumbbell, label: "Make me exercise", text: "I've been avoiding exercise. Give me tough love and a plan I'll actually do." },
-  { icon: SparklesIcon, label: "Just motivate me", text: "I don't even know what I need. Just motivate me." },
+  { icon: Flame, label: "Just motivate me", text: "I don't even know what I need. Just motivate me." },
 ];
 
 function NewChat() {
