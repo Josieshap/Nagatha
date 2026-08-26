@@ -1,24 +1,51 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import mascot from "@/assets/nagatha-mascot.png";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Nagatha — Your Tough-Love AI Buddy" },
+      {
+        name: "description",
+        content:
+          "A sarcastic Gen X AI companion that actually gets you off the couch — work, chores, and exercise, one roast at a time.",
+      },
+      { property: "og:title", content: "Nagatha — Your Tough-Love AI Buddy" },
+      {
+        property: "og:description",
+        content:
+          "A sarcastic Gen X AI companion that actually gets you off the couch — work, chores, and exercise, one roast at a time.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    void supabase.auth.getSession().then(({ data }) => {
+      void navigate({ to: data.session ? "/chat" : "/auth", replace: true });
+    });
+  }, [navigate]);
+
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
+    <div className="bg-paper flex min-h-screen flex-col items-center justify-center gap-4 px-4">
       <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
+        src={mascot}
+        alt="Nagatha, a grumpy coffee mug coach with a whistle"
+        className="size-28 animate-bounce"
+        width={1024}
+        height={1024}
       />
+      <p className="font-display text-lg italic text-muted-foreground">
+        Warming up the whistle…
+      </p>
     </div>
   );
 }
