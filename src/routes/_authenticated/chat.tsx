@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { listThreads, deleteThread } from "@/lib/chat.functions";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import mascot from "@/assets/nagatha-mascot.png";
+import mascot from "@/assets/nagatha-idle.png";
 
 export const Route = createFileRoute("/_authenticated/chat")({
   head: () => ({

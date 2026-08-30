@@ -1,7 +1,7 @@
 import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import mascot from "@/assets/nagatha-mascot.png";
+import mascot from "@/assets/nagatha-idle.png";
 
 export const Route = createFileRoute("/_authenticated")({
   component: AuthGate,
