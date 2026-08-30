@@ -12,7 +12,7 @@ import {
   PromptInputTextarea,
   type PromptInputMessage,
 } from "@/components/ai-elements/prompt-input";
-import mascot from "@/assets/nagatha-mascot.png";
+import mascot from "@/assets/nagatha-work.png";
 
 export const Route = createFileRoute("/_authenticated/chat/")({
   head: () => ({
