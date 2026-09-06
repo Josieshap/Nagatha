@@ -2,7 +2,7 @@ import { createFileRoute, Link, Outlet, useNavigate, useParams } from "@tanstack
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { LogOut, Menu, MessageSquare, Plus, Trash2, X } from "lucide-react";
+import { LogOut, Menu, MessageSquare, Plus, Timer, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { listThreads, deleteThread } from "@/lib/chat.functions";
@@ -71,11 +71,17 @@ function ThreadSidebar({ onNavigate }: { onNavigate?: () => void }) {
         </div>
       </div>
 
-      <div className="px-3">
+      <div className="flex flex-col gap-2 px-3">
         <Button asChild className="w-full justify-start gap-2">
           <Link to="/chat" onClick={onNavigate}>
             <Plus className="size-4" />
             New chat
+          </Link>
+        </Button>
+        <Button asChild variant="outline" className="w-full justify-start gap-2">
+          <Link to="/chat/reality-check" onClick={onNavigate}>
+            <Timer className="size-4" />
+            Reality check
           </Link>
         </Button>
       </div>
