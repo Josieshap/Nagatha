@@ -16,6 +16,7 @@ import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/c
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AuthenticatedChatIndexRouteImport } from './routes/_authenticated/chat.index'
 import { Route as AuthenticatedChatThreadIdRouteImport } from './routes/_authenticated/chat.$threadId'
+import { Route as AuthenticatedChatRealityCheckRouteImport } from './routes/_authenticated/chat.reality-check'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -52,6 +53,12 @@ const AuthenticatedChatThreadIdRoute =
     path: '/$threadId',
     getParentRoute: () => AuthenticatedChatRoute,
   } as any)
+const AuthenticatedChatRealityCheckRoute =
+  AuthenticatedChatRealityCheckRouteImport.update({
+    id: '/reality-check',
+    path: '/reality-check',
+    getParentRoute: () => AuthenticatedChatRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -59,6 +66,7 @@ export interface FileRoutesByFullPath {
   '/chat': typeof AuthenticatedChatRouteWithChildren
   '/api/chat': typeof ApiChatRoute
   '/chat/$threadId': typeof AuthenticatedChatThreadIdRoute
+  '/chat/reality-check': typeof AuthenticatedChatRealityCheckRoute
   '/chat/': typeof AuthenticatedChatIndexRoute
 }
 export interface FileRoutesByTo {
@@ -66,6 +74,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/api/chat': typeof ApiChatRoute
   '/chat/$threadId': typeof AuthenticatedChatThreadIdRoute
+  '/chat/reality-check': typeof AuthenticatedChatRealityCheckRoute
   '/chat': typeof AuthenticatedChatIndexRoute
 }
 export interface FileRoutesById {
@@ -76,14 +85,27 @@ export interface FileRoutesById {
   '/_authenticated/chat': typeof AuthenticatedChatRouteWithChildren
   '/api/chat': typeof ApiChatRoute
   '/_authenticated/chat/$threadId': typeof AuthenticatedChatThreadIdRoute
+  '/_authenticated/chat/reality-check': typeof AuthenticatedChatRealityCheckRoute
   '/_authenticated/chat/': typeof AuthenticatedChatIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/auth' | '/chat' | '/api/chat' | '/chat/$threadId' | '/chat/'
+    | '/'
+    | '/auth'
+    | '/chat'
+    | '/api/chat'
+    | '/chat/$threadId'
+    | '/chat/reality-check'
+    | '/chat/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/api/chat' | '/chat/$threadId' | '/chat'
+  to:
+    | '/'
+    | '/auth'
+    | '/api/chat'
+    | '/chat/$threadId'
+    | '/chat/reality-check'
+    | '/chat'
   id:
     | '__root__'
     | '/'
@@ -92,6 +114,7 @@ export interface FileRouteTypes {
     | '/_authenticated/chat'
     | '/api/chat'
     | '/_authenticated/chat/$threadId'
+    | '/_authenticated/chat/reality-check'
     | '/_authenticated/chat/'
   fileRoutesById: FileRoutesById
 }
@@ -153,16 +176,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedChatThreadIdRouteImport
       parentRoute: typeof AuthenticatedChatRoute
     }
+    '/_authenticated/chat/reality-check': {
+      id: '/_authenticated/chat/reality-check'
+      path: '/reality-check'
+      fullPath: '/chat/reality-check'
+      preLoaderRoute: typeof AuthenticatedChatRealityCheckRouteImport
+      parentRoute: typeof AuthenticatedChatRoute
+    }
   }
 }
 
 interface AuthenticatedChatRouteChildren {
   AuthenticatedChatThreadIdRoute: typeof AuthenticatedChatThreadIdRoute
+  AuthenticatedChatRealityCheckRoute: typeof AuthenticatedChatRealityCheckRoute
   AuthenticatedChatIndexRoute: typeof AuthenticatedChatIndexRoute
 }
 
 const AuthenticatedChatRouteChildren: AuthenticatedChatRouteChildren = {
   AuthenticatedChatThreadIdRoute: AuthenticatedChatThreadIdRoute,
+  AuthenticatedChatRealityCheckRoute: AuthenticatedChatRealityCheckRoute,
   AuthenticatedChatIndexRoute: AuthenticatedChatIndexRoute,
 }
 

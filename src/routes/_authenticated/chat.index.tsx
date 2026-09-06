@@ -1,8 +1,8 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Briefcase, Flame, Dumbbell, Home } from "lucide-react";
+import { Briefcase, Flame, Dumbbell, Home, Timer } from "lucide-react";
 import { createThread } from "@/lib/chat.functions";
 import { PENDING_MESSAGE_KEY } from "@/components/chat-window";
 import {
@@ -89,6 +89,14 @@ function NewChat() {
             </button>
           ))}
         </div>
+
+        <Link
+          to="/chat/reality-check"
+          className="mt-4 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-card px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-accent"
+        >
+          <Timer className="size-4" />
+          How long will it actually take?
+        </Link>
 
         <div className="mt-6 w-full">
           <PromptInput onSubmit={handleSubmit}>
