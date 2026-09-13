@@ -37,7 +37,9 @@ export const estimateTask = createServerFn({ method: "POST" })
     const key = process.env["LOVABLE_API_KEY"];
     if (!key) throw new Error("Missing LOVABLE_API_KEY");
 
-    const gateway = createLovableAiGatewayProvider(key);
+    const gateway = createLovableAiGatewayProvider(key, undefined, {
+      structuredOutputs: true,
+    });
     const { object } = await generateObject({
       model: gateway("google/gemini-3.7-flash"),
       schema: estimateSchema,
@@ -45,5 +47,15 @@ export const estimateTask = createServerFn({ method: "POST" })
       prompt: `Task: ${data.task}`,
     });
 
-    return object;
+    const clamp = (n: number, max: number) =>
+      Math.min(max, Math.max(1, Math.round(Number.isFinite(n) ? n : 1)));
+
+    return {
+      ...object,
+      minutes: clamp(object.minutes, 480),
+      steps: object.steps.slice(0, 5).map((step) => ({
+        ...step,
+        minutes: clamp(step.minutes, 240),
+      })),
+    } satisfies TaskEstimate;
   });
