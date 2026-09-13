@@ -15,7 +15,7 @@ type MoodInfo = {
 export const NAGATHA_MOODS: Record<NagathaMood, MoodInfo> = {
   idle: {
     src: idle,
-    alt: "Nagatha the coffee-mug coach, arms crossed with a whistle",
+    alt: "Nagatha the coach, arms crossed with a whistle",
     caption: "Arms crossed. Waiting.",
   },
   work: {
@@ -30,7 +30,7 @@ export const NAGATHA_MOODS: Record<NagathaMood, MoodInfo> = {
   },
   exercise: {
     src: exercise,
-    alt: "Nagatha with a sweatband, whistle and dumbbell",
+    alt: "Nagatha with a headband, whistle and dumbbell",
     caption: "Whistle in. One more rep.",
   },
   win: {

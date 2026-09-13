@@ -62,7 +62,7 @@ function NewChat() {
       <div className="flex w-full max-w-xl flex-col items-center">
         <img
           src={mascot}
-          alt="Nagatha, a grumpy coffee mug coach with a whistle"
+          alt="Nagatha, a grumpy but caring coach with a whistle"
           className="size-28 md:size-36"
           width={1024}
           height={1024}

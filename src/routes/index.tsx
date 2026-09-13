@@ -38,7 +38,7 @@ function Index() {
     <div className="bg-paper flex min-h-screen flex-col items-center justify-center gap-4 px-4">
       <img
         src={mascot}
-        alt="Nagatha, a grumpy coffee mug coach with a whistle"
+        alt="Nagatha, a grumpy but caring coach with a whistle"
         className="size-28 animate-bounce"
         width={1024}
         height={1024}
