@@ -16,6 +16,7 @@ import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/c
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AuthenticatedChatIndexRouteImport } from './routes/_authenticated/chat.index'
 import { Route as AuthenticatedChatThreadIdRouteImport } from './routes/_authenticated/chat.$threadId'
+import { Route as AuthenticatedChatProgressRouteImport } from './routes/_authenticated/chat.progress'
 import { Route as AuthenticatedChatRealityCheckRouteImport } from './routes/_authenticated/chat.reality-check'
 
 const IndexRoute = IndexRouteImport.update({
@@ -53,6 +54,12 @@ const AuthenticatedChatThreadIdRoute =
     path: '/$threadId',
     getParentRoute: () => AuthenticatedChatRoute,
   } as any)
+const AuthenticatedChatProgressRoute =
+  AuthenticatedChatProgressRouteImport.update({
+    id: '/progress',
+    path: '/progress',
+    getParentRoute: () => AuthenticatedChatRoute,
+  } as any)
 const AuthenticatedChatRealityCheckRoute =
   AuthenticatedChatRealityCheckRouteImport.update({
     id: '/reality-check',
@@ -66,6 +73,7 @@ export interface FileRoutesByFullPath {
   '/chat': typeof AuthenticatedChatRouteWithChildren
   '/api/chat': typeof ApiChatRoute
   '/chat/$threadId': typeof AuthenticatedChatThreadIdRoute
+  '/chat/progress': typeof AuthenticatedChatProgressRoute
   '/chat/reality-check': typeof AuthenticatedChatRealityCheckRoute
   '/chat/': typeof AuthenticatedChatIndexRoute
 }
@@ -74,6 +82,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/api/chat': typeof ApiChatRoute
   '/chat/$threadId': typeof AuthenticatedChatThreadIdRoute
+  '/chat/progress': typeof AuthenticatedChatProgressRoute
   '/chat/reality-check': typeof AuthenticatedChatRealityCheckRoute
   '/chat': typeof AuthenticatedChatIndexRoute
 }
@@ -85,6 +94,7 @@ export interface FileRoutesById {
   '/_authenticated/chat': typeof AuthenticatedChatRouteWithChildren
   '/api/chat': typeof ApiChatRoute
   '/_authenticated/chat/$threadId': typeof AuthenticatedChatThreadIdRoute
+  '/_authenticated/chat/progress': typeof AuthenticatedChatProgressRoute
   '/_authenticated/chat/reality-check': typeof AuthenticatedChatRealityCheckRoute
   '/_authenticated/chat/': typeof AuthenticatedChatIndexRoute
 }
@@ -96,6 +106,7 @@ export interface FileRouteTypes {
     | '/chat'
     | '/api/chat'
     | '/chat/$threadId'
+    | '/chat/progress'
     | '/chat/reality-check'
     | '/chat/'
   fileRoutesByTo: FileRoutesByTo
@@ -104,6 +115,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/api/chat'
     | '/chat/$threadId'
+    | '/chat/progress'
     | '/chat/reality-check'
     | '/chat'
   id:
@@ -114,6 +126,7 @@ export interface FileRouteTypes {
     | '/_authenticated/chat'
     | '/api/chat'
     | '/_authenticated/chat/$threadId'
+    | '/_authenticated/chat/progress'
     | '/_authenticated/chat/reality-check'
     | '/_authenticated/chat/'
   fileRoutesById: FileRoutesById
@@ -176,6 +189,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedChatThreadIdRouteImport
       parentRoute: typeof AuthenticatedChatRoute
     }
+    '/_authenticated/chat/progress': {
+      id: '/_authenticated/chat/progress'
+      path: '/progress'
+      fullPath: '/chat/progress'
+      preLoaderRoute: typeof AuthenticatedChatProgressRouteImport
+      parentRoute: typeof AuthenticatedChatRoute
+    }
     '/_authenticated/chat/reality-check': {
       id: '/_authenticated/chat/reality-check'
       path: '/reality-check'
@@ -188,12 +208,14 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedChatRouteChildren {
   AuthenticatedChatThreadIdRoute: typeof AuthenticatedChatThreadIdRoute
+  AuthenticatedChatProgressRoute: typeof AuthenticatedChatProgressRoute
   AuthenticatedChatRealityCheckRoute: typeof AuthenticatedChatRealityCheckRoute
   AuthenticatedChatIndexRoute: typeof AuthenticatedChatIndexRoute
 }
 
 const AuthenticatedChatRouteChildren: AuthenticatedChatRouteChildren = {
   AuthenticatedChatThreadIdRoute: AuthenticatedChatThreadIdRoute,
+  AuthenticatedChatProgressRoute: AuthenticatedChatProgressRoute,
   AuthenticatedChatRealityCheckRoute: AuthenticatedChatRealityCheckRoute,
   AuthenticatedChatIndexRoute: AuthenticatedChatIndexRoute,
 }
