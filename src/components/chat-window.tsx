@@ -134,6 +134,17 @@ export function ChatWindow({
             if (!text) return null;
             return (
               <Message key={message.id} from={message.role}>
+                {message.role === "assistant" && (
+                  <img
+                    src={NAGATHA_MOODS.idle.src}
+                    alt=""
+                    aria-hidden
+                    className="mt-1 size-8 shrink-0 self-start"
+                    width={1024}
+                    height={1024}
+                    loading="lazy"
+                  />
+                )}
                 <MessageContent className="group-[.is-user]:bg-primary group-[.is-user]:rounded-2xl group-[.is-user]:text-primary-foreground">
                   {message.role === "assistant" ? (
                     <MessageResponse className="chat-markdown">{text}</MessageResponse>
@@ -147,6 +158,15 @@ export function ChatWindow({
 
           {status === "submitted" && (
             <Message from="assistant">
+              <img
+                src={NAGATHA_MOODS.thinking.src}
+                alt=""
+                aria-hidden
+                className="mt-1 size-8 shrink-0 self-start"
+                width={1024}
+                height={1024}
+                loading="lazy"
+              />
               <MessageContent>
                 <Shimmer className="text-sm">Nagatha is cracking her knuckles…</Shimmer>
               </MessageContent>
@@ -166,6 +186,7 @@ export function ChatWindow({
         <div className="mx-auto w-full max-w-2xl">
           <PromptInput onSubmit={handleSubmit}>
             <PromptInputTextarea
+              autoFocus
               placeholder="Tell Nagatha what you're avoiding…"
               aria-label="Message Nagatha"
             />
