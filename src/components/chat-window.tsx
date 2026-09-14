@@ -100,7 +100,7 @@ export function ChatWindow({
               key={mood}
               src={moodInfo.src}
               alt={moodInfo.alt}
-              className="size-10 shrink-0 animate-in fade-in zoom-in-75 duration-300"
+              className="size-12 sm:size-14 shrink-0 animate-in fade-in zoom-in-75 duration-300"
               width={1024}
               height={1024}
             />
