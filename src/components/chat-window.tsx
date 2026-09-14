@@ -162,7 +162,7 @@ export function ChatWindow({
                 src={NAGATHA_MOODS.thinking.src}
                 alt=""
                 aria-hidden
-                className="mt-1 size-8 shrink-0 self-start"
+                className="mt-1 size-10 sm:size-12 shrink-0 self-start"
                 width={1024}
                 height={1024}
                 loading="lazy"
