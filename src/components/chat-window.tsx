@@ -100,7 +100,7 @@ export function ChatWindow({
               key={mood}
               src={moodInfo.src}
               alt={moodInfo.alt}
-              className="size-10 shrink-0 animate-in fade-in zoom-in-75 duration-300"
+              className="size-12 sm:size-14 shrink-0 animate-in fade-in zoom-in-75 duration-300"
               width={1024}
               height={1024}
             />
@@ -139,7 +139,7 @@ export function ChatWindow({
                     src={NAGATHA_MOODS.idle.src}
                     alt=""
                     aria-hidden
-                    className="mt-1 size-8 shrink-0 self-start"
+                    className="mt-1 size-10 sm:size-12 shrink-0 self-start"
                     width={1024}
                     height={1024}
                     loading="lazy"
@@ -162,7 +162,7 @@ export function ChatWindow({
                 src={NAGATHA_MOODS.thinking.src}
                 alt=""
                 aria-hidden
-                className="mt-1 size-8 shrink-0 self-start"
+                className="mt-1 size-10 sm:size-12 shrink-0 self-start"
                 width={1024}
                 height={1024}
                 loading="lazy"
