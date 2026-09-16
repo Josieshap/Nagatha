@@ -24,8 +24,28 @@ export const Route = createFileRoute("/")({
           "A sarcastic AI companion that actually gets you off the couch — work, chores, and exercise, one honest nudge at a time.",
       },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
+      { property: "og:url", content: "https://nagatha.lovable.app/" },
+      {
+        property: "og:image",
+        content: "https://nagatha.lovable.app/nagatha-share.jpg",
+      },
+      {
+        property: "og:image:alt",
+        content: "Nagatha, the knitted tough-love AI buddy",
+      },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { name: "twitter:card", content: "summary_large_image" },
+      {
+        name: "twitter:image",
+        content: "https://nagatha.lovable.app/nagatha-share.jpg",
+      },
+      {
+        name: "twitter:image:alt",
+        content: "Nagatha, the knitted tough-love AI buddy",
+      },
     ],
+    links: [{ rel: "canonical", href: "https://nagatha.lovable.app/" }],
   }),
   component: Landing,
 });
