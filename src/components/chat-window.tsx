@@ -5,6 +5,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Share2, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
+import { createShareLink } from "@/lib/chat.functions";
 import {
   Conversation,
   ConversationContent,
@@ -89,6 +91,7 @@ export function ChatWindow({
   onDelete: () => Promise<void>;
 }) {
   const queryClient = useQueryClient();
+  const makeShareLink = useServerFn(createShareLink);
 
   const transport = useMemo(
     () =>
@@ -184,31 +187,24 @@ export function ChatWindow({
   };
 
   const shareConversation = async () => {
-    const transcript = messages
-      .map((message) => {
-        const photoCount = message.parts.filter((part) => part.type === "file" && part.mediaType.startsWith("image/")).length;
-        const photoNote = photoCount ? ` [${photoCount} photo${photoCount === 1 ? "" : "s"}]` : "";
-        return `${message.role === "assistant" ? "Nagatha" : "Me"}${photoNote}: ${textOf(message)}`;
-      })
-      .join("\n\n");
-    const text = `My chat with Nagatha\n\n${transcript}`;
+    let url: string;
+    try {
+      const { token } = await makeShareLink({ data: { threadId } });
+      url = `${window.location.origin}/share/${token}`;
+    } catch {
+      toast.error("Couldn't make a share link. Try again in a moment.");
+      return;
+    }
     try {
       if (navigator.share) {
-        await navigator.share({ title: "My chat with Nagatha", text });
+        await navigator.share({ title: "My chat with Nagatha", text: "Look how Nagatha handled me:", url });
         return;
       }
-      await navigator.clipboard.writeText(text);
-      toast.success("Chat copied. Go forth and overshare responsibly.");
+      await navigator.clipboard.writeText(url);
+      toast.success("Link copied. Go forth and overshare responsibly.");
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError") return;
-      const file = new Blob([text], { type: "text/plain;charset=utf-8" });
-      const url = URL.createObjectURL(file);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = "nagatha-chat.txt";
-      link.click();
-      URL.revokeObjectURL(url);
-      toast.success("Chat downloaded as a text file.");
+      toast.message("Share this link:", { description: url, duration: 15000 });
     }
   };
 

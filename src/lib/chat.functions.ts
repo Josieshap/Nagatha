@@ -70,3 +70,49 @@ export const deleteThread = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+export const createShareLink = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ threadId: z.string().uuid() }).parse(input))
+  .handler(async ({ context, data }) => {
+    const { data: thread, error } = await context.supabase
+      .from("threads")
+      .select("share_token")
+      .eq("id", data.threadId)
+      .single();
+    if (error) throw new Error(error.message);
+    if (thread.share_token) return { token: thread.share_token as string };
+    const token = crypto.randomUUID();
+    const { error: updateError } = await context.supabase
+      .from("threads")
+      .update({ share_token: token })
+      .eq("id", data.threadId);
+    if (updateError) throw new Error(updateError.message);
+    return { token };
+  });
+
+export const getSharedChat = createServerFn({ method: "GET" })
+  .inputValidator((input: unknown) => z.object({ token: z.string().uuid() }).parse(input))
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: thread } = await supabaseAdmin
+      .from("threads")
+      .select("id, title")
+      .eq("share_token", data.token)
+      .maybeSingle();
+    if (!thread) return null;
+    const { data: rows, error } = await supabaseAdmin
+      .from("messages")
+      .select("id, role, content, attachments, created_at")
+      .eq("thread_id", thread.id)
+      .order("created_at", { ascending: true });
+    if (error) throw new Error(error.message);
+    const messages = await Promise.all(rows.map(async (row) => {
+      const signed = await Promise.all(parseAttachments(row.attachments).map(async (attachment) => {
+        const { data: s } = await supabaseAdmin.storage.from("chat-images").createSignedUrl(attachment.path, 3600);
+        return s?.signedUrl ? { name: attachment.name, mediaType: attachment.mediaType, url: s.signedUrl } : null;
+      }));
+      return { id: row.id, role: row.role, content: row.content, attachments: signed.filter((a) => a !== null) };
+    }));
+    return { title: thread.title, messages };
+  });
