@@ -10,3 +10,6 @@
 - [x] Expand all seven tutoring subjects into structured lessons and exercises.
 - [x] Fix Nagatha’s cropped head on the “What are we pretending to avoid today?” page.
 - [x] Add face-palm Nagatha to the page-load error screen.
+- [ ] Add voice memos for pronunciation coaching in tutoring chats
+- [ ] Replace avoidance-focused wording with tutoring wording in study chats
+- [ ] Verify voice recording and tutoring wording on mobile and desktop
