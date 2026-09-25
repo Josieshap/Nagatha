@@ -19,7 +19,7 @@
 - [x] Build lesson pages for Spanish, Italian, French, German, Korean, Math, and English
 - [x] Add lesson exercises and per-user progress tracking
 - [x] Add a lesson planner with subject, goal, available time, and Nagatha-generated plan
-- [ ] Make chat tutoring ask only one question at a time while preserving Nagatha’s personality
-- [ ] Rewrite Math placement questions so each is plain, complete, and unambiguous
-- [ ] Ensure tutoring answers include substantive explanations across all seven subjects
+- [x] Make chat tutoring ask only one question at a time while preserving Nagatha’s personality
+- [x] Rewrite Math placement questions so each is plain, complete, and unambiguous
+- [x] Ensure tutoring answers include substantive explanations across all seven subjects
 - [ ] Fix mobile chat scrolling, portrait sizing, photo attachments, and the History list
