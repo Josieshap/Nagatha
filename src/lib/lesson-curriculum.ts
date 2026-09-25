@@ -11,6 +11,14 @@ import { LESSONS as KOREAN } from "./curriculum/korean";
 import { LESSONS as MATH } from "./curriculum/math";
 import { LESSONS as ENGLISH } from "./curriculum/english";
 
+export type Subject = {
+  id: SubjectId;
+  name: string;
+  greeting: string;
+  description: string;
+  lessons: Lesson[];
+};
+
 export const SUBJECTS: Subject[] = [
   {
     id: "spanish", name: "Spanish", greeting: "Vamos.", description: "Build useful conversation, grammar, reading, and writing skills.",
