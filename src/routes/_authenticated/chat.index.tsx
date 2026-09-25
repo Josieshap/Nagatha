@@ -41,11 +41,12 @@ export const Route = createFileRoute("/_authenticated/chat/")({
   component: NewChat,
 });
 
-const QUICK_PROMPTS = [
+const QUICK_PROMPTS: Array<{ icon: typeof Briefcase; label: string; text: string; to?: string }> = [
   { icon: Briefcase, label: "I can't start this work project", text: "I have a work project I keep putting off. Help me actually start it." },
   { icon: Home, label: "My place is a disaster", text: "My place is a mess and I don't know where to start. Roast me, then help me clean it." },
   { icon: Dumbbell, label: "Make me exercise", text: "I've been avoiding exercise. Give me tough love and a plan I'll actually do." },
   { icon: Flame, label: "Just motivate me", text: "I don't even know what I need. Just motivate me." },
+  { icon: Timer, label: "How long will it actually take?", text: "", to: "/chat/reality-check" },
 ];
 
 const LANGUAGE_TOPICS = ["grammar", "verb conjugation", "vocabulary", "pronunciation", "conversation"];
@@ -138,13 +139,13 @@ function NewChat() {
         </p>
 
         <div className="mt-6 grid w-full grid-cols-1 gap-2 sm:grid-cols-2">
-          {QUICK_PROMPTS.map(({ icon: Icon, label, text }) => (
+          {QUICK_PROMPTS.map(({ icon: Icon, label, text, to }) => (
             <Button
               key={label}
               type="button"
               variant="outline"
               disabled={busy}
-              onClick={() => void startThread(text)}
+              onClick={() => (to ? void navigate({ to }) : void startThread(text))}
               className="h-auto justify-start whitespace-normal px-4 py-3 text-left"
             >
               <Icon className="size-4 shrink-0 text-primary" />
@@ -156,7 +157,7 @@ function NewChat() {
         <div className="mt-6 w-full border-t pt-5">
           <div className="mb-3 flex items-center gap-2">
             <BookOpen className="size-4 text-primary" />
-            <h2 className="font-display font-bold">Study with Nagatha</h2>
+            <h2 className="font-display font-bold">Learn something. It won't kill you.</h2>
           </div>
           <div className="grid gap-2 sm:grid-cols-2">
             <Button asChild type="button" variant="secondary"><Link to="/chat/lessons"><BookOpen />Browse seven courses</Link></Button>
@@ -182,14 +183,6 @@ function NewChat() {
           )}
           <p className="mt-2 text-xs text-muted-foreground">Or type anything — any subject — or snap a photo of your homework. Nagatha teaches you how; she won't do it for you.</p>
         </div>
-
-        <Link
-          to="/chat/reality-check"
-          className="mt-4 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-card px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-accent"
-        >
-          <Timer className="size-4" />
-          How long will it actually take?
-        </Link>
 
         <div className="mt-6 w-full">
           <PromptInput
