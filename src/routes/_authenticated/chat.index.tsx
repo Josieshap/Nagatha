@@ -23,6 +23,7 @@ import { Attachment, AttachmentPreview, AttachmentRemove, Attachments } from "@/
 import mascot from "@/assets/nagatha-idle.png";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { VoiceRecorder } from "@/components/voice-recorder";
 
 export const Route = createFileRoute("/_authenticated/chat/")({
   head: () => ({
@@ -117,6 +118,30 @@ function NewChat() {
     return startThread(message.text, message.files);
   };
 
+  const startVoiceThread = async (file: File, transcript: string) => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      const thread = await makeThread();
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) throw new Error("Please sign in again to send a voice memo.");
+      const path = `${userData.user.id}/${thread.id}/${crypto.randomUUID()}.wav`;
+      const { error: uploadError } = await supabase.storage.from("chat-images").upload(path, file, { contentType: "audio/wav" });
+      if (uploadError) throw new Error(uploadError.message);
+      const { data: signed, error: signError } = await supabase.storage.from("chat-images").createSignedUrl(path, 3600);
+      if (signError) throw new Error(signError.message);
+      sessionStorage.setItem(PENDING_MESSAGE_KEY(thread.id), JSON.stringify({
+        text: `Voice memo for pronunciation practice. Nagatha's transcription of what I said: “${transcript}”\n\nTell me what you heard clearly, help me improve the pronunciation, and give me one short phrase to retry.`,
+        files: [{ type: "file", filename: file.name, mediaType: "audio/wav", url: signed.signedUrl }],
+        attachments: [{ path, name: file.name, mediaType: "audio/wav" }],
+      }));
+      void navigate({ to: "/chat/$threadId", params: { threadId: thread.id } });
+    } catch (error) {
+      setBusy(false);
+      throw error;
+    }
+  };
+
   return (
     <div className="bg-paper flex min-h-0 flex-1 flex-col items-center overflow-y-auto px-4 py-8">
       <div className="flex w-full max-w-xl shrink-0 flex-col items-center">
@@ -128,7 +153,7 @@ function NewChat() {
           height={1024}
         />
         <h1 className="font-display mt-5 text-center text-2xl font-bold md:text-3xl">
-          What are we pretending to avoid today?
+          What should Nagatha help with today?
         </h1>
         <p className="mt-2 max-w-md text-center text-sm text-muted-foreground">
           Work, chores, that exercise you swore you'd start in January — pick your poison.
@@ -185,7 +210,7 @@ function NewChat() {
           >
             <PhotoPreviews />
             <PromptInputTextarea
-              placeholder="Tell Nagatha what you're avoiding…"
+              placeholder="Ask Nagatha for help or start a lesson…"
               aria-label="Message Nagatha"
               disabled={busy}
             />
@@ -197,7 +222,8 @@ function NewChat() {
                     <PromptInputActionAddAttachments label="Add photos" />
                   </PromptInputActionMenuContent>
                 </PromptInputActionMenu>
-                <span className="text-xs text-muted-foreground">Up to 3 photos</span>
+                <VoiceRecorder disabled={busy} onVoiceReady={startVoiceThread} />
+                <span className="hidden text-xs text-muted-foreground sm:inline">Photos or pronunciation</span>
               </PromptInputTools>
               <PromptInputSubmit disabled={busy} />
             </PromptInputFooter>
