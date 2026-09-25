@@ -173,7 +173,7 @@ export const Route = createFileRoute("/api/chat")({
           role: "user",
           content: [
              ...currentSigned.flatMap((item) => item && item.attachment.mediaType.startsWith("image/") ? [{ type: "file" as const, data: new URL(item.url), filename: item.attachment.name, mediaType: item.attachment.mediaType }] : []),
-            { type: "text" as const, text: userText || "Please look at this photo and help me with what you see." },
+            { type: "text" as const, text: userText || "Please look at this photo and teach me how to do it myself." },
           ],
         });
 
