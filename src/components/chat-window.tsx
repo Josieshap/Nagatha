@@ -213,7 +213,7 @@ export function ChatWindow({
   };
 
   return (
-    <div className="flex min-h-0 min-w-0 flex-1">
+    <div className="flex min-h-0 min-w-0 flex-1 overflow-hidden">
       {messages.length > 0 && (
         <aside className="hidden w-48 shrink-0 flex-col items-center border-r bg-card/40 px-4 py-8 text-center lg:flex">
           <img key={mood} src={moodInfo.src} alt={moodInfo.alt} className="w-full max-w-44 animate-in object-contain fade-in zoom-in-75 duration-300" width={1024} height={1024} />
@@ -222,18 +222,18 @@ export function ChatWindow({
       )}
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
       {messages.length > 0 && (
-        <div className="border-b bg-card/70 px-4 py-2 backdrop-blur lg:hidden">
-          <div className="mx-auto flex w-full max-w-2xl items-center gap-3">
+        <div className="shrink-0 border-b bg-card/70 px-3 py-2 backdrop-blur lg:hidden sm:px-4">
+          <div className="mx-auto grid w-full max-w-2xl grid-cols-[auto_minmax(0,1fr)] items-center gap-3 overflow-hidden">
             <img
               key={mood}
               src={moodInfo.src}
               alt={moodInfo.alt}
-              className="size-24 shrink-0 animate-in fade-in zoom-in-75 duration-300 sm:size-28"
+              className="size-20 shrink-0 animate-in object-contain fade-in zoom-in-75 duration-300 min-[430px]:size-24 sm:size-28"
               width={1024}
               height={1024}
             />
             <div className="min-w-0 flex-1">
-              <p className="font-display text-sm italic text-muted-foreground">{moodInfo.caption}</p>
+              <p className="line-clamp-2 font-display text-sm italic text-muted-foreground">{moodInfo.caption}</p>
               <div className="mt-2 flex gap-1">
                 <Button type="button" size="icon-sm" variant="ghost" aria-label="Share this chat" title="Share this chat" onClick={() => void shareConversation()}>
                   <Share2 />
@@ -261,8 +261,8 @@ export function ChatWindow({
         </div>
       )}
 
-      <Conversation className="flex-1">
-        <ConversationContent className="mx-auto w-full max-w-2xl gap-6 px-4 py-6">
+      <Conversation className="min-h-0 min-w-0 flex-1">
+        <ConversationContent className="mx-auto w-full min-w-0 max-w-2xl gap-6 overflow-x-hidden px-3 py-5 sm:px-4 sm:py-6">
           {messages.length === 0 && !isLoading && (
             <div className="flex flex-col items-center gap-3 py-16 text-center">
               <img
@@ -284,12 +284,12 @@ export function ChatWindow({
             const photos = message.parts.filter((part): part is FileUIPart => part.type === "file" && part.mediaType.startsWith("image/"));
             if (!text && photos.length === 0) return null;
             return (
-              <Message key={message.id} from={message.role}>
+              <Message key={message.id} from={message.role} className="min-w-0">
                 <MessageContent className="group-[.is-user]:bg-primary group-[.is-user]:rounded-2xl group-[.is-user]:text-primary-foreground">
                   {photos.length > 0 && (
-                    <Attachments className="mb-2" aria-label={`${message.role === "user" ? "Your" : "Nagatha's"} attached photos`}>
+                    <Attachments className="mb-2 ml-0 max-w-full" aria-label={`${message.role === "user" ? "Your" : "Nagatha's"} attached photos`}>
                       {photos.map((photo, index) => (
-                        <Attachment key={`${message.id}-photo-${index}`} data={{ ...photo, id: `${message.id}-photo-${index}` }}>
+                        <Attachment className="size-20 min-[430px]:size-24" key={`${message.id}-photo-${index}`} data={{ ...photo, id: `${message.id}-photo-${index}` }}>
                           <AttachmentPreview />
                         </Attachment>
                       ))}
@@ -322,8 +322,8 @@ export function ChatWindow({
         <ConversationScrollButton />
       </Conversation>
 
-      <div className="border-t bg-background px-4 py-3">
-        <div className="mx-auto w-full max-w-2xl">
+      <div className="shrink-0 border-t bg-background px-3 py-3 sm:px-4">
+        <div className="mx-auto w-full min-w-0 max-w-2xl overflow-hidden">
           <PromptInput
             accept="image/jpeg,image/png,image/webp,image/gif"
             multiple

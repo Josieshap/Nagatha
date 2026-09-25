@@ -2,7 +2,7 @@ import { createFileRoute, Link, Outlet, useNavigate, useParams } from "@tanstack
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { History, ListChecks, LogOut, MessageSquare, Plus, Timer, Trash2 } from "lucide-react";
+import { BookOpen, History, ListChecks, LogOut, MessageSquare, Plus, Route as RouteIcon, Timer, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { listThreads, deleteThread } from "@/lib/chat.functions";
@@ -70,21 +70,21 @@ function ThreadSidebar({ onNavigate }: { onNavigate?: () => void }) {
   };
 
   return (
-    <div className="flex h-full flex-col">
-      <nav className="mt-4 flex-1 overflow-y-auto pb-3" aria-label="Chat history">
+    <div className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden">
+      <nav className="mt-4 min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain pb-3" aria-label="Chat history">
         {threads && threads.length > 0 ? (
           <ul className="flex flex-col gap-1">
             {threads.map((thread) => {
               const active = params.threadId === thread.id;
               return (
-                <li key={thread.id} className="group relative">
+                <li key={thread.id} className="group relative min-w-0">
                   <SheetClose asChild>
                     <Link
                       to="/chat/$threadId"
                       params={{ threadId: thread.id }}
                       onClick={onNavigate}
                       className={cn(
-                        "flex items-center gap-2 rounded-lg px-3 py-2 pr-9 text-sm transition-colors",
+                         "flex min-w-0 items-center gap-2 rounded-lg px-3 py-2 pr-9 text-sm transition-colors",
                         active
                           ? "bg-sidebar-accent font-semibold text-sidebar-accent-foreground"
                           : "text-sidebar-foreground hover:bg-sidebar-accent/60",
@@ -146,15 +146,17 @@ function ThreadSidebar({ onNavigate }: { onNavigate?: () => void }) {
 function ChatLayout() {
   return (
     <div className="flex h-dvh min-w-0 flex-col bg-background">
-      <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b bg-card/70 px-3 py-2 sm:px-5">
+      <header className="grid shrink-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 overflow-hidden border-b bg-card/70 px-2 py-2 sm:gap-3 sm:px-5">
         <Link to="/chat" className="min-w-0 truncate font-display font-bold">Nagatha</Link>
         <div className="flex shrink-0 items-center gap-1">
           <Button asChild type="button" size="sm" variant="ghost"><Link to="/chat"><Plus />New</Link></Button>
           <Button asChild type="button" size="sm" variant="ghost"><Link to="/chat/reality-check"><Timer /><span className="hidden sm:inline">Reality check</span></Link></Button>
           <Button asChild type="button" size="sm" variant="ghost"><Link to="/chat/progress"><ListChecks /><span className="hidden sm:inline">Progress</span></Link></Button>
+          <Button asChild type="button" size="sm" variant="ghost"><Link to="/chat/lessons"><BookOpen /><span className="hidden sm:inline">Lessons</span></Link></Button>
+          <Button asChild type="button" size="sm" variant="ghost"><Link to="/chat/planner"><RouteIcon /><span className="hidden sm:inline">Plan</span></Link></Button>
           <Sheet>
             <SheetTrigger asChild><Button type="button" size="sm" variant="outline"><History />History</Button></SheetTrigger>
-            <SheetContent className="flex w-[min(90vw,24rem)] flex-col p-5">
+            <SheetContent className="flex h-dvh min-h-0 w-[min(90vw,24rem)] flex-col overflow-hidden p-5">
               <SheetHeader className="pr-8"><SheetTitle className="font-display">Chat history</SheetTitle><SheetDescription>Pick up where you left off.</SheetDescription></SheetHeader>
               <ThreadSidebar />
             </SheetContent>

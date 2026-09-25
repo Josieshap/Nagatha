@@ -160,6 +160,7 @@
 @layer components {
   .chat-markdown p {
     margin: 0.5rem 0;
+    overflow-wrap: anywhere;
   }
   .chat-markdown ul {
     list-style: disc;
@@ -198,5 +199,10 @@
     border-radius: 0.375rem;
     padding: 0.125rem 0.375rem;
     font-size: 0.875em;
+    overflow-wrap: anywhere;
+  }
+  .chat-markdown pre {
+    max-width: 100%;
+    overflow-x: auto;
   }
 }
