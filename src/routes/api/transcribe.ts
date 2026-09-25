@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createUserSupabaseClient } from "@/lib/supabase-user.server";
 
-const MAX_FILE_BYTES = 13 * 1024 * 1024;
+const MAX_FILE_BYTES = 9 * 1024 * 1024;
 
 function safeGatewayMessage(value: unknown, fallback: string) {
   if (!value || typeof value !== "object") return fallback;
@@ -31,7 +31,7 @@ export const Route = createFileRoute("/api/transcribe")({
         const body = await request.formData();
         const file = body.get("file");
         if (!(file instanceof File) || !file.size || file.size > MAX_FILE_BYTES || !file.type.startsWith("audio/")) {
-          return Response.json({ message: "Please record a valid voice memo under 13 MB." }, { status: 400 });
+          return Response.json({ message: "Please record a valid voice memo under 9 MB." }, { status: 400 });
         }
         const key = process.env["LOVABLE_API_KEY"];
         if (!key) return Response.json({ message: "Voice transcription isn't configured yet." }, { status: 500 });

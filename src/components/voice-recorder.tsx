@@ -48,7 +48,7 @@ export function VoiceRecorder({
     recorderRef.current = undefined;
     try {
       const file = await recorder.stop();
-      if (file.size > 13 * 1024 * 1024) throw new Error("That voice memo is too large. Keep it under a few minutes and try again.");
+      if (file.size > 9 * 1024 * 1024) throw new Error("That voice memo is too large. Keep it under a few minutes and try again.");
       setPreview({ file, url: URL.createObjectURL(file) });
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "That recording didn't save.");
