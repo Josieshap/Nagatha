@@ -15,3 +15,7 @@
 - [ ] Verify voice recording and tutoring wording on mobile and desktop
 - [ ] Remove duplicate Nagatha portraits and keep one beside the conversation
 - [ ] Move saved chats behind a History button
+- [ ] Remove pronunciation voice memos and related controls
+- [ ] Build lesson pages for Spanish, Italian, French, German, Korean, Math, and English
+- [ ] Add lesson exercises and per-user progress tracking
+- [ ] Add a lesson planner with subject, goal, available time, and Nagatha-generated plan
