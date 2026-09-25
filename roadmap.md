@@ -1,0 +1,5 @@
+# Roadmap
+
+- [ ] Enlarge Nagatha’s chat portraits for mobile visibility.
+- [ ] Add tutoring support for Spanish, Italian, French, German, Korean, Math, and English.
+- [ ] Verify the updated chat experience on mobile and desktop.
