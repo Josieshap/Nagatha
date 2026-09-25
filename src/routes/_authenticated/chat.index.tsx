@@ -7,11 +7,19 @@ import { createThread } from "@/lib/chat.functions";
 import { PENDING_MESSAGE_KEY } from "@/components/chat-window";
 import {
   PromptInput,
+  PromptInputActionAddAttachments,
+  PromptInputActionMenu,
+  PromptInputActionMenuContent,
+  PromptInputActionMenuTrigger,
   PromptInputFooter,
+  PromptInputHeader,
   PromptInputSubmit,
   PromptInputTextarea,
+  PromptInputTools,
+  usePromptInputAttachments,
   type PromptInputMessage,
 } from "@/components/ai-elements/prompt-input";
+import { Attachment, AttachmentPreview, AttachmentRemove, Attachments } from "@/components/ai-elements/attachments";
 import mascot from "@/assets/nagatha-idle.png";
 import { Button } from "@/components/ui/button";
 
@@ -49,17 +57,53 @@ const TUTORING_PROMPTS = [
   { label: "English", text: "Start my structured English course. Assess my level and goal, make a lesson path, then teach lesson one with examples, guided practice, exercises, corrections, and a short review." },
 ];
 
+function PhotoPreviews() {
+  const attachments = usePromptInputAttachments();
+  if (attachments.files.length === 0) return null;
+  return (
+    <PromptInputHeader>
+      <Attachments aria-label="Selected photos">
+        {attachments.files.map((file) => (
+          <Attachment key={file.id} data={file} onRemove={() => attachments.remove(file.id)}>
+            <AttachmentPreview />
+            <AttachmentRemove />
+          </Attachment>
+        ))}
+      </Attachments>
+    </PromptInputHeader>
+  );
+}
+
 function NewChat() {
   const navigate = useNavigate();
   const makeThread = useServerFn(createThread);
   const [busy, setBusy] = useState(false);
 
-  const startThread = async (text: string) => {
-    if (busy || !text.trim()) return;
+  const startThread = async (text: string, files: PromptInputMessage["files"] = []) => {
+    if (busy || (!text.trim() && files.length === 0)) return;
     setBusy(true);
     try {
       const thread = await makeThread();
-      sessionStorage.setItem(PENDING_MESSAGE_KEY(thread.id), text.trim());
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) throw new Error("Please sign in again to add a photo.");
+      const stored: Array<{ path: string; name: string; mediaType: string }> = [];
+      const signedFiles = [];
+      for (const file of files) {
+        const blob = await (await fetch(file.url)).blob();
+        const extension = file.filename?.split(".").pop()?.replace(/[^a-zA-Z0-9]/g, "") || "jpg";
+        const path = `${userData.user.id}/${thread.id}/${crypto.randomUUID()}.${extension}`;
+        const { error: uploadError } = await supabase.storage.from("chat-images").upload(path, blob, { contentType: file.mediaType });
+        if (uploadError) throw new Error(uploadError.message);
+        const { data: signed, error: signError } = await supabase.storage.from("chat-images").createSignedUrl(path, 3600);
+        if (signError) throw new Error(signError.message);
+        stored.push({ path, name: file.filename || "Photo", mediaType: file.mediaType });
+        signedFiles.push({ type: "file" as const, filename: file.filename, mediaType: file.mediaType, url: signed.signedUrl });
+      }
+      sessionStorage.setItem(PENDING_MESSAGE_KEY(thread.id), JSON.stringify({
+        text: text.trim() || "Please look at this photo and help me with what you see.",
+        files: signedFiles,
+        attachments: stored,
+      }));
       void navigate({ to: "/chat/$threadId", params: { threadId: thread.id } });
     } catch (err) {
       console.error(err);
@@ -69,7 +113,7 @@ function NewChat() {
   };
 
   const handleSubmit = (message: PromptInputMessage) => {
-    void startThread(message.text);
+    return startThread(message.text, message.files);
   };
 
   return (
@@ -130,13 +174,30 @@ function NewChat() {
         </Link>
 
         <div className="mt-6 w-full">
-          <PromptInput onSubmit={handleSubmit}>
+          <PromptInput
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            multiple
+            maxFiles={3}
+            maxFileSize={10 * 1024 * 1024}
+            onError={({ code }) => toast.error(code === "max_files" ? "Three photos at a time, paparazzi." : code === "max_file_size" ? "That photo is over 10 MB." : "Please choose a JPG, PNG, WebP, or GIF photo.")}
+            onSubmit={handleSubmit}
+          >
+            <PhotoPreviews />
             <PromptInputTextarea
               placeholder="Tell Nagatha what you're avoiding…"
               aria-label="Message Nagatha"
               disabled={busy}
             />
-            <PromptInputFooter className="justify-end">
+            <PromptInputFooter>
+              <PromptInputTools>
+                <PromptInputActionMenu>
+                  <PromptInputActionMenuTrigger tooltip="Add a photo" aria-label="Add a photo" />
+                  <PromptInputActionMenuContent>
+                    <PromptInputActionAddAttachments label="Add photos" />
+                  </PromptInputActionMenuContent>
+                </PromptInputActionMenu>
+                <span className="text-xs text-muted-foreground">Up to 3 photos</span>
+              </PromptInputTools>
               <PromptInputSubmit disabled={busy} />
             </PromptInputFooter>
           </PromptInput>

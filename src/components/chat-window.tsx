@@ -48,6 +48,12 @@ import { NAGATHA_MOODS, detectMood } from "@/lib/nagatha-mood";
 
 export const PENDING_MESSAGE_KEY = (threadId: string) => `nagatha:pending:${threadId}`;
 
+type PendingMessage = {
+  text: string;
+  files?: Array<{ filename?: string; mediaType: string; url: string }>;
+  attachments?: Array<{ path: string; name: string; mediaType: string }>;
+};
+
 function textOf(message: UIMessage): string {
   return message.parts
     .filter((part) => part.type === "text")
@@ -123,11 +129,20 @@ export function ChatWindow({
   const sentPending = useRef(false);
   useEffect(() => {
     if (sentPending.current) return;
-    const pending = sessionStorage.getItem(PENDING_MESSAGE_KEY(threadId));
-    if (pending && initialMessages.length === 0) {
+    const pendingValue = sessionStorage.getItem(PENDING_MESSAGE_KEY(threadId));
+    if (pendingValue && initialMessages.length === 0) {
       sentPending.current = true;
       sessionStorage.removeItem(PENDING_MESSAGE_KEY(threadId));
-      void sendMessage({ text: pending });
+      let pending: PendingMessage;
+      try {
+        pending = JSON.parse(pendingValue) as PendingMessage;
+      } catch {
+        pending = { text: pendingValue };
+      }
+      void sendMessage(
+        { text: pending.text, files: pending.files ?? [] },
+        { body: { attachments: pending.attachments ?? [] } },
+      );
     }
   }, [threadId, initialMessages.length, sendMessage]);
 
@@ -135,32 +150,37 @@ export function ChatWindow({
     const text = message.text.trim();
     if ((!text && message.files.length === 0) || isLoading) return;
 
-    const { data: userData } = await supabase.auth.getUser();
-    if (!userData.user) throw new Error("Please sign in again to add a photo.");
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) throw new Error("Please sign in again to add a photo.");
 
-    const stored: Array<{ path: string; name: string; mediaType: string }> = [];
-    const files = [];
-    for (const file of message.files) {
-      const response = await fetch(file.url);
-      const blob = await response.blob();
-      const extension = file.filename?.split(".").pop()?.replace(/[^a-zA-Z0-9]/g, "") || "jpg";
-      const path = `${userData.user.id}/${threadId}/${crypto.randomUUID()}.${extension}`;
-      const { error: uploadError } = await supabase.storage.from("chat-images").upload(path, blob, {
-        contentType: file.mediaType,
-        upsert: false,
-      });
-      if (uploadError) throw new Error(uploadError.message);
+      const stored: Array<{ path: string; name: string; mediaType: string }> = [];
+      const files = [];
+      for (const file of message.files) {
+        const response = await fetch(file.url);
+        const blob = await response.blob();
+        const extension = file.filename?.split(".").pop()?.replace(/[^a-zA-Z0-9]/g, "") || "jpg";
+        const path = `${userData.user.id}/${threadId}/${crypto.randomUUID()}.${extension}`;
+        const { error: uploadError } = await supabase.storage.from("chat-images").upload(path, blob, {
+          contentType: file.mediaType,
+          upsert: false,
+        });
+        if (uploadError) throw new Error(uploadError.message);
 
-      const { data: signed, error: signError } = await supabase.storage.from("chat-images").createSignedUrl(path, 3600);
-      if (signError) throw new Error(signError.message);
-      stored.push({ path, name: file.filename || "Photo", mediaType: file.mediaType });
-      files.push({ type: "file" as const, filename: file.filename, mediaType: file.mediaType, url: signed.signedUrl });
+        const { data: signed, error: signError } = await supabase.storage.from("chat-images").createSignedUrl(path, 3600);
+        if (signError) throw new Error(signError.message);
+        stored.push({ path, name: file.filename || "Photo", mediaType: file.mediaType });
+        files.push({ type: "file" as const, filename: file.filename, mediaType: file.mediaType, url: signed.signedUrl });
+      }
+
+      await sendMessage(
+        { text: text || "Please look at this photo and help me with what you see.", files },
+        { body: { attachments: stored } },
+      );
+    } catch (uploadError) {
+      toast.error(uploadError instanceof Error ? uploadError.message : "Couldn't add that photo.");
+      throw uploadError;
     }
-
-    await sendMessage(
-      { text: text || "Please look at this photo and help me with what you see.", files },
-      { body: { attachments: stored } },
-    );
   };
 
   const shareConversation = async () => {
