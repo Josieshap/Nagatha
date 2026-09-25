@@ -2,13 +2,13 @@ import { createFileRoute, Link, Outlet, useNavigate, useParams } from "@tanstack
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ListChecks, LogOut, Menu, MessageSquare, Plus, Timer, Trash2, X } from "lucide-react";
+import { History, ListChecks, LogOut, MessageSquare, Plus, Timer, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { listThreads, deleteThread } from "@/lib/chat.functions";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import mascot from "@/assets/nagatha-idle.png";
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -71,63 +71,29 @@ function ThreadSidebar({ onNavigate }: { onNavigate?: () => void }) {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex items-center gap-2.5 px-4 pt-5 pb-4">
-        <img
-          src={mascot}
-          alt="Nagatha mascot"
-          className="size-9"
-          width={1024}
-          height={1024}
-          loading="lazy"
-        />
-        <div className="min-w-0">
-          <p className="font-display text-lg font-bold leading-tight">Nagatha</p>
-          <p className="text-xs text-muted-foreground leading-tight">Tough love, on tap</p>
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-2 px-3">
-        <Button asChild className="w-full justify-start gap-2">
-          <Link to="/chat" onClick={onNavigate}>
-            <Plus className="size-4" />
-            New chat
-          </Link>
-        </Button>
-        <Button asChild variant="outline" className="w-full justify-start gap-2">
-          <Link to="/chat/reality-check" onClick={onNavigate}>
-            <Timer className="size-4" />
-            Reality check
-          </Link>
-        </Button>
-        <Button asChild variant="outline" className="w-full justify-start gap-2">
-          <Link to="/chat/progress" onClick={onNavigate}>
-            <ListChecks className="size-4" />
-            Progress tracker
-          </Link>
-        </Button>
-      </div>
-
-      <nav className="mt-4 flex-1 overflow-y-auto px-3 pb-3" aria-label="Chat threads">
+      <nav className="mt-4 flex-1 overflow-y-auto pb-3" aria-label="Chat history">
         {threads && threads.length > 0 ? (
           <ul className="flex flex-col gap-1">
             {threads.map((thread) => {
               const active = params.threadId === thread.id;
               return (
                 <li key={thread.id} className="group relative">
-                  <Link
-                    to="/chat/$threadId"
-                    params={{ threadId: thread.id }}
-                    onClick={onNavigate}
-                    className={cn(
-                      "flex items-center gap-2 rounded-lg px-3 py-2 pr-9 text-sm transition-colors",
-                      active
-                        ? "bg-sidebar-accent font-semibold text-sidebar-accent-foreground"
-                        : "text-sidebar-foreground hover:bg-sidebar-accent/60",
-                    )}
-                  >
-                    <MessageSquare className="size-4 shrink-0 text-muted-foreground" />
-                    <span className="truncate">{thread.title}</span>
-                  </Link>
+                  <SheetClose asChild>
+                    <Link
+                      to="/chat/$threadId"
+                      params={{ threadId: thread.id }}
+                      onClick={onNavigate}
+                      className={cn(
+                        "flex items-center gap-2 rounded-lg px-3 py-2 pr-9 text-sm transition-colors",
+                        active
+                          ? "bg-sidebar-accent font-semibold text-sidebar-accent-foreground"
+                          : "text-sidebar-foreground hover:bg-sidebar-accent/60",
+                      )}
+                    >
+                      <MessageSquare className="size-4 shrink-0 text-muted-foreground" />
+                      <span className="truncate">{thread.title}</span>
+                    </Link>
+                  </SheetClose>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button
@@ -178,59 +144,24 @@ function ThreadSidebar({ onNavigate }: { onNavigate?: () => void }) {
 }
 
 function ChatLayout() {
-  const [drawerOpen, setDrawerOpen] = useState(false);
-
   return (
-    <div className="flex h-dvh bg-background">
-      {/* Desktop sidebar */}
-      <aside className="hidden w-72 shrink-0 border-r border-sidebar-border bg-sidebar md:block">
-        <ThreadSidebar />
-      </aside>
-
-      {/* Mobile drawer */}
-      {drawerOpen && (
-        <div className="fixed inset-0 z-40 md:hidden">
-          <div
-            className="absolute inset-0 bg-foreground/30"
-            onClick={() => setDrawerOpen(false)}
-            aria-hidden
-          />
-          <aside className="absolute left-0 top-0 h-full w-72 border-r border-sidebar-border bg-sidebar shadow-xl">
-            <button
-              type="button"
-              aria-label="Close menu"
-              onClick={() => setDrawerOpen(false)}
-              className="absolute right-3 top-4 rounded-md p-1.5 text-muted-foreground hover:bg-sidebar-accent"
-            >
-              <X className="size-5" />
-            </button>
-            <ThreadSidebar onNavigate={() => setDrawerOpen(false)} />
-          </aside>
+    <div className="flex h-dvh min-w-0 flex-col bg-background">
+      <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b bg-card/70 px-3 py-2 sm:px-5">
+        <Link to="/chat" className="min-w-0 truncate font-display font-bold">Nagatha</Link>
+        <div className="flex shrink-0 items-center gap-1">
+          <Button asChild type="button" size="sm" variant="ghost"><Link to="/chat"><Plus />New</Link></Button>
+          <Button asChild type="button" size="sm" variant="ghost"><Link to="/chat/reality-check"><Timer /><span className="hidden sm:inline">Reality check</span></Link></Button>
+          <Button asChild type="button" size="sm" variant="ghost"><Link to="/chat/progress"><ListChecks /><span className="hidden sm:inline">Progress</span></Link></Button>
+          <Sheet>
+            <SheetTrigger asChild><Button type="button" size="sm" variant="outline"><History />History</Button></SheetTrigger>
+            <SheetContent className="flex w-[min(90vw,24rem)] flex-col p-5">
+              <SheetHeader className="pr-8"><SheetTitle className="font-display">Chat history</SheetTitle><SheetDescription>Pick up where you left off.</SheetDescription></SheetHeader>
+              <ThreadSidebar />
+            </SheetContent>
+          </Sheet>
         </div>
-      )}
-
-      <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center gap-2 border-b px-3 py-2.5 md:hidden">
-          <button
-            type="button"
-            aria-label="Open menu"
-            onClick={() => setDrawerOpen(true)}
-            className="rounded-md p-1.5 text-foreground hover:bg-accent"
-          >
-            <Menu className="size-5" />
-          </button>
-          <img
-            src={mascot}
-            alt=""
-            className="size-6"
-            width={1024}
-            height={1024}
-            loading="lazy"
-          />
-          <span className="font-display font-bold">Nagatha</span>
-        </header>
-        <Outlet />
-      </div>
+      </header>
+      <main className="flex min-h-0 min-w-0 flex-1"><Outlet /></main>
     </div>
   );
 }

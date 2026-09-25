@@ -45,7 +45,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { NAGATHA_MOODS, detectMood } from "@/lib/nagatha-mood";
-import { VoiceRecorder } from "@/components/voice-recorder";
 
 export const PENDING_MESSAGE_KEY = (threadId: string) => `nagatha:pending:${threadId}`;
 
@@ -184,30 +183,12 @@ export function ChatWindow({
     }
   };
 
-  const sendVoiceMemo = async (file: File, transcript: string) => {
-    if (isLoading) return;
-    const { data: userData } = await supabase.auth.getUser();
-    if (!userData.user) throw new Error("Please sign in again to send a voice memo.");
-    const path = `${userData.user.id}/${threadId}/${crypto.randomUUID()}.wav`;
-    const { error: uploadError } = await supabase.storage.from("chat-images").upload(path, file, { contentType: "audio/wav", upsert: false });
-    if (uploadError) throw new Error(uploadError.message);
-    const { data: signed, error: signError } = await supabase.storage.from("chat-images").createSignedUrl(path, 3600);
-    if (signError) throw new Error(signError.message);
-    const text = `Voice memo for pronunciation practice. Nagatha's transcription of what I said: “${transcript}”\n\nTell me what you heard clearly, help me improve the pronunciation, and give me one short phrase to retry.`;
-    await sendMessage(
-      { text, files: [{ type: "file", filename: file.name, mediaType: "audio/wav", url: signed.signedUrl }] },
-      { body: { attachments: [{ path, name: file.name, mediaType: "audio/wav" }] } },
-    );
-  };
-
   const shareConversation = async () => {
     const transcript = messages
       .map((message) => {
         const photoCount = message.parts.filter((part) => part.type === "file" && part.mediaType.startsWith("image/")).length;
-        const voiceCount = message.parts.filter((part) => part.type === "file" && part.mediaType.startsWith("audio/")).length;
         const photoNote = photoCount ? ` [${photoCount} photo${photoCount === 1 ? "" : "s"}]` : "";
-        const voiceNote = voiceCount ? " [voice memo]" : "";
-        return `${message.role === "assistant" ? "Nagatha" : "Me"}${photoNote}${voiceNote}: ${textOf(message)}`;
+        return `${message.role === "assistant" ? "Nagatha" : "Me"}${photoNote}: ${textOf(message)}`;
       })
       .join("\n\n");
     const text = `My chat with Nagatha\n\n${transcript}`;
@@ -232,9 +213,16 @@ export function ChatWindow({
   };
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
+    <div className="flex min-h-0 min-w-0 flex-1">
       {messages.length > 0 && (
-        <div className="bg-card/70 border-b px-4 py-2 backdrop-blur">
+        <aside className="hidden w-48 shrink-0 flex-col items-center border-r bg-card/40 px-4 py-8 text-center lg:flex">
+          <img key={mood} src={moodInfo.src} alt={moodInfo.alt} className="w-full max-w-44 animate-in object-contain fade-in zoom-in-75 duration-300" width={1024} height={1024} />
+          <p className="mt-3 font-display text-sm italic text-muted-foreground">{moodInfo.caption}</p>
+        </aside>
+      )}
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+      {messages.length > 0 && (
+        <div className="border-b bg-card/70 px-4 py-2 backdrop-blur lg:hidden">
           <div className="mx-auto flex w-full max-w-2xl items-center gap-3">
             <img
               key={mood}
@@ -294,21 +282,9 @@ export function ChatWindow({
           {messages.map((message) => {
             const text = textOf(message);
             const photos = message.parts.filter((part): part is FileUIPart => part.type === "file" && part.mediaType.startsWith("image/"));
-            const voiceMemos = message.parts.filter((part): part is FileUIPart => part.type === "file" && part.mediaType.startsWith("audio/"));
-            if (!text && photos.length === 0 && voiceMemos.length === 0) return null;
+            if (!text && photos.length === 0) return null;
             return (
               <Message key={message.id} from={message.role}>
-                {message.role === "assistant" && (
-                  <img
-                    src={NAGATHA_MOODS.idle.src}
-                    alt=""
-                    aria-hidden
-                    className="size-28 shrink-0 self-start sm:size-36"
-                    width={1024}
-                    height={1024}
-                    loading="lazy"
-                  />
-                )}
                 <MessageContent className="group-[.is-user]:bg-primary group-[.is-user]:rounded-2xl group-[.is-user]:text-primary-foreground">
                   {photos.length > 0 && (
                     <Attachments className="mb-2" aria-label={`${message.role === "user" ? "Your" : "Nagatha's"} attached photos`}>
@@ -319,9 +295,6 @@ export function ChatWindow({
                       ))}
                     </Attachments>
                   )}
-                  {voiceMemos.map((voice, index) => (
-                    <audio key={`${message.id}-voice-${index}`} className="mb-2 h-10 w-full min-w-56" controls src={voice.url} aria-label="Voice memo" />
-                  ))}
                   {message.role === "assistant" ? (
                     <MessageResponse className="chat-markdown">{text}</MessageResponse>
                   ) : (
@@ -334,15 +307,6 @@ export function ChatWindow({
 
           {status === "submitted" && (
             <Message from="assistant">
-              <img
-                src={NAGATHA_MOODS.thinking.src}
-                alt=""
-                aria-hidden
-                className="size-28 shrink-0 self-start sm:size-36"
-                width={1024}
-                height={1024}
-                loading="lazy"
-              />
               <MessageContent>
                 <Shimmer className="text-sm">Nagatha is cracking her knuckles…</Shimmer>
               </MessageContent>
@@ -371,7 +335,7 @@ export function ChatWindow({
             <PhotoPreviews />
             <PromptInputTextarea
               autoFocus
-              placeholder={messages.some((message) => /Spanish|Italian|French|German|Korean|English|pronunciation|lesson|tutor/i.test(textOf(message))) ? "Ask a question or practice your pronunciation…" : "Ask Nagatha for help…"}
+              placeholder={messages.some((message) => /Spanish|Italian|French|German|Korean|English|lesson|tutor/i.test(textOf(message))) ? "Ask a question about your lesson…" : "Ask Nagatha for help…"}
               aria-label="Message Nagatha"
             />
             <PromptInputFooter>
@@ -382,8 +346,7 @@ export function ChatWindow({
                     <PromptInputActionAddAttachments label="Add photos" />
                   </PromptInputActionMenuContent>
                 </PromptInputActionMenu>
-                <VoiceRecorder disabled={isLoading} onVoiceReady={sendVoiceMemo} />
-                <span className="hidden text-xs text-muted-foreground sm:inline">Photos or pronunciation</span>
+                <span className="hidden text-xs text-muted-foreground sm:inline">Add a reference photo</span>
               </PromptInputTools>
               <PromptInputSubmit status={status} disabled={isLoading} />
             </PromptInputFooter>
@@ -392,6 +355,7 @@ export function ChatWindow({
             Nagatha roasts with love. Your chores fear her.
           </p>
         </div>
+      </div>
       </div>
     </div>
   );
