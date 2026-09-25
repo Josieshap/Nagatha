@@ -41,11 +41,12 @@ export const Route = createFileRoute("/_authenticated/chat/")({
   component: NewChat,
 });
 
-const QUICK_PROMPTS = [
+const QUICK_PROMPTS: Array<{ icon: typeof Briefcase; label: string; text: string; to?: string }> = [
   { icon: Briefcase, label: "I can't start this work project", text: "I have a work project I keep putting off. Help me actually start it." },
   { icon: Home, label: "My place is a disaster", text: "My place is a mess and I don't know where to start. Roast me, then help me clean it." },
   { icon: Dumbbell, label: "Make me exercise", text: "I've been avoiding exercise. Give me tough love and a plan I'll actually do." },
   { icon: Flame, label: "Just motivate me", text: "I don't even know what I need. Just motivate me." },
+  { icon: Timer, label: "How long will it actually take?", text: "", to: "/chat/reality-check" },
 ];
 
 const LANGUAGE_TOPICS = ["grammar", "verb conjugation", "vocabulary", "pronunciation", "conversation"];
@@ -156,7 +157,7 @@ function NewChat() {
         <div className="mt-6 w-full border-t pt-5">
           <div className="mb-3 flex items-center gap-2">
             <BookOpen className="size-4 text-primary" />
-            <h2 className="font-display font-bold">Study with Nagatha</h2>
+            <h2 className="font-display font-bold">Learn something. It won't kill you.</h2>
           </div>
           <div className="grid gap-2 sm:grid-cols-2">
             <Button asChild type="button" variant="secondary"><Link to="/chat/lessons"><BookOpen />Browse seven courses</Link></Button>
