@@ -2,7 +2,7 @@ import { createFileRoute, Link, Outlet, useNavigate, useParams } from "@tanstack
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { History, ListChecks, LogOut, MessageSquare, Plus, Timer, Trash2 } from "lucide-react";
+import { BookOpen, History, ListChecks, LogOut, MessageSquare, Plus, Route as RouteIcon, Timer, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { listThreads, deleteThread } from "@/lib/chat.functions";
@@ -152,6 +152,8 @@ function ChatLayout() {
           <Button asChild type="button" size="sm" variant="ghost"><Link to="/chat"><Plus />New</Link></Button>
           <Button asChild type="button" size="sm" variant="ghost"><Link to="/chat/reality-check"><Timer /><span className="hidden sm:inline">Reality check</span></Link></Button>
           <Button asChild type="button" size="sm" variant="ghost"><Link to="/chat/progress"><ListChecks /><span className="hidden sm:inline">Progress</span></Link></Button>
+          <Button asChild type="button" size="sm" variant="ghost"><Link to="/chat/lessons"><BookOpen /><span className="hidden sm:inline">Lessons</span></Link></Button>
+          <Button asChild type="button" size="sm" variant="ghost"><Link to="/chat/planner"><RouteIcon /><span className="hidden sm:inline">Plan</span></Link></Button>
           <Sheet>
             <SheetTrigger asChild><Button type="button" size="sm" variant="outline"><History />History</Button></SheetTrigger>
             <SheetContent className="flex w-[min(90vw,24rem)] flex-col p-5">

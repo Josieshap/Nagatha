@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Briefcase, Calculator, Dumbbell, Flame, Home, Languages, Timer } from "lucide-react";
+import { Briefcase, BookOpen, Dumbbell, Flame, Home, Route as RouteIcon, Timer } from "lucide-react";
 import { createThread } from "@/lib/chat.functions";
 import { PENDING_MESSAGE_KEY } from "@/components/chat-window";
 import {
@@ -46,16 +46,6 @@ const QUICK_PROMPTS = [
   { icon: Home, label: "My place is a disaster", text: "My place is a mess and I don't know where to start. Roast me, then help me clean it." },
   { icon: Dumbbell, label: "Make me exercise", text: "I've been avoiding exercise. Give me tough love and a plan I'll actually do." },
   { icon: Flame, label: "Just motivate me", text: "I don't even know what I need. Just motivate me." },
-];
-
-const TUTORING_PROMPTS = [
-  { label: "Spanish", text: "Start my structured Spanish course. Assess my level and goal, make a lesson path, then teach lesson one with examples, guided practice, exercises, corrections, and a short review." },
-  { label: "Italian", text: "Start my structured Italian course. Assess my level and goal, make a lesson path, then teach lesson one with examples, guided practice, exercises, corrections, and a short review." },
-  { label: "French", text: "Start my structured French course. Assess my level and goal, make a lesson path, then teach lesson one with examples, guided practice, exercises, corrections, and a short review." },
-  { label: "German", text: "Start my structured German course. Assess my level and goal, make a lesson path, then teach lesson one with examples, guided practice, exercises, corrections, and a short review." },
-  { label: "Korean", text: "Start my structured Korean course. Assess my level and goal, make a lesson path, then teach lesson one with Hangul, helpful beginner romanization, examples, exercises, corrections, and review." },
-  { label: "Math", text: "Start my structured Math course. Assess my level and topic, make a lesson path, then teach lesson one step by step with worked examples, guided problems, independent exercises, corrections, and review." },
-  { label: "English", text: "Start my structured English course. Assess my level and goal, make a lesson path, then teach lesson one with examples, guided practice, exercises, corrections, and a short review." },
 ];
 
 function PhotoPreviews() {
@@ -156,13 +146,9 @@ function NewChat() {
             <Languages className="size-4 text-primary" />
             <h2 className="font-display font-bold">Study with Nagatha</h2>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {TUTORING_PROMPTS.map(({ label, text }) => (
-              <Button key={label} type="button" size="sm" variant="secondary" disabled={busy} onClick={() => void startThread(text)}>
-                {label === "Math" ? <Calculator /> : <Languages />}
-                {label}
-              </Button>
-            ))}
+          <div className="grid gap-2 sm:grid-cols-2">
+            <Button asChild type="button" variant="secondary"><Link to="/chat/lessons"><BookOpen />Browse seven courses</Link></Button>
+            <Button asChild type="button" variant="outline"><Link to="/chat/planner"><RouteIcon />Make a lesson plan</Link></Button>
           </div>
         </div>
 
