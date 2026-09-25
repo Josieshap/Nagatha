@@ -40,13 +40,13 @@ const QUICK_PROMPTS = [
 ];
 
 const TUTORING_PROMPTS = [
-  { label: "Spanish", text: "Tutor me in Spanish. Start by asking my level and what I want to practice." },
-  { label: "Italian", text: "Tutor me in Italian. Start by asking my level and what I want to practice." },
-  { label: "French", text: "Tutor me in French. Start by asking my level and what I want to practice." },
-  { label: "German", text: "Tutor me in German. Start by asking my level and what I want to practice." },
-  { label: "Korean", text: "Tutor me in Korean. Start by asking my level and what I want to practice." },
-  { label: "Math", text: "Tutor me in Math. Ask what topic and level I am working on, then teach me step by step." },
-  { label: "English", text: "Tutor me in English. Start by asking my level and what I want to practice." },
+  { label: "Spanish", text: "Start my structured Spanish course. Assess my level and goal, make a lesson path, then teach lesson one with examples, guided practice, exercises, corrections, and a short review." },
+  { label: "Italian", text: "Start my structured Italian course. Assess my level and goal, make a lesson path, then teach lesson one with examples, guided practice, exercises, corrections, and a short review." },
+  { label: "French", text: "Start my structured French course. Assess my level and goal, make a lesson path, then teach lesson one with examples, guided practice, exercises, corrections, and a short review." },
+  { label: "German", text: "Start my structured German course. Assess my level and goal, make a lesson path, then teach lesson one with examples, guided practice, exercises, corrections, and a short review." },
+  { label: "Korean", text: "Start my structured Korean course. Assess my level and goal, make a lesson path, then teach lesson one with Hangul, helpful beginner romanization, examples, exercises, corrections, and review." },
+  { label: "Math", text: "Start my structured Math course. Assess my level and topic, make a lesson path, then teach lesson one step by step with worked examples, guided problems, independent exercises, corrections, and review." },
+  { label: "English", text: "Start my structured English course. Assess my level and goal, make a lesson path, then teach lesson one with examples, guided practice, exercises, corrections, and a short review." },
 ];
 
 function NewChat() {
@@ -73,12 +73,12 @@ function NewChat() {
   };
 
   return (
-    <div className="bg-paper flex min-h-0 flex-1 flex-col items-center justify-center px-4 py-8">
-      <div className="flex w-full max-w-xl flex-col items-center">
+    <div className="bg-paper flex min-h-0 flex-1 flex-col items-center overflow-y-auto px-4 py-8">
+      <div className="flex w-full max-w-xl shrink-0 flex-col items-center">
         <img
           src={mascot}
           alt="Nagatha, a grumpy but caring coach with a whistle"
-          className="size-28 md:size-36"
+          className="size-28 shrink-0 object-contain md:size-36"
           width={1024}
           height={1024}
         />
