@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport, type UIMessage } from "ai";
+import { DefaultChatTransport, type FileUIPart, type UIMessage } from "ai";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Share2, Trash2 } from "lucide-react";
@@ -13,11 +13,24 @@ import {
 import { Message, MessageContent, MessageResponse } from "@/components/ai-elements/message";
 import {
   PromptInput,
+  PromptInputActionAddAttachments,
+  PromptInputActionMenu,
+  PromptInputActionMenuContent,
+  PromptInputActionMenuTrigger,
   PromptInputFooter,
+  PromptInputHeader,
   PromptInputSubmit,
   PromptInputTextarea,
+  PromptInputTools,
+  usePromptInputAttachments,
   type PromptInputMessage,
 } from "@/components/ai-elements/prompt-input";
+import {
+  Attachment,
+  AttachmentPreview,
+  AttachmentRemove,
+  Attachments,
+} from "@/components/ai-elements/attachments";
 import { Shimmer } from "@/components/ai-elements/shimmer";
 import { Button } from "@/components/ui/button";
 import {
@@ -35,11 +48,35 @@ import { NAGATHA_MOODS, detectMood } from "@/lib/nagatha-mood";
 
 export const PENDING_MESSAGE_KEY = (threadId: string) => `nagatha:pending:${threadId}`;
 
+type PendingMessage = {
+  text: string;
+  files?: FileUIPart[];
+  attachments?: Array<{ path: string; name: string; mediaType: string }>;
+};
+
 function textOf(message: UIMessage): string {
   return message.parts
     .filter((part) => part.type === "text")
     .map((part) => part.text)
     .join("");
+}
+
+function PhotoPreviews() {
+  const attachments = usePromptInputAttachments();
+  if (attachments.files.length === 0) return null;
+
+  return (
+    <PromptInputHeader>
+      <Attachments aria-label="Selected photos">
+        {attachments.files.map((file) => (
+          <Attachment key={file.id} data={file} onRemove={() => attachments.remove(file.id)}>
+            <AttachmentPreview />
+            <AttachmentRemove />
+          </Attachment>
+        ))}
+      </Attachments>
+    </PromptInputHeader>
+  );
 }
 
 export function ChatWindow({
@@ -92,23 +129,67 @@ export function ChatWindow({
   const sentPending = useRef(false);
   useEffect(() => {
     if (sentPending.current) return;
-    const pending = sessionStorage.getItem(PENDING_MESSAGE_KEY(threadId));
-    if (pending && initialMessages.length === 0) {
+    const pendingValue = sessionStorage.getItem(PENDING_MESSAGE_KEY(threadId));
+    if (pendingValue && initialMessages.length === 0) {
       sentPending.current = true;
       sessionStorage.removeItem(PENDING_MESSAGE_KEY(threadId));
-      void sendMessage({ text: pending });
+      let pending: PendingMessage;
+      try {
+        pending = JSON.parse(pendingValue) as PendingMessage;
+      } catch {
+        pending = { text: pendingValue };
+      }
+      void sendMessage(
+        { text: pending.text, files: pending.files ?? [] },
+        { body: { attachments: pending.attachments ?? [] } },
+      );
     }
   }, [threadId, initialMessages.length, sendMessage]);
 
-  const handleSubmit = (message: PromptInputMessage) => {
+  const handleSubmit = async (message: PromptInputMessage) => {
     const text = message.text.trim();
-    if (!text || isLoading) return;
-    void sendMessage({ text });
+    if ((!text && message.files.length === 0) || isLoading) return;
+
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) throw new Error("Please sign in again to add a photo.");
+
+      const stored: Array<{ path: string; name: string; mediaType: string }> = [];
+      const files: FileUIPart[] = [];
+      for (const file of message.files) {
+        const response = await fetch(file.url);
+        const blob = await response.blob();
+        const extension = file.filename?.split(".").pop()?.replace(/[^a-zA-Z0-9]/g, "") || "jpg";
+        const path = `${userData.user.id}/${threadId}/${crypto.randomUUID()}.${extension}`;
+        const { error: uploadError } = await supabase.storage.from("chat-images").upload(path, blob, {
+          contentType: file.mediaType,
+          upsert: false,
+        });
+        if (uploadError) throw new Error(uploadError.message);
+
+        const { data: signed, error: signError } = await supabase.storage.from("chat-images").createSignedUrl(path, 3600);
+        if (signError) throw new Error(signError.message);
+        stored.push({ path, name: file.filename || "Photo", mediaType: file.mediaType });
+        files.push({ type: "file", filename: file.filename || "Photo", mediaType: file.mediaType, url: signed.signedUrl });
+      }
+
+      await sendMessage(
+        { text: text || "Please look at this photo and help me with what you see.", files },
+        { body: { attachments: stored } },
+      );
+    } catch (uploadError) {
+      toast.error(uploadError instanceof Error ? uploadError.message : "Couldn't add that photo.");
+      throw uploadError;
+    }
   };
 
   const shareConversation = async () => {
     const transcript = messages
-      .map((message) => `${message.role === "assistant" ? "Nagatha" : "Me"}: ${textOf(message)}`)
+      .map((message) => {
+        const photoCount = message.parts.filter((part) => part.type === "file" && part.mediaType.startsWith("image/")).length;
+        const photoNote = photoCount ? ` [${photoCount} photo${photoCount === 1 ? "" : "s"}]` : "";
+        return `${message.role === "assistant" ? "Nagatha" : "Me"}${photoNote}: ${textOf(message)}`;
+      })
       .join("\n\n");
     const text = `My chat with Nagatha\n\n${transcript}`;
     try {
@@ -193,7 +274,8 @@ export function ChatWindow({
 
           {messages.map((message) => {
             const text = textOf(message);
-            if (!text) return null;
+            const photos = message.parts.filter((part): part is FileUIPart => part.type === "file" && part.mediaType.startsWith("image/"));
+            if (!text && photos.length === 0) return null;
             return (
               <Message key={message.id} from={message.role}>
                 {message.role === "assistant" && (
@@ -208,6 +290,15 @@ export function ChatWindow({
                   />
                 )}
                 <MessageContent className="group-[.is-user]:bg-primary group-[.is-user]:rounded-2xl group-[.is-user]:text-primary-foreground">
+                  {photos.length > 0 && (
+                    <Attachments className="mb-2" aria-label={`${message.role === "user" ? "Your" : "Nagatha's"} attached photos`}>
+                      {photos.map((photo, index) => (
+                        <Attachment key={`${message.id}-photo-${index}`} data={{ ...photo, id: `${message.id}-photo-${index}` }}>
+                          <AttachmentPreview />
+                        </Attachment>
+                      ))}
+                    </Attachments>
+                  )}
                   {message.role === "assistant" ? (
                     <MessageResponse className="chat-markdown">{text}</MessageResponse>
                   ) : (
@@ -246,13 +337,30 @@ export function ChatWindow({
 
       <div className="border-t bg-background px-4 py-3">
         <div className="mx-auto w-full max-w-2xl">
-          <PromptInput onSubmit={handleSubmit}>
+          <PromptInput
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            multiple
+            maxFiles={3}
+            maxFileSize={10 * 1024 * 1024}
+            onError={({ code }) => toast.error(code === "max_files" ? "Three photos at a time, paparazzi." : code === "max_file_size" ? "That photo is over 10 MB." : "Please choose a JPG, PNG, WebP, or GIF photo.")}
+            onSubmit={handleSubmit}
+          >
+            <PhotoPreviews />
             <PromptInputTextarea
               autoFocus
               placeholder="Tell Nagatha what you're avoiding…"
               aria-label="Message Nagatha"
             />
-            <PromptInputFooter className="justify-end">
+            <PromptInputFooter>
+              <PromptInputTools>
+                <PromptInputActionMenu>
+                  <PromptInputActionMenuTrigger tooltip="Add a photo" aria-label="Add a photo" />
+                  <PromptInputActionMenuContent>
+                    <PromptInputActionAddAttachments label="Add photos" />
+                  </PromptInputActionMenuContent>
+                </PromptInputActionMenu>
+                <span className="text-xs text-muted-foreground">Up to 3 photos</span>
+              </PromptInputTools>
               <PromptInputSubmit status={status} disabled={isLoading} />
             </PromptInputFooter>
           </PromptInput>

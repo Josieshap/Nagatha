@@ -58,7 +58,15 @@ function ThreadPage() {
   const initialMessages: UIMessage[] = data.map((row) => ({
     id: row.id,
     role: row.role as "user" | "assistant",
-    parts: [{ type: "text", text: row.content }],
+    parts: [
+      ...(Array.isArray(row.attachments) ? row.attachments : []).map((attachment) => ({
+        type: "file" as const,
+        filename: attachment.name,
+        mediaType: attachment.mediaType,
+        url: attachment.url,
+      })),
+      { type: "text" as const, text: row.content },
+    ],
   }));
 
   const handleDelete = async () => {
