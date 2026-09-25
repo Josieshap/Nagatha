@@ -69,6 +69,7 @@ function NewChat() {
   const navigate = useNavigate();
   const makeThread = useServerFn(createThread);
   const [busy, setBusy] = useState(false);
+  const [helpSubject, setHelpSubject] = useState<string | null>(null);
 
   const startThread = async (text: string, files: PromptInputMessage["files"] = []) => {
     if (busy || (!text.trim() && files.length === 0)) return;
@@ -150,6 +151,25 @@ function NewChat() {
             <Button asChild type="button" variant="secondary"><Link to="/chat/lessons"><BookOpen />Browse seven courses</Link></Button>
             <Button asChild type="button" variant="outline"><Link to="/chat/planner"><RouteIcon />Make a lesson plan</Link></Button>
           </div>
+          <p className="mt-5 text-sm font-semibold">Get help with something specific</p>
+          <div className="mt-2 flex flex-wrap gap-2" role="group" aria-label="Choose a subject">
+            {Object.keys(HELP_TOPICS).map((name) => (
+              <Button key={name} type="button" size="sm" variant={helpSubject === name ? "default" : "outline"} onClick={() => setHelpSubject(helpSubject === name ? null : name)}>
+                {name}
+              </Button>
+            ))}
+          </div>
+          {helpSubject && (
+            <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label={`${helpSubject} topics`}>
+              {HELP_TOPICS[helpSubject]!.map((topic) => (
+                <Button key={topic} type="button" size="sm" variant="secondary" disabled={busy}
+                  onClick={() => void startThread(`I need help with ${helpSubject} ${topic}. Teach me the most important part of it right away with a clear explanation and an example, then give me one short practice question.`)}>
+                  {topic}
+                </Button>
+              ))}
+            </div>
+          )}
+          <p className="mt-2 text-xs text-muted-foreground">Or just type it below, like “I need help with Italian grammar.”</p>
         </div>
 
         <Link
