@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Briefcase, Flame, Dumbbell, Home, Timer } from "lucide-react";
+import { Briefcase, Calculator, Dumbbell, Flame, Home, Languages, Timer } from "lucide-react";
 import { createThread } from "@/lib/chat.functions";
 import { PENDING_MESSAGE_KEY } from "@/components/chat-window";
 import {
@@ -13,6 +13,7 @@ import {
   type PromptInputMessage,
 } from "@/components/ai-elements/prompt-input";
 import mascot from "@/assets/nagatha-idle.png";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/chat/")({
   head: () => ({
@@ -20,8 +21,12 @@ export const Route = createFileRoute("/_authenticated/chat/")({
       { title: "New chat — Nagatha" },
       {
         name: "description",
-        content: "Start a new chat with Nagatha, your tough-love AI buddy.",
+        content: "Start a new chat with Nagatha for motivation or tutoring.",
       },
+      { property: "og:title", content: "New chat — Nagatha" },
+      { property: "og:description", content: "Get tough-love motivation or tutoring from Nagatha." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: NewChat,
@@ -32,6 +37,16 @@ const QUICK_PROMPTS = [
   { icon: Home, label: "My place is a disaster", text: "My place is a mess and I don't know where to start. Roast me, then help me clean it." },
   { icon: Dumbbell, label: "Make me exercise", text: "I've been avoiding exercise. Give me tough love and a plan I'll actually do." },
   { icon: Flame, label: "Just motivate me", text: "I don't even know what I need. Just motivate me." },
+];
+
+const TUTORING_PROMPTS = [
+  { label: "Spanish", text: "Tutor me in Spanish. Start by asking my level and what I want to practice." },
+  { label: "Italian", text: "Tutor me in Italian. Start by asking my level and what I want to practice." },
+  { label: "French", text: "Tutor me in French. Start by asking my level and what I want to practice." },
+  { label: "German", text: "Tutor me in German. Start by asking my level and what I want to practice." },
+  { label: "Korean", text: "Tutor me in Korean. Start by asking my level and what I want to practice." },
+  { label: "Math", text: "Tutor me in Math. Ask what topic and level I am working on, then teach me step by step." },
+  { label: "English", text: "Tutor me in English. Start by asking my level and what I want to practice." },
 ];
 
 function NewChat() {
@@ -77,17 +92,33 @@ function NewChat() {
 
         <div className="mt-6 grid w-full grid-cols-1 gap-2 sm:grid-cols-2">
           {QUICK_PROMPTS.map(({ icon: Icon, label, text }) => (
-            <button
+            <Button
               key={label}
               type="button"
+              variant="outline"
               disabled={busy}
               onClick={() => void startThread(text)}
-              className="flex items-center gap-2.5 rounded-xl border bg-card px-4 py-3 text-left text-sm font-medium shadow-sm transition-colors hover:bg-accent disabled:opacity-50"
+              className="h-auto justify-start whitespace-normal px-4 py-3 text-left"
             >
               <Icon className="size-4 shrink-0 text-primary" />
               {label}
-            </button>
+            </Button>
           ))}
+        </div>
+
+        <div className="mt-6 w-full border-t pt-5">
+          <div className="mb-3 flex items-center gap-2">
+            <Languages className="size-4 text-primary" />
+            <h2 className="font-display font-bold">Study with Nagatha</h2>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {TUTORING_PROMPTS.map(({ label, text }) => (
+              <Button key={label} type="button" size="sm" variant="secondary" disabled={busy} onClick={() => void startThread(text)}>
+                {label === "Math" ? <Calculator /> : <Languages />}
+                {label}
+              </Button>
+            ))}
+          </div>
         </div>
 
         <Link

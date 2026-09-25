@@ -3,6 +3,7 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { Share2, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Conversation,
@@ -18,6 +19,18 @@ import {
   type PromptInputMessage,
 } from "@/components/ai-elements/prompt-input";
 import { Shimmer } from "@/components/ai-elements/shimmer";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { NAGATHA_MOODS, detectMood } from "@/lib/nagatha-mood";
 
 export const PENDING_MESSAGE_KEY = (threadId: string) => `nagatha:pending:${threadId}`;
@@ -32,9 +45,11 @@ function textOf(message: UIMessage): string {
 export function ChatWindow({
   threadId,
   initialMessages,
+  onDelete,
 }: {
   threadId: string;
   initialMessages: UIMessage[];
+  onDelete: () => Promise<void>;
 }) {
   const queryClient = useQueryClient();
 
@@ -91,6 +106,31 @@ export function ChatWindow({
     void sendMessage({ text });
   };
 
+  const shareConversation = async () => {
+    const transcript = messages
+      .map((message) => `${message.role === "assistant" ? "Nagatha" : "Me"}: ${textOf(message)}`)
+      .join("\n\n");
+    const text = `My chat with Nagatha\n\n${transcript}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: "My chat with Nagatha", text });
+        return;
+      }
+      await navigator.clipboard.writeText(text);
+      toast.success("Chat copied. Go forth and overshare responsibly.");
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") return;
+      const file = new Blob([text], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(file);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "nagatha-chat.txt";
+      link.click();
+      URL.revokeObjectURL(url);
+      toast.success("Chat downloaded as a text file.");
+    }
+  };
+
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       {messages.length > 0 && (
@@ -100,13 +140,35 @@ export function ChatWindow({
               key={mood}
               src={moodInfo.src}
               alt={moodInfo.alt}
-              className="size-12 sm:size-14 shrink-0 animate-in fade-in zoom-in-75 duration-300"
+              className="size-24 shrink-0 animate-in fade-in zoom-in-75 duration-300 sm:size-28"
               width={1024}
               height={1024}
             />
-            <p className="font-display text-sm italic text-muted-foreground">
-              {moodInfo.caption}
-            </p>
+            <div className="min-w-0 flex-1">
+              <p className="font-display text-sm italic text-muted-foreground">{moodInfo.caption}</p>
+              <div className="mt-2 flex gap-1">
+                <Button type="button" size="icon-sm" variant="ghost" aria-label="Share this chat" title="Share this chat" onClick={() => void shareConversation()}>
+                  <Share2 />
+                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button type="button" size="icon-sm" variant="ghost" aria-label="Delete this chat" title="Delete this chat">
+                      <Trash2 />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="max-w-sm">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Delete this chat?</AlertDialogTitle>
+                      <AlertDialogDescription>This conversation will be gone for good. Nagatha will pretend not to be sentimental.</AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Keep it</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => void onDelete()} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete chat</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -139,7 +201,7 @@ export function ChatWindow({
                     src={NAGATHA_MOODS.idle.src}
                     alt=""
                     aria-hidden
-                    className="mt-1 size-10 sm:size-12 shrink-0 self-start"
+                    className="size-28 shrink-0 self-start sm:size-36"
                     width={1024}
                     height={1024}
                     loading="lazy"
@@ -162,7 +224,7 @@ export function ChatWindow({
                 src={NAGATHA_MOODS.thinking.src}
                 alt=""
                 aria-hidden
-                className="mt-1 size-10 sm:size-12 shrink-0 self-start"
+                className="size-28 shrink-0 self-start sm:size-36"
                 width={1024}
                 height={1024}
                 loading="lazy"

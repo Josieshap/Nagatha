@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
+import { useNavigate } from "@tanstack/react-router";
+import { toast } from "sonner";
 import type { UIMessage } from "ai";
-import { getThreadMessages } from "@/lib/chat.functions";
+import { deleteThread, getThreadMessages } from "@/lib/chat.functions";
 import { ChatWindow } from "@/components/chat-window";
 import { Shimmer } from "@/components/ai-elements/shimmer";
 
@@ -12,8 +14,12 @@ export const Route = createFileRoute("/_authenticated/chat/$threadId")({
       { title: "Chat — Nagatha" },
       {
         name: "description",
-        content: "Chat with Nagatha, your tough-love AI buddy for work, chores, and exercise.",
+        content: "Chat with Nagatha for motivation or tutoring in languages, Math, and English.",
       },
+      { property: "og:title", content: "Chat — Nagatha" },
+      { property: "og:description", content: "Chat with Nagatha for motivation, practical help, and tutoring." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: ThreadPage,
@@ -22,6 +28,9 @@ export const Route = createFileRoute("/_authenticated/chat/$threadId")({
 function ThreadPage() {
   const { threadId } = Route.useParams();
   const fetchMessages = useServerFn(getThreadMessages);
+  const removeThread = useServerFn(deleteThread);
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["messages", threadId],
@@ -52,5 +61,16 @@ function ThreadPage() {
     parts: [{ type: "text", text: row.content }],
   }));
 
-  return <ChatWindow key={threadId} threadId={threadId} initialMessages={initialMessages} />;
+  const handleDelete = async () => {
+    try {
+      await removeThread({ data: { threadId } });
+      await queryClient.invalidateQueries({ queryKey: ["threads"] });
+      void navigate({ to: "/chat" });
+      toast.success("Chat deleted. Evidence successfully destroyed.");
+    } catch {
+      toast.error("Couldn't delete that chat. Nagatha keeps receipts anyway.");
+    }
+  };
+
+  return <ChatWindow key={threadId} threadId={threadId} initialMessages={initialMessages} onDelete={handleDelete} />;
 }

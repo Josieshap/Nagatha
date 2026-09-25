@@ -9,12 +9,27 @@ import { listThreads, deleteThread } from "@/lib/chat.functions";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import mascot from "@/assets/nagatha-idle.png";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export const Route = createFileRoute("/_authenticated/chat")({
   head: () => ({
     meta: [
       { title: "Chats — Nagatha" },
       { name: "description", content: "Your conversations with Nagatha, your tough-love AI buddy." },
+      { property: "og:title", content: "Chats — Nagatha" },
+      { property: "og:description", content: "Your saved conversations with Nagatha." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: ChatLayout,
@@ -113,14 +128,29 @@ function ThreadSidebar({ onNavigate }: { onNavigate?: () => void }) {
                     <MessageSquare className="size-4 shrink-0 text-muted-foreground" />
                     <span className="truncate">{thread.title}</span>
                   </Link>
-                  <button
-                    type="button"
-                    aria-label={`Delete chat ${thread.title}`}
-                    onClick={() => void handleDelete(thread.id)}
-                    className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded-md p-1.5 text-muted-foreground opacity-0 transition-opacity hover:bg-background hover:text-destructive focus-visible:opacity-100 group-hover:opacity-100"
-                  >
-                    <Trash2 className="size-4" />
-                  </button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        type="button"
+                        size="icon-sm"
+                        variant="ghost"
+                        aria-label={`Delete chat ${thread.title}`}
+                        className="absolute right-1.5 top-1/2 -translate-y-1/2 text-muted-foreground md:opacity-0 md:group-hover:opacity-100 md:focus-visible:opacity-100"
+                      >
+                        <Trash2 />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent className="max-w-sm">
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete “{thread.title}”?</AlertDialogTitle>
+                        <AlertDialogDescription>This conversation will be permanently deleted.</AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Keep it</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => void handleDelete(thread.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete chat</AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </li>
               );
             })}

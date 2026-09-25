@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { createOpenAI } from "@ai-sdk/openai";
 import { streamText, type UIMessage } from "ai";
 import {
-  createLovableAiGatewayProvider,
+  createLovableAiGatewayRunIdFetch,
   getLovableAiGatewayResponseHeaders,
   getLovableAiGatewayRunId,
   withLovableAiGatewayRunIdHeader,
@@ -10,7 +11,7 @@ import { createUserSupabaseClient } from "@/lib/supabase-user.server";
 
 const SYSTEM_PROMPT = `You are Nagatha, the user's tough-love accountability buddy: the sarcastic best friend who doesn't do coddling but genuinely cares, and it shows.
 
-Your job: motivate the user to do work, housework, physical exercise, and generally get their life together.
+Your job: motivate the user to do work, housework, physical exercise, and generally get their life together. You are also a patient, capable tutor for Spanish, Italian, French, German, Korean, Math, and English.
 
 How you operate:
 - Roast the procrastination, never the person. Affectionate sarcasm and dry one-liners.
@@ -19,6 +20,8 @@ How you operate:
 - Celebrate wins with deadpan enthusiasm ("Look at you, doing laundry like a functioning adult. I'm not crying, you're crying.").
 - No toxic positivity, no "live laugh love", no corporate wellness-speak. If you catch yourself sounding like a motivational poster, stop.
 - Keep replies punchy — usually under 120 words unless the user asks for a real plan. Short markdown lists are fine.
+- When tutoring, first infer or briefly ask the learner's level and goal. Explain one idea at a time, model a clear example, then give a short practice question and wait for their answer. Correct mistakes specifically and kindly. For languages, use the target language at an appropriate level with concise English support when useful; teach pronunciation, vocabulary, grammar, conversation, reading, and writing. For Korean, include Hangul and a simple romanization only when it helps a beginner. For Math, show the method in understandable steps, check the learner's work, and do not merely hand over an answer when they are practicing.
+- Keep the Nagatha voice while tutoring, but clarity beats jokes. Never shame someone for not knowing something.
 - If the user seems genuinely distressed or mentions something serious, drop the bit completely and be warm, direct, and helpful.`;
 
 type ChatRequestBody = {
@@ -106,10 +109,30 @@ export const Route = createFileRoute("/api/chat")({
           return new Response("Missing LOVABLE_API_KEY", { status: 500 });
         }
 
-        const gateway = createLovableAiGatewayProvider(key, getLovableAiGatewayRunId(request));
+        const initialRunId = getLovableAiGatewayRunId(request);
+        const runIdFetch = createLovableAiGatewayRunIdFetch(initialRunId);
+        const lovable = createOpenAI({
+          baseURL: "https://ai.gateway.lovable.dev/v1",
+          apiKey: key,
+          headers: {
+            "Lovable-API-Key": key,
+            "X-Lovable-AIG-SDK": "vercel-ai-sdk",
+          },
+          fetch: runIdFetch.fetch,
+        });
         const result = streamText({
-          model: gateway("google/gemini-3.7-flash"),
+          model: lovable.responses("openai/gpt-6-astra"),
           system: SYSTEM_PROMPT,
+          maxRetries: 0,
+          providerOptions: {
+            openai: {
+              forceReasoning: true,
+              reasoningEffort: "medium",
+              reasoningSummary: "auto",
+              store: false,
+              include: ["reasoning.encrypted_content"],
+            },
+          },
           messages: [
             ...(history ?? []).map((m) => ({
               role: m.role as "user" | "assistant",
@@ -137,11 +160,11 @@ export const Route = createFileRoute("/api/chat")({
           },
           onError: (error) => {
             console.error("[chat] stream error:", error);
-            return "Nagatha dropped the whistle for a second — try that again.";
+            return error instanceof Error ? error.message : "The chat request failed.";
           },
         });
 
-        return withLovableAiGatewayRunIdHeader(response, gateway);
+        return withLovableAiGatewayRunIdHeader(response, runIdFetch);
       },
     },
   },
