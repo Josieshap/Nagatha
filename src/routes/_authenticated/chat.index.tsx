@@ -48,6 +48,17 @@ const QUICK_PROMPTS = [
   { icon: Flame, label: "Just motivate me", text: "I don't even know what I need. Just motivate me." },
 ];
 
+const LANGUAGE_TOPICS = ["grammar", "verb conjugation", "vocabulary", "pronunciation", "conversation"];
+const HELP_TOPICS: Record<string, string[]> = {
+  Spanish: LANGUAGE_TOPICS,
+  Italian: LANGUAGE_TOPICS,
+  French: LANGUAGE_TOPICS,
+  German: LANGUAGE_TOPICS,
+  Korean: ["Hangul", "grammar", "vocabulary", "pronunciation", "conversation"],
+  Math: ["fractions", "algebra", "geometry", "word problems", "percentages"],
+  English: ["grammar", "writing", "vocabulary", "reading comprehension", "punctuation"],
+};
+
 function PhotoPreviews() {
   const attachments = usePromptInputAttachments();
   if (attachments.files.length === 0) return null;
