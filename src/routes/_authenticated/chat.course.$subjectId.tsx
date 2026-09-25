@@ -7,7 +7,7 @@ import { listLessonProgress } from "@/lib/lessons.functions";
 import { LessonProgressBar } from "@/components/lesson-progress-bar";
 import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/_authenticated/chat/lessons/$subjectId")({
+export const Route = createFileRoute("/_authenticated/chat/course/$subjectId")({
   beforeLoad: ({ params }) => { if (!getSubject(params.subjectId)) throw notFound(); },
   head: ({ params }) => {
     const subject = getSubject(params.subjectId);
@@ -49,7 +49,7 @@ function SubjectPage() {
                   <p className="mt-1 text-sm text-muted-foreground">{lesson.objective}</p>
                   <p className="mt-2 flex items-center gap-1 text-xs text-muted-foreground"><Clock3 className="size-3.5" />{lesson.minutes} minutes{record ? ` · Best score ${record.score}%` : ""}</p>
                 </div>
-                <Button asChild size="icon" variant="ghost" aria-label={`Open ${lesson.title}`}><Link to="/chat/lessons/$subjectId/$lessonId" params={{ subjectId, lessonId: lesson.id }}><ArrowRight /></Link></Button>
+                <Button asChild size="icon" variant="ghost" aria-label={`Open ${lesson.title}`}><Link to="/chat/lesson/$subjectId/$lessonId" params={{ subjectId, lessonId: lesson.id }}><ArrowRight /></Link></Button>
               </li>
             );
           })}

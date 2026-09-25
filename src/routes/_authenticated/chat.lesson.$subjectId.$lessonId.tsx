@@ -11,7 +11,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/_authenticated/chat/lessons/$subjectId/$lessonId")({
+export const Route = createFileRoute("/_authenticated/chat/lesson/$subjectId/$lessonId")({
   beforeLoad: ({ params }) => { if (!getLesson(params.subjectId, params.lessonId)) throw notFound(); },
   head: ({ params }) => {
     const lesson = getLesson(params.subjectId, params.lessonId);
@@ -51,7 +51,7 @@ function LessonPage() {
   return (
     <main className="flex-1 overflow-y-auto bg-paper">
       <article className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6">
-        <Button asChild variant="ghost" size="sm"><Link to="/chat/lessons/$subjectId" params={{ subjectId }}><ArrowLeft />{subject.name}</Link></Button>
+        <Button asChild variant="ghost" size="sm"><Link to="/chat/course/$subjectId" params={{ subjectId }}><ArrowLeft />{subject.name}</Link></Button>
         <header className="mt-5 border-b pb-6">
           <p className="flex items-center gap-1 text-sm text-muted-foreground"><Clock3 className="size-4" />{lesson.minutes} minutes</p>
           <h1 className="font-display mt-2 text-3xl font-bold sm:text-4xl">{lesson.title}</h1>
@@ -73,7 +73,7 @@ function LessonPage() {
           {checked && <div className="mt-7 rounded-lg border bg-card p-5 text-center"><p className="font-display text-3xl font-bold">{score}%</p><p className="mt-1 text-sm text-muted-foreground">{score >= 70 ? "Passed. Suspiciously competent." : "Not there yet. Review, retry, annoyingly improve."}</p></div>}
           <div className="mt-6 flex flex-wrap justify-end gap-2">
             {checked && score < 70 && <Button type="button" variant="outline" onClick={() => { setAnswers({}); setChecked(false); }}>Retry</Button>}
-            {checked && score >= 70 ? <Button type="button" onClick={() => void navigate({ to: "/chat/lessons/$subjectId", params: { subjectId } })}>Back to course</Button> : <Button type="button" disabled={Object.keys(answers).length !== lesson.exercises.length || mutation.isPending} onClick={checkAnswers}>Check answers</Button>}
+            {checked && score >= 70 ? <Button type="button" onClick={() => void navigate({ to: "/chat/course/$subjectId", params: { subjectId } })}>Back to course</Button> : <Button type="button" disabled={Object.keys(answers).length !== lesson.exercises.length || mutation.isPending} onClick={checkAnswers}>Check answers</Button>}
           </div>
         </section>
       </article>

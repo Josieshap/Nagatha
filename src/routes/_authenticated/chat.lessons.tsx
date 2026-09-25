@@ -59,7 +59,7 @@ function LessonsPage() {
                 </CardHeader>
                 <CardContent className="mt-auto space-y-4">
                   <LessonProgressBar value={percent} label={`${count}/${subject.lessons.length} finished`} />
-                  <Button asChild className="w-full"><Link to="/chat/lessons/$subjectId" params={{ subjectId: subject.id }}><BookOpen />Open course<ArrowRight /></Link></Button>
+                  <Button asChild className="w-full"><Link to="/chat/course/$subjectId" params={{ subjectId: subject.id }}><BookOpen />Open course<ArrowRight /></Link></Button>
                 </CardContent>
               </Card>
             );
