@@ -9,7 +9,7 @@ function parseAttachments(value: unknown): SavedAttachment[] {
   return value.filter((item): item is SavedAttachment => {
     if (!item || typeof item !== "object") return false;
     const candidate = item as Record<string, unknown>;
-    return typeof candidate.path === "string" && typeof candidate.name === "string" && typeof candidate.mediaType === "string";
+    return typeof candidate["path"] === "string" && typeof candidate["name"] === "string" && typeof candidate["mediaType"] === "string";
   });
 }
 

@@ -22,6 +22,7 @@ import {
 import { Attachment, AttachmentPreview, AttachmentRemove, Attachments } from "@/components/ai-elements/attachments";
 import mascot from "@/assets/nagatha-idle.png";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/chat/")({
   head: () => ({
@@ -97,7 +98,7 @@ function NewChat() {
         const { data: signed, error: signError } = await supabase.storage.from("chat-images").createSignedUrl(path, 3600);
         if (signError) throw new Error(signError.message);
         stored.push({ path, name: file.filename || "Photo", mediaType: file.mediaType });
-        signedFiles.push({ type: "file" as const, filename: file.filename, mediaType: file.mediaType, url: signed.signedUrl });
+        signedFiles.push({ type: "file" as const, filename: file.filename || "Photo", mediaType: file.mediaType, url: signed.signedUrl });
       }
       sessionStorage.setItem(PENDING_MESSAGE_KEY(thread.id), JSON.stringify({
         text: text.trim() || "Please look at this photo and help me with what you see.",

@@ -99,6 +99,7 @@ export const Route = createFileRoute("/api/chat")({
         if (!userText && attachments.length === 0) {
           return new Response("Empty message", { status: 400 });
         }
+        const displayText = userText || "Photo reference";
 
         // Full history from the database — the source of truth.
         const { data: history } = await supabase
@@ -117,7 +118,7 @@ export const Route = createFileRoute("/api/chat")({
 
         // Auto-title brand-new threads from the first message.
         if (thread.title === "New chat") {
-          const title = userText.length > 48 ? `${userText.slice(0, 48)}…` : userText;
+          const title = displayText.length > 48 ? `${displayText.slice(0, 48)}…` : displayText;
           await supabase.from("threads").update({ title }).eq("id", threadId);
         }
 
@@ -197,7 +198,7 @@ export const Route = createFileRoute("/api/chat")({
               // Bump updated_at so the sidebar ordering stays fresh.
               await supabase
                 .from("threads")
-                .update({ title: thread.title === "New chat" ? (userText.length > 48 ? `${userText.slice(0, 48)}…` : userText) : thread.title })
+                .update({ title: thread.title === "New chat" ? (displayText.length > 48 ? `${displayText.slice(0, 48)}…` : displayText) : thread.title })
                 .eq("id", threadId);
             }
           },

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport, type UIMessage } from "ai";
+import { DefaultChatTransport, type FileUIPart, type UIMessage } from "ai";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Share2, Trash2 } from "lucide-react";
@@ -50,7 +50,7 @@ export const PENDING_MESSAGE_KEY = (threadId: string) => `nagatha:pending:${thre
 
 type PendingMessage = {
   text: string;
-  files?: Array<{ filename?: string; mediaType: string; url: string }>;
+  files?: FileUIPart[];
   attachments?: Array<{ path: string; name: string; mediaType: string }>;
 };
 
@@ -155,7 +155,7 @@ export function ChatWindow({
       if (!userData.user) throw new Error("Please sign in again to add a photo.");
 
       const stored: Array<{ path: string; name: string; mediaType: string }> = [];
-      const files = [];
+      const files: FileUIPart[] = [];
       for (const file of message.files) {
         const response = await fetch(file.url);
         const blob = await response.blob();
@@ -170,7 +170,7 @@ export function ChatWindow({
         const { data: signed, error: signError } = await supabase.storage.from("chat-images").createSignedUrl(path, 3600);
         if (signError) throw new Error(signError.message);
         stored.push({ path, name: file.filename || "Photo", mediaType: file.mediaType });
-        files.push({ type: "file" as const, filename: file.filename, mediaType: file.mediaType, url: signed.signedUrl });
+        files.push({ type: "file", filename: file.filename || "Photo", mediaType: file.mediaType, url: signed.signedUrl });
       }
 
       await sendMessage(
@@ -274,7 +274,7 @@ export function ChatWindow({
 
           {messages.map((message) => {
             const text = textOf(message);
-            const photos = message.parts.filter((part) => part.type === "file" && part.mediaType.startsWith("image/"));
+            const photos = message.parts.filter((part): part is FileUIPart => part.type === "file" && part.mediaType.startsWith("image/"));
             if (!text && photos.length === 0) return null;
             return (
               <Message key={message.id} from={message.role}>
