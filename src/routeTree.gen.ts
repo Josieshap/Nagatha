@@ -20,8 +20,8 @@ import { Route as AuthenticatedChatLessonsRouteImport } from './routes/_authenti
 import { Route as AuthenticatedChatPlannerRouteImport } from './routes/_authenticated/chat.planner'
 import { Route as AuthenticatedChatProgressRouteImport } from './routes/_authenticated/chat.progress'
 import { Route as AuthenticatedChatRealityCheckRouteImport } from './routes/_authenticated/chat.reality-check'
-import { Route as AuthenticatedChatLessonsSubjectIdRouteImport } from './routes/_authenticated/chat.lessons.$subjectId'
-import { Route as AuthenticatedChatLessonsSubjectIdLessonIdRouteImport } from './routes/_authenticated/chat.lessons.$subjectId.$lessonId'
+import { Route as AuthenticatedChatCourseSubjectIdRouteImport } from './routes/_authenticated/chat.course.$subjectId'
+import { Route as AuthenticatedChatLessonSubjectIdLessonIdRouteImport } from './routes/_authenticated/chat.lesson.$subjectId.$lessonId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -82,17 +82,17 @@ const AuthenticatedChatRealityCheckRoute =
     path: '/reality-check',
     getParentRoute: () => AuthenticatedChatRoute,
   } as any)
-const AuthenticatedChatLessonsSubjectIdRoute =
-  AuthenticatedChatLessonsSubjectIdRouteImport.update({
-    id: '/$subjectId',
-    path: '/$subjectId',
-    getParentRoute: () => AuthenticatedChatLessonsRoute,
+const AuthenticatedChatCourseSubjectIdRoute =
+  AuthenticatedChatCourseSubjectIdRouteImport.update({
+    id: '/course/$subjectId',
+    path: '/course/$subjectId',
+    getParentRoute: () => AuthenticatedChatRoute,
   } as any)
-const AuthenticatedChatLessonsSubjectIdLessonIdRoute =
-  AuthenticatedChatLessonsSubjectIdLessonIdRouteImport.update({
-    id: '/$lessonId',
-    path: '/$lessonId',
-    getParentRoute: () => AuthenticatedChatLessonsSubjectIdRoute,
+const AuthenticatedChatLessonSubjectIdLessonIdRoute =
+  AuthenticatedChatLessonSubjectIdLessonIdRouteImport.update({
+    id: '/lesson/$subjectId/$lessonId',
+    path: '/lesson/$subjectId/$lessonId',
+    getParentRoute: () => AuthenticatedChatRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -101,26 +101,26 @@ export interface FileRoutesByFullPath {
   '/chat': typeof AuthenticatedChatRouteWithChildren
   '/api/chat': typeof ApiChatRoute
   '/chat/$threadId': typeof AuthenticatedChatThreadIdRoute
-  '/chat/lessons': typeof AuthenticatedChatLessonsRouteWithChildren
+  '/chat/lessons': typeof AuthenticatedChatLessonsRoute
   '/chat/planner': typeof AuthenticatedChatPlannerRoute
   '/chat/progress': typeof AuthenticatedChatProgressRoute
   '/chat/reality-check': typeof AuthenticatedChatRealityCheckRoute
   '/chat/': typeof AuthenticatedChatIndexRoute
-  '/chat/lessons/$subjectId': typeof AuthenticatedChatLessonsSubjectIdRouteWithChildren
-  '/chat/lessons/$subjectId/$lessonId': typeof AuthenticatedChatLessonsSubjectIdLessonIdRoute
+  '/chat/course/$subjectId': typeof AuthenticatedChatCourseSubjectIdRoute
+  '/chat/lesson/$subjectId/$lessonId': typeof AuthenticatedChatLessonSubjectIdLessonIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/api/chat': typeof ApiChatRoute
   '/chat/$threadId': typeof AuthenticatedChatThreadIdRoute
-  '/chat/lessons': typeof AuthenticatedChatLessonsRouteWithChildren
+  '/chat/lessons': typeof AuthenticatedChatLessonsRoute
   '/chat/planner': typeof AuthenticatedChatPlannerRoute
   '/chat/progress': typeof AuthenticatedChatProgressRoute
   '/chat/reality-check': typeof AuthenticatedChatRealityCheckRoute
   '/chat': typeof AuthenticatedChatIndexRoute
-  '/chat/lessons/$subjectId': typeof AuthenticatedChatLessonsSubjectIdRouteWithChildren
-  '/chat/lessons/$subjectId/$lessonId': typeof AuthenticatedChatLessonsSubjectIdLessonIdRoute
+  '/chat/course/$subjectId': typeof AuthenticatedChatCourseSubjectIdRoute
+  '/chat/lesson/$subjectId/$lessonId': typeof AuthenticatedChatLessonSubjectIdLessonIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -130,13 +130,13 @@ export interface FileRoutesById {
   '/_authenticated/chat': typeof AuthenticatedChatRouteWithChildren
   '/api/chat': typeof ApiChatRoute
   '/_authenticated/chat/$threadId': typeof AuthenticatedChatThreadIdRoute
-  '/_authenticated/chat/lessons': typeof AuthenticatedChatLessonsRouteWithChildren
+  '/_authenticated/chat/lessons': typeof AuthenticatedChatLessonsRoute
   '/_authenticated/chat/planner': typeof AuthenticatedChatPlannerRoute
   '/_authenticated/chat/progress': typeof AuthenticatedChatProgressRoute
   '/_authenticated/chat/reality-check': typeof AuthenticatedChatRealityCheckRoute
   '/_authenticated/chat/': typeof AuthenticatedChatIndexRoute
-  '/_authenticated/chat/lessons/$subjectId': typeof AuthenticatedChatLessonsSubjectIdRouteWithChildren
-  '/_authenticated/chat/lessons/$subjectId/$lessonId': typeof AuthenticatedChatLessonsSubjectIdLessonIdRoute
+  '/_authenticated/chat/course/$subjectId': typeof AuthenticatedChatCourseSubjectIdRoute
+  '/_authenticated/chat/lesson/$subjectId/$lessonId': typeof AuthenticatedChatLessonSubjectIdLessonIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -151,8 +151,8 @@ export interface FileRouteTypes {
     | '/chat/progress'
     | '/chat/reality-check'
     | '/chat/'
-    | '/chat/lessons/$subjectId'
-    | '/chat/lessons/$subjectId/$lessonId'
+    | '/chat/course/$subjectId'
+    | '/chat/lesson/$subjectId/$lessonId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -164,8 +164,8 @@ export interface FileRouteTypes {
     | '/chat/progress'
     | '/chat/reality-check'
     | '/chat'
-    | '/chat/lessons/$subjectId'
-    | '/chat/lessons/$subjectId/$lessonId'
+    | '/chat/course/$subjectId'
+    | '/chat/lesson/$subjectId/$lessonId'
   id:
     | '__root__'
     | '/'
@@ -179,8 +179,8 @@ export interface FileRouteTypes {
     | '/_authenticated/chat/progress'
     | '/_authenticated/chat/reality-check'
     | '/_authenticated/chat/'
-    | '/_authenticated/chat/lessons/$subjectId'
-    | '/_authenticated/chat/lessons/$subjectId/$lessonId'
+    | '/_authenticated/chat/course/$subjectId'
+    | '/_authenticated/chat/lesson/$subjectId/$lessonId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -269,69 +269,44 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedChatRealityCheckRouteImport
       parentRoute: typeof AuthenticatedChatRoute
     }
-    '/_authenticated/chat/lessons/$subjectId': {
-      id: '/_authenticated/chat/lessons/$subjectId'
-      path: '/$subjectId'
-      fullPath: '/chat/lessons/$subjectId'
-      preLoaderRoute: typeof AuthenticatedChatLessonsSubjectIdRouteImport
-      parentRoute: typeof AuthenticatedChatLessonsRoute
+    '/_authenticated/chat/course/$subjectId': {
+      id: '/_authenticated/chat/course/$subjectId'
+      path: '/course/$subjectId'
+      fullPath: '/chat/course/$subjectId'
+      preLoaderRoute: typeof AuthenticatedChatCourseSubjectIdRouteImport
+      parentRoute: typeof AuthenticatedChatRoute
     }
-    '/_authenticated/chat/lessons/$subjectId/$lessonId': {
-      id: '/_authenticated/chat/lessons/$subjectId/$lessonId'
-      path: '/$lessonId'
-      fullPath: '/chat/lessons/$subjectId/$lessonId'
-      preLoaderRoute: typeof AuthenticatedChatLessonsSubjectIdLessonIdRouteImport
-      parentRoute: typeof AuthenticatedChatLessonsSubjectIdRoute
+    '/_authenticated/chat/lesson/$subjectId/$lessonId': {
+      id: '/_authenticated/chat/lesson/$subjectId/$lessonId'
+      path: '/lesson/$subjectId/$lessonId'
+      fullPath: '/chat/lesson/$subjectId/$lessonId'
+      preLoaderRoute: typeof AuthenticatedChatLessonSubjectIdLessonIdRouteImport
+      parentRoute: typeof AuthenticatedChatRoute
     }
   }
 }
-
-interface AuthenticatedChatLessonsSubjectIdRouteChildren {
-  AuthenticatedChatLessonsSubjectIdLessonIdRoute: typeof AuthenticatedChatLessonsSubjectIdLessonIdRoute
-}
-
-const AuthenticatedChatLessonsSubjectIdRouteChildren: AuthenticatedChatLessonsSubjectIdRouteChildren =
-  {
-    AuthenticatedChatLessonsSubjectIdLessonIdRoute:
-      AuthenticatedChatLessonsSubjectIdLessonIdRoute,
-  }
-
-const AuthenticatedChatLessonsSubjectIdRouteWithChildren =
-  AuthenticatedChatLessonsSubjectIdRoute._addFileChildren(
-    AuthenticatedChatLessonsSubjectIdRouteChildren,
-  )
-
-interface AuthenticatedChatLessonsRouteChildren {
-  AuthenticatedChatLessonsSubjectIdRoute: typeof AuthenticatedChatLessonsSubjectIdRouteWithChildren
-}
-
-const AuthenticatedChatLessonsRouteChildren: AuthenticatedChatLessonsRouteChildren =
-  {
-    AuthenticatedChatLessonsSubjectIdRoute:
-      AuthenticatedChatLessonsSubjectIdRouteWithChildren,
-  }
-
-const AuthenticatedChatLessonsRouteWithChildren =
-  AuthenticatedChatLessonsRoute._addFileChildren(
-    AuthenticatedChatLessonsRouteChildren,
-  )
 
 interface AuthenticatedChatRouteChildren {
   AuthenticatedChatThreadIdRoute: typeof AuthenticatedChatThreadIdRoute
-  AuthenticatedChatLessonsRoute: typeof AuthenticatedChatLessonsRouteWithChildren
+  AuthenticatedChatLessonsRoute: typeof AuthenticatedChatLessonsRoute
   AuthenticatedChatPlannerRoute: typeof AuthenticatedChatPlannerRoute
   AuthenticatedChatProgressRoute: typeof AuthenticatedChatProgressRoute
   AuthenticatedChatRealityCheckRoute: typeof AuthenticatedChatRealityCheckRoute
   AuthenticatedChatIndexRoute: typeof AuthenticatedChatIndexRoute
+  AuthenticatedChatCourseSubjectIdRoute: typeof AuthenticatedChatCourseSubjectIdRoute
+  AuthenticatedChatLessonSubjectIdLessonIdRoute: typeof AuthenticatedChatLessonSubjectIdLessonIdRoute
 }
 
 const AuthenticatedChatRouteChildren: AuthenticatedChatRouteChildren = {
   AuthenticatedChatThreadIdRoute: AuthenticatedChatThreadIdRoute,
-  AuthenticatedChatLessonsRoute: AuthenticatedChatLessonsRouteWithChildren,
+  AuthenticatedChatLessonsRoute: AuthenticatedChatLessonsRoute,
   AuthenticatedChatPlannerRoute: AuthenticatedChatPlannerRoute,
   AuthenticatedChatProgressRoute: AuthenticatedChatProgressRoute,
   AuthenticatedChatRealityCheckRoute: AuthenticatedChatRealityCheckRoute,
   AuthenticatedChatIndexRoute: AuthenticatedChatIndexRoute,
+  AuthenticatedChatCourseSubjectIdRoute: AuthenticatedChatCourseSubjectIdRoute,
+  AuthenticatedChatLessonSubjectIdLessonIdRoute:
+    AuthenticatedChatLessonSubjectIdLessonIdRoute,
 }
 
 const AuthenticatedChatRouteWithChildren =
