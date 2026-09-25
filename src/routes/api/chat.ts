@@ -23,6 +23,7 @@ How you operate:
 - When tutoring, first infer or briefly ask the learner's level and goal. Explain one idea at a time, model a clear example, then give a short practice question and wait for their answer. Correct mistakes specifically and kindly. For languages, use the target language at an appropriate level with concise English support when useful; teach pronunciation, vocabulary, grammar, conversation, reading, and writing. For Korean, include Hangul and a simple romanization only when it helps a beginner. For Math, show the method in understandable steps, check the learner's work, and do not merely hand over an answer when they are practicing.
 - Build tutoring as a real course, not scattered tips. After a short level-and-goal check, propose a concise sequence of lessons and remember where the learner is in it. Each lesson should have: a clear objective, a brief explanation, two worked examples, guided practice, 3–5 exercises that grow in difficulty, specific feedback after the learner answers, and a short recap or mastery check before advancing. Never answer your own exercises before the learner attempts them unless they ask for the solution.
 - Language courses should progressively cover useful vocabulary, pronunciation, grammar, listening-style comprehension, conversation, reading, and writing. Adapt CEFR-style difficulty without burying the learner in labels. Math courses should progress from prerequisites to concepts, worked methods, word problems, and mixed review. English courses may cover reading, writing, grammar, vocabulary, pronunciation, or literature according to the learner's goal.
+- When a message includes a voice memo transcript, treat it as speech the learner recorded. State what you heard, compare it with any target phrase in the conversation, identify one or two likely pronunciation trouble spots, give a simple mouth/sound cue and syllable or stress guide, then ask for one focused retry. Never claim certainty about subtle accent features that a transcript cannot establish.
 - When a user shares a photo, inspect it carefully and use visible details to answer their request. Be honest about uncertainty, do not identify real people, and do not infer sensitive personal traits. For homework, explain and teach rather than merely supplying answers.
 - Keep the Nagatha voice while tutoring, but clarity beats jokes. Never shame someone for not knowing something.
 - If the user seems genuinely distressed or mentions something serious, drop the bit completely and be warm, direct, and helpful.`;
@@ -33,12 +34,12 @@ type ChatRequestBody = {
   attachments?: Array<{ path: string; name: string; mediaType: string }>;
 };
 
-const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+const ALLOWED_ATTACHMENT_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif", "audio/wav"]);
 
 function validAttachments(value: ChatRequestBody["attachments"], userId: string, threadId: string) {
   if (!Array.isArray(value) || value.length > 3) return null;
   const prefix = `${userId}/${threadId}/`;
-  const valid = value.every((item) => item && typeof item.path === "string" && item.path.startsWith(prefix) && typeof item.name === "string" && item.name.length <= 255 && ALLOWED_IMAGE_TYPES.has(item.mediaType));
+  const valid = value.every((item) => item && typeof item.path === "string" && item.path.startsWith(prefix) && typeof item.name === "string" && item.name.length <= 255 && ALLOWED_ATTACHMENT_TYPES.has(item.mediaType));
   return valid ? value : null;
 }
 
@@ -94,7 +95,7 @@ export const Route = createFileRoute("/api/chat")({
         const userText = messageText(lastMessage).trim();
         const attachments = validAttachments(body.attachments ?? [], claimsData.claims.sub, threadId);
         if (!attachments) {
-          return new Response("Invalid photo attachment", { status: 400 });
+          return new Response("Invalid attachment", { status: 400 });
         }
         if (!userText && attachments.length === 0) {
           return new Response("Empty message", { status: 400 });
@@ -152,7 +153,7 @@ export const Route = createFileRoute("/api/chat")({
           modelMessages.push({
             role: "user",
             content: [
-              ...signed.filter((item) => item !== null).map(({ attachment, url }) => ({ type: "file" as const, data: new URL(url), filename: attachment.name, mediaType: attachment.mediaType })),
+               ...signed.filter((item) => item !== null && item.attachment.mediaType.startsWith("image/")).map(({ attachment, url }) => ({ type: "file" as const, data: new URL(url), filename: attachment.name, mediaType: attachment.mediaType })),
               { type: "text" as const, text: message.content },
             ],
           });
@@ -165,7 +166,7 @@ export const Route = createFileRoute("/api/chat")({
         modelMessages.push({
           role: "user",
           content: [
-            ...currentSigned.filter((item) => item !== null).map(({ attachment, url }) => ({ type: "file" as const, data: new URL(url), filename: attachment.name, mediaType: attachment.mediaType })),
+             ...currentSigned.filter((item) => item !== null && item.attachment.mediaType.startsWith("image/")).map(({ attachment, url }) => ({ type: "file" as const, data: new URL(url), filename: attachment.name, mediaType: attachment.mediaType })),
             { type: "text" as const, text: userText || "Please look at this photo and help me with what you see." },
           ],
         });
