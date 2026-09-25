@@ -143,7 +143,7 @@ function NewChat() {
 
         <div className="mt-6 w-full border-t pt-5">
           <div className="mb-3 flex items-center gap-2">
-            <Languages className="size-4 text-primary" />
+            <BookOpen className="size-4 text-primary" />
             <h2 className="font-display font-bold">Study with Nagatha</h2>
           </div>
           <div className="grid gap-2 sm:grid-cols-2">
