@@ -103,7 +103,7 @@ function NewChat() {
         signedFiles.push({ type: "file" as const, filename: file.filename || "Photo", mediaType: file.mediaType, url: signed.signedUrl });
       }
       sessionStorage.setItem(PENDING_MESSAGE_KEY(thread.id), JSON.stringify({
-        text: text.trim() || "Please look at this photo and help me with what you see.",
+        text: text.trim() || "Please look at this photo and teach me how to do it myself.",
         files: signedFiles,
         attachments: stored,
       }));
@@ -180,7 +180,7 @@ function NewChat() {
               ))}
             </div>
           )}
-          <p className="mt-2 text-xs text-muted-foreground">Or just type it below, like “I need help with Italian grammar.”</p>
+          <p className="mt-2 text-xs text-muted-foreground">Or type anything — any subject — or snap a photo of your homework. Nagatha teaches you how; she won't do it for you.</p>
         </div>
 
         <Link
