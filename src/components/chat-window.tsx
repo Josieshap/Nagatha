@@ -232,9 +232,16 @@ export function ChatWindow({
   };
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
+    <div className="flex min-h-0 min-w-0 flex-1">
       {messages.length > 0 && (
-        <div className="bg-card/70 border-b px-4 py-2 backdrop-blur">
+        <aside className="hidden w-48 shrink-0 flex-col items-center border-r bg-card/40 px-4 py-8 text-center lg:flex">
+          <img key={mood} src={moodInfo.src} alt={moodInfo.alt} className="w-full max-w-44 animate-in object-contain fade-in zoom-in-75 duration-300" width={1024} height={1024} />
+          <p className="mt-3 font-display text-sm italic text-muted-foreground">{moodInfo.caption}</p>
+        </aside>
+      )}
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+      {messages.length > 0 && (
+        <div className="border-b bg-card/70 px-4 py-2 backdrop-blur lg:hidden">
           <div className="mx-auto flex w-full max-w-2xl items-center gap-3">
             <img
               key={mood}
@@ -298,17 +305,6 @@ export function ChatWindow({
             if (!text && photos.length === 0 && voiceMemos.length === 0) return null;
             return (
               <Message key={message.id} from={message.role}>
-                {message.role === "assistant" && (
-                  <img
-                    src={NAGATHA_MOODS.idle.src}
-                    alt=""
-                    aria-hidden
-                    className="size-28 shrink-0 self-start sm:size-36"
-                    width={1024}
-                    height={1024}
-                    loading="lazy"
-                  />
-                )}
                 <MessageContent className="group-[.is-user]:bg-primary group-[.is-user]:rounded-2xl group-[.is-user]:text-primary-foreground">
                   {photos.length > 0 && (
                     <Attachments className="mb-2" aria-label={`${message.role === "user" ? "Your" : "Nagatha's"} attached photos`}>
@@ -334,15 +330,6 @@ export function ChatWindow({
 
           {status === "submitted" && (
             <Message from="assistant">
-              <img
-                src={NAGATHA_MOODS.thinking.src}
-                alt=""
-                aria-hidden
-                className="size-28 shrink-0 self-start sm:size-36"
-                width={1024}
-                height={1024}
-                loading="lazy"
-              />
               <MessageContent>
                 <Shimmer className="text-sm">Nagatha is cracking her knuckles…</Shimmer>
               </MessageContent>
@@ -392,6 +379,7 @@ export function ChatWindow({
             Nagatha roasts with love. Your chores fear her.
           </p>
         </div>
+      </div>
       </div>
     </div>
   );

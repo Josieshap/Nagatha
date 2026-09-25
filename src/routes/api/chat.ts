@@ -153,7 +153,7 @@ export const Route = createFileRoute("/api/chat")({
           modelMessages.push({
             role: "user",
             content: [
-               ...signed.filter((item) => item !== null && item.attachment.mediaType.startsWith("image/")).map(({ attachment, url }) => ({ type: "file" as const, data: new URL(url), filename: attachment.name, mediaType: attachment.mediaType })),
+               ...signed.flatMap((item) => item && item.attachment.mediaType.startsWith("image/") ? [{ type: "file" as const, data: new URL(item.url), filename: item.attachment.name, mediaType: item.attachment.mediaType }] : []),
               { type: "text" as const, text: message.content },
             ],
           });
@@ -166,7 +166,7 @@ export const Route = createFileRoute("/api/chat")({
         modelMessages.push({
           role: "user",
           content: [
-             ...currentSigned.filter((item) => item !== null && item.attachment.mediaType.startsWith("image/")).map(({ attachment, url }) => ({ type: "file" as const, data: new URL(url), filename: attachment.name, mediaType: attachment.mediaType })),
+             ...currentSigned.flatMap((item) => item && item.attachment.mediaType.startsWith("image/") ? [{ type: "file" as const, data: new URL(item.url), filename: item.attachment.name, mediaType: item.attachment.mediaType }] : []),
             { type: "text" as const, text: userText || "Please look at this photo and help me with what you see." },
           ],
         });

@@ -14,7 +14,7 @@ export function VoiceRecorder({
   disabled?: boolean;
   onVoiceReady: (file: File, transcript: string) => Promise<void>;
 }) {
-  const recorderRef = useRef<Recorder>();
+  const recorderRef = useRef<Recorder | undefined>(undefined);
   const [recording, setRecording] = useState(false);
   const [working, setWorking] = useState(false);
   const [seconds, setSeconds] = useState(0);
