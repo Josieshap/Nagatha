@@ -7,3 +7,5 @@
 - [ ] Add private photo attachments to chat messages.
 - [ ] Let Nagatha inspect uploaded photos and preserve them in chat history.
 - [ ] Verify photo chat on mobile and desktop.
+- [ ] Expand all seven tutoring subjects into structured lessons and exercises.
+- [ ] Fix Nagatha’s cropped head on the “What are we pretending to avoid today?” page.
