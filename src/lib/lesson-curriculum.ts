@@ -129,19 +129,19 @@ export const SUBJECTS: Subject[] = [
     lessons: [
       { id: "math-1", title: "Fractions without drama", minutes: 18, objective: "Add and simplify fractions.", sections: [
         { heading: "Common denominators", body: "To add fractions, rewrite them with the same denominator. Multiply numerator and denominator by the same number, then add only the numerators.", examples: ["1/3 + 1/6 = 2/6 + 1/6 = 3/6 = 1/2", "3/4 + 1/8 = 6/8 + 1/8 = 7/8"] },
-      ], [
+      ], exercises: [
         { question: "What is 1/4 + 1/2?", choices: ["2/6", "3/4", "1/8"], answer: 1, explanation: "Rewrite 1/2 as 2/4, then 1/4 + 2/4 = 3/4." },
         { question: "Simplify 6/8.", choices: ["3/4", "2/3", "4/6"], answer: 0, explanation: "Divide numerator and denominator by 2." },
       ] },
       { id: "math-2", title: "Solve for x", minutes: 18, objective: "Solve one-step and two-step equations.", sections: [
         { heading: "Keep the balance", body: "An equation is balanced. Do the same operation to both sides, undoing addition or subtraction before multiplication or division.", examples: ["x + 5 = 12 → x = 7", "3x + 2 = 14 → 3x = 12 → x = 4"] },
-      ], [
+      ], exercises: [
         { question: "Solve: x − 7 = 9", choices: ["2", "16", "63"], answer: 1, explanation: "Add 7 to both sides: x = 16." },
         { question: "Solve: 2x + 3 = 11", choices: ["4", "7", "5.5"], answer: 0, explanation: "Subtract 3 to get 2x = 8, then divide by 2." },
       ] },
       { id: "math-3", title: "Percentages in real life", minutes: 15, objective: "Calculate discounts, tips, and percentage change.", sections: [
         { heading: "Percent means per hundred", body: "Convert a percent to a decimal by dividing by 100, then multiply. A 20% discount on $50 is 0.20 × 50 = $10.", examples: ["15% of 80 = 0.15 × 80 = 12", "$50 after 20% off = $50 − $10 = $40"] },
-      ], [
+      ], exercises: [
         { question: "What is 25% of 60?", choices: ["10", "15", "25"], answer: 1, explanation: "0.25 × 60 = 15." },
         { question: "A $40 item is 10% off. New price?", choices: ["$36", "$30", "$44"], answer: 0, explanation: "10% of 40 is 4; subtract it from 40." },
       ] },
