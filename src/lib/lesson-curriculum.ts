@@ -36,21 +36,21 @@ export const SUBJECTS: Subject[] = [
       languageLesson("spanish-1", "Greetings that sound human", "Greet someone and introduce yourself naturally.", [
         { heading: "Core phrases", body: "Hola works any time. Buenos días is used in the morning, buenas tardes later in the day, and buenas noches at night. Say Me llamo… for your name and Mucho gusto when meeting someone.", examples: ["Hola, me llamo Ana.", "Buenos días. Mucho gusto."] },
         { heading: "A tiny conversation", body: "¿Cómo te llamas? asks someone’s name informally. ¿Cómo estás? asks how they are. Estoy bien means I am well.", examples: ["—¿Cómo te llamas? —Me llamo Luis.", "—¿Cómo estás? —Estoy bien, gracias."] },
-      ], exercises: [
+      ], [
         { question: "Which phrase means “My name is Marta”?", choices: ["Soy bien Marta", "Me llamo Marta", "Cómo Marta"], answer: 1, explanation: "Me llamo literally means ‘I call myself’ and is the usual introduction." },
         { question: "What greeting fits the morning?", choices: ["Buenas noches", "Buenas tardes", "Buenos días"], answer: 2, explanation: "Buenos días is the standard morning greeting." },
       ]),
       languageLesson("spanish-2", "The verbs you cannot avoid", "Use ser, estar, and tener in simple statements.", [
         { heading: "Ser and estar", body: "Use ser for identity and lasting descriptions; estar for location and temporary states.", examples: ["Soy estudiante. — I am a student.", "Estoy cansada. — I am tired."] },
         { heading: "Tener", body: "Tener means to have. Spanish also uses it for age and common conditions.", examples: ["Tengo treinta años.", "Tengo hambre. — I am hungry."] },
-      ], exercises: [
+      ], [
         { question: "Complete: Yo ___ en casa. (I am at home.)", choices: ["soy", "estoy", "tengo"], answer: 1, explanation: "Location takes estar: estoy en casa." },
         { question: "How do you say “I am hungry”?", choices: ["Soy hambre", "Estoy hambre", "Tengo hambre"], answer: 2, explanation: "Spanish expresses hunger with tener: tengo hambre." },
       ]),
       languageLesson("spanish-3", "Ordering without pointing", "Order food and ask politely for what you need.", [
         { heading: "Making a request", body: "Quisiera… is a polite ‘I would like.’ Add por favor. Para mí… is another natural way to order.", examples: ["Quisiera un café, por favor.", "Para mí, la ensalada."] },
         { heading: "Useful questions", body: "Ask ¿Qué recomienda? for a recommendation and ¿Cuánto cuesta? for the price.", examples: ["¿Qué recomienda?", "La cuenta, por favor."] },
-      ], exercises: [
+      ], [
         { question: "Which is the polite way to order coffee?", choices: ["Tengo café", "Quisiera un café, por favor", "Soy café"], answer: 1, explanation: "Quisiera… por favor is polite and natural." },
         { question: "How do you ask for the bill?", choices: ["La cuenta, por favor", "¿Cómo estás?", "Mucho gusto"], answer: 0, explanation: "La cuenta means the bill or check." },
       ]),
