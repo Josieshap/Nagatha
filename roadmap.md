@@ -13,3 +13,5 @@
 - [ ] Add voice memos for pronunciation coaching in tutoring chats
 - [ ] Replace avoidance-focused wording with tutoring wording in study chats
 - [ ] Verify voice recording and tutoring wording on mobile and desktop
+- [ ] Remove duplicate Nagatha portraits and keep one beside the conversation
+- [ ] Move saved chats behind a History button
