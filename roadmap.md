@@ -9,3 +9,4 @@
 - [ ] Verify photo chat on mobile and desktop.
 - [ ] Expand all seven tutoring subjects into structured lessons and exercises.
 - [ ] Fix Nagatha’s cropped head on the “What are we pretending to avoid today?” page.
+- [ ] Add face-palm Nagatha to the page-load error screen.
