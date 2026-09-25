@@ -59,7 +59,7 @@ function ThreadPage() {
     id: row.id,
     role: row.role as "user" | "assistant",
     parts: [
-      ...row.attachments.map((attachment) => ({
+      ...(Array.isArray(row.attachments) ? row.attachments : []).map((attachment) => ({
         type: "file" as const,
         filename: attachment.name,
         mediaType: attachment.mediaType,
