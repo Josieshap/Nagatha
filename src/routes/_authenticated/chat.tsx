@@ -8,8 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { listThreads, deleteThread } from "@/lib/chat.functions";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import mascot from "@/assets/nagatha-idle.png";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -79,20 +78,22 @@ function ThreadSidebar({ onNavigate }: { onNavigate?: () => void }) {
               const active = params.threadId === thread.id;
               return (
                 <li key={thread.id} className="group relative">
-                  <Link
-                    to="/chat/$threadId"
-                    params={{ threadId: thread.id }}
-                    onClick={onNavigate}
-                    className={cn(
-                      "flex items-center gap-2 rounded-lg px-3 py-2 pr-9 text-sm transition-colors",
-                      active
-                        ? "bg-sidebar-accent font-semibold text-sidebar-accent-foreground"
-                        : "text-sidebar-foreground hover:bg-sidebar-accent/60",
-                    )}
-                  >
-                    <MessageSquare className="size-4 shrink-0 text-muted-foreground" />
-                    <span className="truncate">{thread.title}</span>
-                  </Link>
+                  <SheetClose asChild>
+                    <Link
+                      to="/chat/$threadId"
+                      params={{ threadId: thread.id }}
+                      onClick={onNavigate}
+                      className={cn(
+                        "flex items-center gap-2 rounded-lg px-3 py-2 pr-9 text-sm transition-colors",
+                        active
+                          ? "bg-sidebar-accent font-semibold text-sidebar-accent-foreground"
+                          : "text-sidebar-foreground hover:bg-sidebar-accent/60",
+                      )}
+                    >
+                      <MessageSquare className="size-4 shrink-0 text-muted-foreground" />
+                      <span className="truncate">{thread.title}</span>
+                    </Link>
+                  </SheetClose>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button
@@ -146,10 +147,7 @@ function ChatLayout() {
   return (
     <div className="flex h-dvh min-w-0 flex-col bg-background">
       <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-b bg-card/70 px-3 py-2 sm:px-5">
-        <Link to="/chat" className="flex min-w-0 items-center gap-2 font-display font-bold">
-          <img src={mascot} alt="" className="size-8 shrink-0 object-contain" width={1024} height={1024} />
-          <span className="truncate">Nagatha</span>
-        </Link>
+        <Link to="/chat" className="min-w-0 truncate font-display font-bold">Nagatha</Link>
         <div className="flex shrink-0 items-center gap-1">
           <Button asChild type="button" size="sm" variant="ghost"><Link to="/chat"><Plus />New</Link></Button>
           <Button asChild type="button" size="sm" variant="ghost"><Link to="/chat/reality-check"><Timer /><span className="hidden sm:inline">Reality check</span></Link></Button>
