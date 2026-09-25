@@ -38,7 +38,7 @@ function PlannerPage() {
     try {
       const thread = await makeThread();
       const subjectName = SUBJECTS.find((item) => item.id === subject)?.name ?? subject;
-      const prompt = `Act as my ${subjectName} tutor and create my personalized lesson plan. My goal: ${goal.trim()}. My available study time: ${time.trim()}. First, give me a realistic structured plan with milestones, a weekly rhythm, and the exact first lesson. Then begin that first lesson and wait for my answer to its first exercise. Keep the plan practical and trackable.`;
+      const prompt = `Act as my ${subjectName} tutor. My goal is: ${goal.trim()}. My available study time is: ${time.trim()}. Keep your Nagatha personality. Do not dump the whole plan at once. Ask me exactly one short question now to clarify the most important missing detail, then wait for my reply. After that, build and teach the plan progressively, one question or exercise per message. If this is Math, make every question complete and unambiguous.`;
       sessionStorage.setItem(PENDING_MESSAGE_KEY(thread.id), JSON.stringify({ text: prompt, files: [], attachments: [] }));
       void navigate({ to: "/chat/$threadId", params: { threadId: thread.id } });
     } catch {

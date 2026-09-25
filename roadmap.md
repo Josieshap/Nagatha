@@ -20,3 +20,4 @@
 - [x] Add lesson exercises and per-user progress tracking
 - [x] Add a lesson planner with subject, goal, available time, and Nagatha-generated plan
 - [ ] Make chat tutoring ask only one question at a time while preserving Nagatha’s personality
+- [ ] Rewrite Math placement questions so each is plain, complete, and unambiguous
