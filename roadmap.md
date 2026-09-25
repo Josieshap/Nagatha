@@ -22,4 +22,4 @@
 - [x] Make chat tutoring ask only one question at a time while preserving Nagatha’s personality
 - [x] Rewrite Math placement questions so each is plain, complete, and unambiguous
 - [x] Ensure tutoring answers include substantive explanations across all seven subjects
-- [ ] Fix mobile chat scrolling, portrait sizing, photo attachments, and the History list
+- [x] Fix mobile chat scrolling, portrait sizing, photo attachments, and the History list
