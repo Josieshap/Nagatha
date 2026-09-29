@@ -172,14 +172,26 @@ function NewChat() {
             ))}
           </div>
           {helpSubject && (
-            <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label={`${helpSubject} topics`}>
-              {HELP_TOPICS[helpSubject]!.map((topic) => (
-                <Button key={topic} type="button" size="sm" variant="secondary" disabled={busy}
-                  onClick={() => void startThread(`I need help with ${helpSubject} ${topic}. Teach me the most important part of it right away with a clear explanation and an example, then give me one short practice question.`)}>
-                  {topic}
+            <>
+              <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label={`${helpSubject} topics`}>
+                {HELP_TOPICS[helpSubject]!.map((topic) => (
+                  <Button key={topic} type="button" size="sm" variant="secondary" disabled={busy}
+                    onClick={() => void startThread(`I need help with ${helpSubject} ${topic}. Teach me the most important part of it right away with a clear explanation and an example, then give me one short practice question.`)}>
+                    {topic}
+                  </Button>
+                ))}
+              </div>
+              <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label={`${helpSubject} practice games`}>
+                <Button type="button" size="sm" variant="outline" disabled={busy}
+                  onClick={() => void startThread(`Quiz me with ${helpSubject} flashcards. Show one card at a time, wait for my answer, then flip it and give the next card.`)}>
+                  Flashcards
                 </Button>
-              ))}
-            </div>
+                <Button type="button" size="sm" variant="outline" disabled={busy}
+                  onClick={() => void startThread(`Let's play a ${helpSubject} guessing game. You describe something and I guess what it is.`)}>
+                  Guessing game
+                </Button>
+              </div>
+            </>
           )}
           <p className="mt-2 text-xs text-muted-foreground">Or type anything — any subject — or snap a photo of your homework. Nagatha teaches you how; she won't do it for you.</p>
         </div>
