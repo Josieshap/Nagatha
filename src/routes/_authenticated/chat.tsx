@@ -2,10 +2,11 @@ import { createFileRoute, Link, Outlet, useNavigate, useParams } from "@tanstack
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { BookOpen, History, ListChecks, LogOut, MessageSquare, Plus, Route as RouteIcon, Timer, Trash2 } from "lucide-react";
+import { BookOpen, History, ListChecks, LogOut, MessageSquare, Plus, Route as RouteIcon, Timer, Trash2, UserX } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { listThreads, deleteThread } from "@/lib/chat.functions";
+import { deleteAccount } from "@/lib/account.functions";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -40,8 +41,10 @@ function ThreadSidebar({ onNavigate }: { onNavigate?: () => void }) {
   const queryClient = useQueryClient();
   const fetchThreads = useServerFn(listThreads);
   const removeThread = useServerFn(deleteThread);
+  const removeAccount = useServerFn(deleteAccount);
   const params = useParams({ strict: false }) as { threadId?: string };
   const [email, setEmail] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     void supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email ?? null));
@@ -67,6 +70,20 @@ function ThreadSidebar({ onNavigate }: { onNavigate?: () => void }) {
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     void navigate({ to: "/auth" });
+  };
+
+  const handleDeleteAccount = async () => {
+    setDeleting(true);
+    try {
+      await removeAccount();
+      await supabase.auth.signOut();
+      queryClient.clear();
+      toast.success("Account deleted. She'll pretend she isn't hurt.");
+      void navigate({ to: "/" });
+    } catch {
+      toast.error("Couldn't delete your account. Try again in a moment.");
+      setDeleting(false);
+    }
   };
 
   return (
@@ -138,6 +155,32 @@ function ThreadSidebar({ onNavigate }: { onNavigate?: () => void }) {
           <LogOut className="size-4" />
           Sign out
         </Button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button variant="ghost" className="w-full justify-start gap-2 text-destructive hover:text-destructive">
+              <UserX className="size-4" />
+              Delete my account
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent className="max-w-sm">
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete your account?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This permanently deletes your account, every chat, photo, task and lesson score. There's no undo — not even for Nagatha.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Keep my account</AlertDialogCancel>
+              <AlertDialogAction
+                disabled={deleting}
+                onClick={() => void handleDeleteAccount()}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {deleting ? "Deleting…" : "Delete forever"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );

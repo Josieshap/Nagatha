@@ -1,3 +1,4 @@
+import { haptic, nativeShare } from "@/lib/native";
 import { useEffect, useMemo, useRef } from "react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type FileUIPart, type UIMessage } from "ai";
@@ -196,10 +197,8 @@ export function ChatWindow({
       return;
     }
     try {
-      if (navigator.share) {
-        await navigator.share({ title: "My chat with Nagatha", text: "Look how Nagatha handled me:", url });
-        return;
-      }
+      void haptic("light");
+      if (await nativeShare({ title: "My chat with Nagatha", text: "Look how Nagatha handled me:", url })) return;
       await navigator.clipboard.writeText(url);
       toast.success("Link copied. Go forth and overshare responsibly.");
     } catch (error) {

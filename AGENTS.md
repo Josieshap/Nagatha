@@ -8,3 +8,4 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+- Native-app wrapper (Capacitor) uses src/lib/native.ts bridge; web fallbacks keep the site working without it.
