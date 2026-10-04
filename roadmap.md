@@ -24,6 +24,6 @@
 - [x] Ensure tutoring answers include substantive explanations across all seven subjects
 - [x] Fix mobile chat scrolling, portrait sizing, photo attachments, and the History list
 
-- [ ] App Store reviewer demo account with sample data
-- [ ] App Store screenshots (6.7" iPhone)
-- [ ] Privacy policy page (data, chats, photos, Apple sign-in)
+- [x] App Store reviewer demo account with sample data
+- [x] App Store screenshots (6.7" iPhone)
+- [x] Privacy policy page (data, chats, photos, Apple sign-in)
