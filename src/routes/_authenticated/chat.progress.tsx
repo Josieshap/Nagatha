@@ -5,6 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { addTask, deleteTask, listTasks, setTaskDone } from "@/lib/tasks.functions";
+import { haptic } from "@/lib/native";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -156,7 +157,7 @@ function ProgressPage() {
               <Checkbox
                 checked={task.done}
                 onCheckedChange={(checked) =>
-                  toggle.mutate({ id: task.id, done: checked === true })
+                  (void haptic(checked === true ? "medium" : "light"), toggle.mutate)({ id: task.id, done: checked === true })
                 }
                 aria-label={`Mark ${task.title} as ${task.done ? "not done" : "done"}`}
               />
