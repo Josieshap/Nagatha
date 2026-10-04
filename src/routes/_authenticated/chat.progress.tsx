@@ -156,9 +156,10 @@ function ProgressPage() {
             >
               <Checkbox
                 checked={task.done}
-                onCheckedChange={(checked) =>
-                  (void haptic(checked === true ? "medium" : "light"), toggle.mutate)({ id: task.id, done: checked === true })
-                }
+                onCheckedChange={(checked) => {
+                  void haptic(checked === true ? "medium" : "light");
+                  toggle.mutate({ id: task.id, done: checked === true });
+                }}
                 aria-label={`Mark ${task.title} as ${task.done ? "not done" : "done"}`}
               />
               <span

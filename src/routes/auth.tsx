@@ -68,14 +68,14 @@ function AuthPage() {
     }
   };
 
-  const handleGoogle = async () => {
+  const handleOAuth = async (provider: "google" | "apple") => {
     setBusy(true);
     setError(null);
-    const result = await lovable.auth.signInWithOAuth("google", {
+    const result = await lovable.auth.signInWithOAuth(provider, {
       redirect_uri: window.location.origin,
     });
     if (result.error) {
-      setError(result.error.message ?? "Google sign-in failed");
+      setError(result.error.message ?? `${provider === "apple" ? "Apple" : "Google"} sign-in failed`);
       setBusy(false);
       return;
     }
@@ -143,15 +143,25 @@ function AuthPage() {
             <div className="h-px flex-1 bg-border" />
           </div>
 
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full"
-            disabled={busy}
-            onClick={() => void handleGoogle()}
-          >
-            Continue with Google
-          </Button>
+          <div className="flex flex-col gap-2">
+            <Button
+              type="button"
+              className="w-full bg-foreground text-background hover:bg-foreground/90"
+              disabled={busy}
+              onClick={() => void handleOAuth("apple")}
+            >
+              Continue with Apple
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              disabled={busy}
+              onClick={() => void handleOAuth("google")}
+            >
+              Continue with Google
+            </Button>
+          </div>
 
           <button
             type="button"
