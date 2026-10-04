@@ -1,3 +1,4 @@
+import { haptic, nativeShare } from "@/lib/native";
 import { useEffect, useMemo, useRef } from "react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type FileUIPart, type UIMessage } from "ai";
