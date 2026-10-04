@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
@@ -175,6 +175,11 @@ function AuthPage() {
             {mode === "signin" ? "New here? Create an account" : "Already have an account? Sign in"}
           </button>
         </div>
+        <p className="mt-6 text-center text-xs text-muted-foreground">
+          <Link to="/privacy" className="underline underline-offset-4 hover:text-foreground">
+            Privacy policy
+          </Link>
+        </p>
       </div>
     </div>
   );

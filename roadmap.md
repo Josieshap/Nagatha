@@ -23,3 +23,7 @@
 - [x] Rewrite Math placement questions so each is plain, complete, and unambiguous
 - [x] Ensure tutoring answers include substantive explanations across all seven subjects
 - [x] Fix mobile chat scrolling, portrait sizing, photo attachments, and the History list
+
+- [x] App Store reviewer demo account with sample data
+- [x] App Store screenshots (6.7" iPhone)
+- [x] Privacy policy page (data, chats, photos, Apple sign-in)
