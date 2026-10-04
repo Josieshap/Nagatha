@@ -21,7 +21,6 @@ import { Route as AuthenticatedChatLessonsRouteImport } from './routes/_authenti
 import { Route as AuthenticatedChatPlannerRouteImport } from './routes/_authenticated/chat.planner'
 import { Route as AuthenticatedChatProgressRouteImport } from './routes/_authenticated/chat.progress'
 import { Route as AuthenticatedChatRealityCheckRouteImport } from './routes/_authenticated/chat.reality-check'
-import { Route as ApiPublicSeedReviewerRouteImport } from './routes/api/public/seed-reviewer'
 import { Route as AuthenticatedChatCourseSubjectIdRouteImport } from './routes/_authenticated/chat.course.$subjectId'
 import { Route as AuthenticatedChatLessonSubjectIdLessonIdRouteImport } from './routes/_authenticated/chat.lesson.$subjectId.$lessonId'
 
@@ -89,11 +88,6 @@ const AuthenticatedChatRealityCheckRoute =
     path: '/reality-check',
     getParentRoute: () => AuthenticatedChatRoute,
   } as any)
-const ApiPublicSeedReviewerRoute = ApiPublicSeedReviewerRouteImport.update({
-  id: '/api/public/seed-reviewer',
-  path: '/api/public/seed-reviewer',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthenticatedChatCourseSubjectIdRoute =
   AuthenticatedChatCourseSubjectIdRouteImport.update({
     id: '/course/$subjectId',
@@ -118,7 +112,6 @@ export interface FileRoutesByFullPath {
   '/chat/planner': typeof AuthenticatedChatPlannerRoute
   '/chat/progress': typeof AuthenticatedChatProgressRoute
   '/chat/reality-check': typeof AuthenticatedChatRealityCheckRoute
-  '/api/public/seed-reviewer': typeof ApiPublicSeedReviewerRoute
   '/chat/': typeof AuthenticatedChatIndexRoute
   '/chat/course/$subjectId': typeof AuthenticatedChatCourseSubjectIdRoute
   '/chat/lesson/$subjectId/$lessonId': typeof AuthenticatedChatLessonSubjectIdLessonIdRoute
@@ -133,7 +126,6 @@ export interface FileRoutesByTo {
   '/chat/planner': typeof AuthenticatedChatPlannerRoute
   '/chat/progress': typeof AuthenticatedChatProgressRoute
   '/chat/reality-check': typeof AuthenticatedChatRealityCheckRoute
-  '/api/public/seed-reviewer': typeof ApiPublicSeedReviewerRoute
   '/chat': typeof AuthenticatedChatIndexRoute
   '/chat/course/$subjectId': typeof AuthenticatedChatCourseSubjectIdRoute
   '/chat/lesson/$subjectId/$lessonId': typeof AuthenticatedChatLessonSubjectIdLessonIdRoute
@@ -151,7 +143,6 @@ export interface FileRoutesById {
   '/_authenticated/chat/planner': typeof AuthenticatedChatPlannerRoute
   '/_authenticated/chat/progress': typeof AuthenticatedChatProgressRoute
   '/_authenticated/chat/reality-check': typeof AuthenticatedChatRealityCheckRoute
-  '/api/public/seed-reviewer': typeof ApiPublicSeedReviewerRoute
   '/_authenticated/chat/': typeof AuthenticatedChatIndexRoute
   '/_authenticated/chat/course/$subjectId': typeof AuthenticatedChatCourseSubjectIdRoute
   '/_authenticated/chat/lesson/$subjectId/$lessonId': typeof AuthenticatedChatLessonSubjectIdLessonIdRoute
@@ -169,7 +160,6 @@ export interface FileRouteTypes {
     | '/chat/planner'
     | '/chat/progress'
     | '/chat/reality-check'
-    | '/api/public/seed-reviewer'
     | '/chat/'
     | '/chat/course/$subjectId'
     | '/chat/lesson/$subjectId/$lessonId'
@@ -184,7 +174,6 @@ export interface FileRouteTypes {
     | '/chat/planner'
     | '/chat/progress'
     | '/chat/reality-check'
-    | '/api/public/seed-reviewer'
     | '/chat'
     | '/chat/course/$subjectId'
     | '/chat/lesson/$subjectId/$lessonId'
@@ -201,7 +190,6 @@ export interface FileRouteTypes {
     | '/_authenticated/chat/planner'
     | '/_authenticated/chat/progress'
     | '/_authenticated/chat/reality-check'
-    | '/api/public/seed-reviewer'
     | '/_authenticated/chat/'
     | '/_authenticated/chat/course/$subjectId'
     | '/_authenticated/chat/lesson/$subjectId/$lessonId'
@@ -213,7 +201,6 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   ApiChatRoute: typeof ApiChatRoute
   ShareTokenRoute: typeof ShareTokenRoute
-  ApiPublicSeedReviewerRoute: typeof ApiPublicSeedReviewerRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -302,13 +289,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedChatRealityCheckRouteImport
       parentRoute: typeof AuthenticatedChatRoute
     }
-    '/api/public/seed-reviewer': {
-      id: '/api/public/seed-reviewer'
-      path: '/api/public/seed-reviewer'
-      fullPath: '/api/public/seed-reviewer'
-      preLoaderRoute: typeof ApiPublicSeedReviewerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_authenticated/chat/course/$subjectId': {
       id: '/_authenticated/chat/course/$subjectId'
       path: '/course/$subjectId'
@@ -369,7 +349,6 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   ApiChatRoute: ApiChatRoute,
   ShareTokenRoute: ShareTokenRoute,
-  ApiPublicSeedReviewerRoute: ApiPublicSeedReviewerRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
