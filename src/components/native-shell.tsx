@@ -8,6 +8,7 @@ export function NativeShell() {
     let disposed = false;
     let cleanup: (() => void) | undefined;
     void listenForNagTaps((nag) => {
+      sessionStorage.setItem("nagatha:pending-nag", nag);
       void navigate({ to: "/chat", search: { nag } });
     }).then((remove) => {
       if (disposed) remove();

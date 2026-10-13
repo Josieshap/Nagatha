@@ -1,6 +1,6 @@
 // Thin bridge for phone features. Uses the native app shell's plugins when Nagatha
 // runs inside a wrapped iOS/Android app, and falls back to web APIs otherwise.
-import { LocalNotifications } from "@capacitor/local-notifications";
+import { LocalNotifications, type LocalNotificationSchema } from "@capacitor/local-notifications";
 import { NAG_IDS, nagRequestForNotification } from "./nags";
 
 type CapacitorGlobal = {
@@ -119,14 +119,13 @@ export async function setDailyReminder(hour: number | null, mode: ReminderMode =
     "Two minutes. That's all I'm asking. Tap for a plan you can actually start.",
     "The couch will still be there. Tap here and let's make starting less painful.",
   ];
-  await ln.schedule({
-    notifications: [
+  const notifications: LocalNotificationSchema[] = [
       {
         id: REMINDER_ID,
         title: "Your daily nag",
-        body: lines[new Date().getDate() % lines.length],
+        body: lines[new Date().getDate() % lines.length] ?? lines[0] ?? "Tap here for a helpful nag.",
         schedule: { on: { hour, minute: 0 }, repeats: true, allowWhileIdle: true },
-        ...(mode === "nuke" ? { sound: "default" } : { sound: undefined }),
+        ...(mode === "nuke" ? { sound: "default" } : {}),
       },
       ...(mode === "nuke"
         ? [
@@ -136,8 +135,8 @@ export async function setDailyReminder(hour: number | null, mode: ReminderMode =
               schedule: { on: { hour, minute: 20 }, repeats: true, allowWhileIdle: true } },
           ]
         : []),
-    ],
-  });
+    ];
+  await ln.schedule({ notifications });
   return true;
 }
 

@@ -26,9 +26,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { nagPrompt } from "@/lib/nags";
 
 export const Route = createFileRoute("/_authenticated/chat/")({
-  validateSearch: (search: Record<string, unknown>): { nag?: string } => ({
-    nag: typeof search.nag === "string" && nagPrompt(search.nag) ? search.nag : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): { nag?: string } => {
+    const nag = search["nag"];
+    return typeof nag === "string" && nagPrompt(nag) ? { nag } : {};
+  },
   head: () => ({
     meta: [
       { title: "New chat — Nagatha" },
@@ -123,9 +124,11 @@ function NewChat() {
   }, [busy, makeThread, navigate]);
 
   useEffect(() => {
-    const prompt = nagPrompt(nag);
-    if (!prompt || !nag || handledNag.current === nag || busy) return;
-    handledNag.current = nag;
+    const request = nag ?? sessionStorage.getItem("nagatha:pending-nag") ?? undefined;
+    const prompt = nagPrompt(request);
+    if (!prompt || !request || handledNag.current === request || busy) return;
+    handledNag.current = request;
+    sessionStorage.removeItem("nagatha:pending-nag");
     void startThread(prompt);
   }, [nag, busy, startThread]);
 
