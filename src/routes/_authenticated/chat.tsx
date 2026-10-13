@@ -1,8 +1,8 @@
-import { createFileRoute, Link, Outlet, useNavigate, useParams } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useNavigate, useParams, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { BookOpen, History, ListChecks, LogOut, MessageSquare, Plus, Route as RouteIcon, Timer, Trash2, UserX } from "lucide-react";
+import { BookOpen, History, ListChecks, LogOut, Menu, MessageSquare, Plus, Route as RouteIcon, Timer, Trash2, UserX } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { listThreads, deleteThread } from "@/lib/chat.functions";
@@ -189,24 +189,49 @@ function ThreadSidebar({ onNavigate }: { onNavigate?: () => void }) {
 }
 
 function ChatLayout() {
+  const pathname = useRouterState({ select: (router) => router.location.pathname });
+  const [menuOpen, setMenuOpen] = useState(false);
+  const navigation = [
+    { to: "/chat", label: "New chat", icon: Plus },
+    { to: "/chat/reality-check", label: "Reality check", icon: Timer },
+    { to: "/chat/progress", label: "Progress", icon: ListChecks },
+    { to: "/chat/lessons", label: "Lessons", icon: BookOpen },
+    { to: "/chat/planner", label: "Lesson plan", icon: RouteIcon },
+  ] as const;
+  const currentPage = pathname.startsWith("/chat/course/") || pathname.startsWith("/chat/lesson/")
+    ? "Lessons"
+    : navigation.find((item) => item.to !== "/chat" && item.to === pathname)?.label ?? "Chat";
+
   return (
-    <div className="flex h-dvh min-w-0 flex-col bg-background">
-      <header className="grid shrink-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-2 overflow-hidden border-b bg-card/70 px-2 py-2 sm:gap-3 sm:px-5">
-        <Link to="/chat" className="min-w-0 truncate font-display font-bold">Nagatha</Link>
-        <div className="flex shrink-0 items-center gap-1">
-          <Button asChild type="button" size="sm" variant="ghost"><Link to="/chat"><Plus />New</Link></Button>
-          <Button asChild type="button" size="sm" variant="ghost"><Link to="/chat/reality-check"><Timer /><span className="hidden sm:inline">Reality check</span></Link></Button>
-          <Button asChild type="button" size="sm" variant="ghost"><Link to="/chat/progress"><ListChecks /><span className="hidden sm:inline">Progress</span></Link></Button>
-          <Button asChild type="button" size="sm" variant="ghost"><Link to="/chat/lessons"><BookOpen /><span className="hidden sm:inline">Lessons</span></Link></Button>
-          <Button asChild type="button" size="sm" variant="ghost"><Link to="/chat/planner"><RouteIcon /><span className="hidden sm:inline">Plan</span></Link></Button>
-          <Sheet>
-            <SheetTrigger asChild><Button type="button" size="sm" variant="outline"><History />History</Button></SheetTrigger>
-            <SheetContent className="flex h-dvh min-h-0 w-[min(90vw,24rem)] flex-col overflow-hidden p-5">
-              <SheetHeader className="pr-8"><SheetTitle className="font-display">Chat history</SheetTitle><SheetDescription>Pick up where you left off.</SheetDescription></SheetHeader>
-              <ThreadSidebar />
+    <div className="flex h-dvh min-w-0 flex-col overflow-hidden bg-background pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
+      <header className="grid min-h-16 shrink-0 grid-cols-[2.75rem_minmax(0,1fr)_2.75rem] items-center gap-3 border-b bg-card/70 px-4 py-2">
+          <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+            <SheetTrigger asChild>
+              <Button type="button" variant="ghost" size="icon" className="size-11" aria-label="Open navigation menu"><Menu className="size-6" /></Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="flex h-dvh min-h-0 w-[min(90vw,24rem)] flex-col gap-0 overflow-hidden px-4 pt-[max(1.5rem,env(safe-area-inset-top))] pb-[max(0.75rem,env(safe-area-inset-bottom))] [&>button]:top-[max(1rem,env(safe-area-inset-top))] [&>button]:flex [&>button]:size-11 [&>button]:items-center [&>button]:justify-center">
+              <SheetHeader className="px-3 pr-12 text-left"><SheetTitle className="font-display text-2xl">Nagatha</SheetTitle><SheetDescription className="sr-only">Navigation, saved chats, and account settings.</SheetDescription></SheetHeader>
+              <nav aria-label="Main navigation" className="mt-5 flex shrink-0 flex-col gap-1 border-b border-sidebar-border pb-4">
+                {navigation.map((item) => {
+                  const active = item.to === "/chat/lessons"
+                    ? currentPage === "Lessons"
+                    : pathname === item.to || (item.to === "/chat" && pathname === "/chat/");
+                  return (
+                    <Button key={item.to} asChild variant="ghost" className={cn("h-11 w-full justify-start gap-3 px-3 text-base", active && "bg-sidebar-accent text-sidebar-accent-foreground")}>
+                      <Link to={item.to} aria-current={active ? "page" : undefined} onClick={() => setMenuOpen(false)}><item.icon className="size-5" />{item.label}</Link>
+                    </Button>
+                  );
+                })}
+              </nav>
+              <h2 className="mt-4 flex shrink-0 items-center gap-2 px-3 text-sm font-semibold text-muted-foreground"><History className="size-4" />Chat history</h2>
+              <div className="min-h-0 flex-1"><ThreadSidebar onNavigate={() => setMenuOpen(false)} /></div>
             </SheetContent>
           </Sheet>
+        <div className="min-w-0 text-center">
+          <Link to="/chat" className="block truncate font-display text-xl font-bold">Nagatha</Link>
+          <p className="truncate text-xs text-muted-foreground">{currentPage}</p>
         </div>
+        <Button asChild type="button" size="icon" variant="ghost" className="size-11"><Link to="/chat" aria-label="New chat" title="New chat"><Plus className="size-5" /></Link></Button>
       </header>
       <main className="flex min-h-0 min-w-0 flex-1"><Outlet /></main>
     </div>
