@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { BellRing, Zap } from "lucide-react";
+import { BellRing, Zap, Heart } from "lucide-react";
+import { NAG_THEME_KEY, parseNagTheme, type NagTheme } from "@/lib/nags";
 import { toast } from "sonner";
 import {
   isNativeApp,
@@ -16,14 +17,25 @@ export function ReminderToggle() {
   const [native, setNative] = useState(false);
   const [hour, setHour] = useState<string>("off");
   const [mode, setMode] = useState<ReminderMode>("gentle");
+  const [theme, setTheme] = useState<NagTheme>("productivity");
 
   useEffect(() => {
     setNative(isNativeApp());
     setHour(localStorage.getItem(REMINDER_KEY) ?? "off");
     setMode((localStorage.getItem(REMINDER_MODE_KEY) as ReminderMode) ?? "gentle");
+    setTheme(parseNagTheme(localStorage.getItem(NAG_THEME_KEY)));
   }, []);
 
-  if (!native) return null;
+  async function changeTheme(value: string) {
+    const next = parseNagTheme(value);
+    if (native && hour !== "off" && !(await setDailyReminder(Number(hour), mode, next))) {
+      toast.error("Couldn't update your nags. Check notification permissions and try again.");
+      return;
+    }
+    setTheme(next);
+    localStorage.setItem(NAG_THEME_KEY, next);
+    toast.success("Nag theme saved.");
+  }
 
   async function apply(nextHour: string, nextMode: ReminderMode) {
     const ok = await setDailyReminder(nextHour === "off" ? null : Number(nextHour), nextMode);
@@ -59,6 +71,16 @@ export function ReminderToggle() {
   return (
     <div className="w-full">
       <label className="flex w-full items-center gap-2 px-4 py-2 text-sm text-muted-foreground">
+        <Heart className="size-4" />
+        <span className="flex-1">Nag theme</span>
+        <select className="rounded-md border bg-background px-2 py-1 text-sm text-foreground" value={theme} onChange={(e) => void changeTheme(e.target.value)} aria-label="Nag theme">
+          <option value="productivity">Productivity</option>
+          <option value="anxiety">Anxiety</option>
+          <option value="sleep">Sleep</option>
+        </select>
+      </label>
+      {native && <>
+      <label className="flex w-full items-center gap-2 px-4 py-2 text-sm text-muted-foreground">
         <BellRing className="size-4" />
         <span className="flex-1">Daily nag</span>
         <select
@@ -88,6 +110,7 @@ export function ReminderToggle() {
            <option value="nuke">Persistent nag</option>
         </select>
       </label>
+      </>}
     </div>
   );
 }

@@ -1,7 +1,7 @@
 // Thin bridge for phone features. Uses the native app shell's plugins when Nagatha
 // runs inside a wrapped iOS/Android app, and falls back to web APIs otherwise.
 import { LocalNotifications, type LocalNotificationSchema } from "@capacitor/local-notifications";
-import { NAG_IDS, nagRequestForNotification } from "./nags";
+import { NAG_IDS, NAG_NOTIFICATION_TEXT, NAG_THEME_KEY, parseNagTheme, nagRequestForNotification, type NagTheme } from "./nags";
 
 type CapacitorGlobal = {
   isNativePlatform?: () => boolean;
@@ -107,31 +107,26 @@ export async function nukeBuzz(): Promise<void> {
   navigator.vibrate?.([400, 150, 400, 150, 400]);
 }
 
-export async function setDailyReminder(hour: number | null, mode: ReminderMode = "gentle"): Promise<boolean> {
+export async function setDailyReminder(hour: number | null, mode: ReminderMode = "gentle", theme: NagTheme = parseNagTheme(typeof localStorage === "undefined" ? null : localStorage.getItem(NAG_THEME_KEY))): Promise<boolean> {
   if (!isNativeApp()) return false;
   const ln = LocalNotifications;
   await ln.cancel({ notifications: NAG_IDS.map((id) => ({ id })) });
   if (hour === null) return true;
   const perm = await ln.requestPermissions();
   if (perm?.display !== "granted") return false;
-  const lines = [
-    "Your to-do list called. Tap here; we'll pick one tiny first step.",
-    "Two minutes. That's all I'm asking. Tap for a plan you can actually start.",
-    "The couch will still be there. Tap here and let's make starting less painful.",
-  ];
   const notifications: LocalNotificationSchema[] = [
       {
         id: REMINDER_ID,
         title: "Your daily nag",
-        body: lines[new Date().getDate() % lines.length] ?? lines[0] ?? "Tap here for a helpful nag.",
+        body: NAG_NOTIFICATION_TEXT[theme],
         schedule: { on: { hour, minute: 0 }, repeats: true, allowWhileIdle: true },
         ...(mode === "nuke" ? { sound: "default" } : {}),
       },
       ...(mode === "nuke"
         ? [
-             { id: REMINDER_ID + 1, title: "A nag, not a lecture", body: "Still stuck? Tap here. We'll shrink the task, not your dignity.", sound: "default",
+             { id: REMINDER_ID + 1, title: "A nag, not a lecture", body: NAG_NOTIFICATION_TEXT[theme], sound: "default",
               schedule: { on: { hour, minute: 10 }, repeats: true, allowWhileIdle: true } },
-             { id: REMINDER_ID + 2, title: "One tiny step", body: "No grand life overhaul. Tap here and we'll start with two minutes.", sound: "default",
+             { id: REMINDER_ID + 2, title: "One tiny step", body: NAG_NOTIFICATION_TEXT[theme], sound: "default",
               schedule: { on: { hour, minute: 20 }, repeats: true, allowWhileIdle: true } },
           ]
         : []),

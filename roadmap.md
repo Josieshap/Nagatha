@@ -29,3 +29,4 @@
 - [x] Privacy policy page (data, chats, photos, Apple sign-in)
 - [x] Replace crowded app header with a readable hamburger menu and verify navigation on phone and desktop.
 - [x] Rename nuke reminders to nags and make notification taps open useful coaching; verified saved chat and a concrete AI reply (phone delivery still needs a real-device check).
+- [ ] Add productivity, anxiety, and sleep nag themes with a choice before the reply.
