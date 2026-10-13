@@ -1,5 +1,7 @@
 // Thin bridge for phone features. Uses the native app shell's plugins when Nagatha
 // runs inside a wrapped iOS/Android app, and falls back to web APIs otherwise.
+import { LocalNotifications } from "@capacitor/local-notifications";
+import { NAG_IDS, nagRequestForNotification } from "./nags";
 
 type CapacitorGlobal = {
   isNativePlatform?: () => boolean;
@@ -106,37 +108,50 @@ export async function nukeBuzz(): Promise<void> {
 }
 
 export async function setDailyReminder(hour: number | null, mode: ReminderMode = "gentle"): Promise<boolean> {
-  const ln = plugin("LocalNotifications");
-  if (!ln) return false;
-  await ln["cancel"]?.({ notifications: [{ id: REMINDER_ID }, { id: REMINDER_ID + 1 }, { id: REMINDER_ID + 2 }] });
+  if (!isNativeApp()) return false;
+  const ln = LocalNotifications;
+  await ln.cancel({ notifications: NAG_IDS.map((id) => ({ id })) });
   if (hour === null) return true;
-  const perm = (await ln["requestPermissions"]?.()) as { display?: string } | undefined;
+  const perm = await ln.requestPermissions();
   if (perm?.display !== "granted") return false;
   const lines = [
-    "Your to-do list called. It's lonely.",
-    "Five minutes. That's all I'm asking. Then we'll see.",
-    "The couch will still be there later. Get up.",
+    "Your to-do list called. Tap here; we'll pick one tiny first step.",
+    "Two minutes. That's all I'm asking. Tap for a plan you can actually start.",
+    "The couch will still be there. Tap here and let's make starting less painful.",
   ];
-  await ln["schedule"]?.({
+  await ln.schedule({
     notifications: [
       {
         id: REMINDER_ID,
-        title: "Nagatha",
+        title: "Your daily nag",
         body: lines[new Date().getDate() % lines.length],
         schedule: { on: { hour, minute: 0 }, repeats: true, allowWhileIdle: true },
-        ...(mode === "nuke" ? { sound: "default" } : { silent: true }),
+        ...(mode === "nuke" ? { sound: "default" } : { sound: undefined }),
       },
       ...(mode === "nuke"
         ? [
-            { id: REMINDER_ID + 1, title: "Nagatha", body: "Still waiting. I can do this all day.", sound: "default",
+             { id: REMINDER_ID + 1, title: "A nag, not a lecture", body: "Still stuck? Tap here. We'll shrink the task, not your dignity.", sound: "default",
               schedule: { on: { hour, minute: 10 }, repeats: true, allowWhileIdle: true } },
-            { id: REMINDER_ID + 2, title: "Nagatha", body: "Final warning. Up. Now.", sound: "default",
+             { id: REMINDER_ID + 2, title: "One tiny step", body: "No grand life overhaul. Tap here and we'll start with two minutes.", sound: "default",
               schedule: { on: { hour, minute: 20 }, repeats: true, allowWhileIdle: true } },
           ]
         : []),
     ],
   });
   return true;
+}
+
+/** Registers early so notification taps also work when launching the app. */
+export async function listenForNagTaps(onNag: (request: string) => void): Promise<() => void> {
+  if (!isNativeApp()) return () => {};
+  const listener = await LocalNotifications.addListener("localNotificationActionPerformed", (action) => {
+    const request = nagRequestForNotification(action.notification.id);
+    if (!request) return;
+    onNag(request);
+    // Clear displayed nags once opened; daily schedules remain enabled.
+    void LocalNotifications.removeDeliveredNotificationsById({ ids: NAG_IDS }).catch(() => {});
+  });
+  return () => { void listener.remove(); };
 }
 
 /** Styles the native status bar and hides the launch screen once the web app is ready. */

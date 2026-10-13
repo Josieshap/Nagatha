@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Briefcase, BookOpen, Dumbbell, Flame, Home, Route as RouteIcon, Timer } from "lucide-react";
@@ -23,8 +23,12 @@ import { Attachment, AttachmentPreview, AttachmentRemove, Attachments } from "@/
 import mascot from "@/assets/nagatha-idle.png";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { nagPrompt } from "@/lib/nags";
 
 export const Route = createFileRoute("/_authenticated/chat/")({
+  validateSearch: (search: Record<string, unknown>): { nag?: string } => ({
+    nag: typeof search.nag === "string" && nagPrompt(search.nag) ? search.nag : undefined,
+  }),
   head: () => ({
     meta: [
       { title: "New chat — Nagatha" },
@@ -78,12 +82,14 @@ function PhotoPreviews() {
 }
 
 function NewChat() {
+  const { nag } = Route.useSearch();
+  const handledNag = useRef<string | undefined>(undefined);
   const navigate = useNavigate();
   const makeThread = useServerFn(createThread);
   const [busy, setBusy] = useState(false);
   const [helpSubject, setHelpSubject] = useState<string | null>(null);
 
-  const startThread = async (text: string, files: PromptInputMessage["files"] = []) => {
+  const startThread = useCallback(async (text: string, files: PromptInputMessage["files"] = []) => {
     if (busy || (!text.trim() && files.length === 0)) return;
     setBusy(true);
     try {
@@ -114,7 +120,14 @@ function NewChat() {
       toast.error("Couldn't start a chat. Even Nagatha needs a coffee break sometimes.");
       setBusy(false);
     }
-  };
+  }, [busy, makeThread, navigate]);
+
+  useEffect(() => {
+    const prompt = nagPrompt(nag);
+    if (!prompt || !nag || handledNag.current === nag || busy) return;
+    handledNag.current = nag;
+    void startThread(prompt);
+  }, [nag, busy, startThread]);
 
   const handleSubmit = (message: PromptInputMessage) => {
     return startThread(message.text, message.files);
@@ -174,7 +187,7 @@ function NewChat() {
           {helpSubject && (
             <>
               <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label={`${helpSubject} topics`}>
-                {HELP_TOPICS[helpSubject]!.map((topic) => (
+                 {HELP_TOPICS[helpSubject]?.map((topic) => (
                   <Button key={topic} type="button" size="sm" variant="secondary" disabled={busy}
                     onClick={() => void startThread(`I need help with ${helpSubject} ${topic}. Teach me the most important part of it right away with a clear explanation and an example, then give me one short practice question.`)}>
                     {topic}

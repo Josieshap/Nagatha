@@ -28,3 +28,4 @@
 - [x] App Store screenshots (6.7" iPhone)
 - [x] Privacy policy page (data, chats, photos, Apple sign-in)
 - [x] Replace crowded app header with a readable hamburger menu and verify navigation on phone and desktop.
+- [ ] Rename nuke reminders to nags and make notification taps open useful coaching.
