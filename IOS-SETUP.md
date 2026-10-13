@@ -86,3 +86,14 @@ After `git pull` + `npm install`, run `npx cap sync ios`. Then in Xcode open
 Features Apple reviewers will see: native camera, daily local reminder
 notifications (History panel → "Daily nag"), haptics, native share sheet,
 Sign in with Apple, in-app account deletion, launch screen, offline screen.
+
+## App icon and launch screen
+
+The `assets/` folder holds the app icon (1024×1024, no transparency, as Apple
+requires) and launch screen images. To install them into the Xcode project, run
+in the nagatha folder:
+
+```sh
+npx @capacitor/assets generate --ios
+npx cap sync ios
+```
