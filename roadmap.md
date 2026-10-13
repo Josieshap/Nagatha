@@ -27,3 +27,4 @@
 - [x] App Store reviewer demo account with sample data
 - [x] App Store screenshots (6.7" iPhone)
 - [x] Privacy policy page (data, chats, photos, Apple sign-in)
+- [x] Replace crowded app header with a readable hamburger menu and verify navigation on phone and desktop.
