@@ -1,10 +1,10 @@
-import { haptic, nativeShare } from "@/lib/native";
+import { haptic, nativeShare, takePhoto } from "@/lib/native";
 import { useEffect, useMemo, useRef } from "react";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type FileUIPart, type UIMessage } from "ai";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Share2, Trash2 } from "lucide-react";
+import { Camera, Share2, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
 import { createShareLink } from "@/lib/chat.functions";
@@ -62,6 +62,28 @@ function textOf(message: UIMessage): string {
     .filter((part) => part.type === "text")
     .map((part) => part.text)
     .join("");
+}
+
+function CameraButton() {
+  const attachments = usePromptInputAttachments();
+  return (
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon"
+      className="size-8"
+      aria-label="Take a photo of your work"
+      onClick={async () => {
+        const file = await takePhoto();
+        if (file) {
+          void haptic("light");
+          attachments.add([file]);
+        }
+      }}
+    >
+      <Camera className="size-4" />
+    </Button>
+  );
 }
 
 function PhotoPreviews() {
@@ -341,6 +363,7 @@ export function ChatWindow({
                     <PromptInputActionAddAttachments label="Add photos" />
                   </PromptInputActionMenuContent>
                 </PromptInputActionMenu>
+                <CameraButton />
                 <span className="hidden text-xs text-muted-foreground sm:inline">Add a reference photo</span>
               </PromptInputTools>
               <PromptInputSubmit status={status} disabled={isLoading} />
