@@ -81,7 +81,7 @@ const SECTIONS: { h: string; p: string[] }[] = [
     h: "Changes and contact",
     p: [
       "If this policy changes we will update this page and the date below.",
-      "Questions or deletion requests: privacy@nagatha.app.",
+      "Questions or deletion requests: forkyeahbaby@gmail.com.",
     ],
   },
 ];
@@ -95,7 +95,7 @@ function PrivacyPage() {
           <span className="font-display text-xl font-bold">Nagatha</span>
         </Link>
         <h1 className="font-display mt-8 text-4xl font-bold">Privacy Policy</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Last updated October 4, 2026</p>
+        <p className="mt-2 text-sm text-muted-foreground">Last updated October 13, 2026</p>
         <p className="mt-6">
           Nagatha is nosy about your to-do list, not your personal life. Here's exactly what we keep
           and why.
@@ -110,6 +110,10 @@ function PrivacyPage() {
             ))}
           </section>
         ))}
+        <footer className="mt-10 border-t border-border pt-6 text-sm text-muted-foreground">
+          <Link to="/support" className="underline underline-offset-4">Contact support</Link>
+          <p className="mt-3">© 2026 Nagatha. All rights reserved.</p>
+        </footer>
       </article>
     </div>
   );

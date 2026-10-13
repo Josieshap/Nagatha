@@ -15,3 +15,4 @@
 - Nag themes and coaching prompts are centralized in src/lib/nags.ts; notification taps show a theme confirmation before starting a conversation, and the local preference also determines notification wording.
 - Capacitor shell loads the live published site (`server.url` in capacitor.config.ts), not a bundled SPA build; `capacitor-www/` is only a fallback page. Why: the TanStack Start build targets Cloudflare SSR, so there is no static bundle to embed, and site updates then need no new app build.
 - The iOS `ios/` folder is generated on a Mac with `npx cap add ios` (see IOS-SETUP.md); never commit hand-made iOS stubs from the sandbox.
+- Support and privacy pages are public leaf routes with their own metadata, so App Store visitors can access contact information without signing in.
