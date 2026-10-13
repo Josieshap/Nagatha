@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { exerciseReaction, lessonAside } from "@/lib/lesson-voice";
 
 export const Route = createFileRoute("/_authenticated/chat/lesson/$subjectId/$lessonId")({
   beforeLoad: ({ params }) => { if (!getLesson(params.subjectId, params.lessonId)) throw notFound(); },
@@ -58,7 +59,7 @@ function LessonPage() {
           <p className="mt-2 text-muted-foreground">{lesson.objective}</p>
         </header>
         <div className="mt-7 space-y-8">
-          {lesson.sections.map((section) => <section key={section.heading}><h2 className="font-display text-xl font-bold">{section.heading}</h2><p className="mt-2 leading-7">{section.body}</p><div className="mt-3 space-y-2 border-l-4 border-primary/40 pl-4">{section.examples.map((example) => <p key={example} className="text-sm font-medium">{example}</p>)}</div></section>)}
+          {lesson.sections.map((section, index) => <section key={section.heading}><h2 className="font-display text-xl font-bold">{section.heading}</h2><p className="mt-2 text-sm italic text-muted-foreground">{lessonAside(subject.id, index)}</p><p className="mt-2 leading-7">{section.body}</p><div className="mt-3 space-y-2 border-l-4 border-primary/40 pl-4">{section.examples.map((example) => <p key={example} className="text-sm font-medium">{example}</p>)}</div></section>)}
         </div>
         <section className="mt-10 border-t pt-8">
           <h2 className="font-display text-2xl font-bold">Exercises</h2>
@@ -67,7 +68,7 @@ function LessonPage() {
             {lesson.exercises.map((exercise, index) => {
               const selected = Number(answers[index]);
               const correct = selected === exercise.answer;
-              return <fieldset key={exercise.question}><legend className="font-semibold">{index + 1}. {exercise.question}</legend><RadioGroup value={answers[index] ?? null} onValueChange={(value) => { setAnswers((old) => ({ ...old, [index]: value })); setChecked(false); }} className="mt-3 gap-2">{exercise.choices.map((choice, choiceIndex) => <div key={choice} className={cn("flex items-center gap-3 rounded-md border bg-card/70 p-3", checked && choiceIndex === exercise.answer && "border-primary bg-accent/50", checked && selected === choiceIndex && !correct && "border-destructive")}><RadioGroupItem value={String(choiceIndex)} id={`q${index}-${choiceIndex}`} /><Label htmlFor={`q${index}-${choiceIndex}`} className="flex-1 cursor-pointer">{choice}</Label></div>)}</RadioGroup>{checked && <div className={cn("mt-3 flex gap-2 rounded-md p-3 text-sm", correct ? "bg-accent/60" : "bg-destructive/10")} >{correct ? <CheckCircle2 className="size-5 shrink-0 text-primary" /> : <CircleAlert className="size-5 shrink-0 text-destructive" />}<span>{exercise.explanation}</span></div>}</fieldset>;
+              return <fieldset key={exercise.question}><legend className="font-semibold">{index + 1}. {exercise.question}</legend><RadioGroup value={answers[index] ?? null} onValueChange={(value) => { setAnswers((old) => ({ ...old, [index]: value })); setChecked(false); }} className="mt-3 gap-2">{exercise.choices.map((choice, choiceIndex) => <div key={choice} className={cn("flex items-center gap-3 rounded-md border bg-card/70 p-3", checked && choiceIndex === exercise.answer && "border-primary bg-accent/50", checked && selected === choiceIndex && !correct && "border-destructive")}><RadioGroupItem value={String(choiceIndex)} id={`q${index}-${choiceIndex}`} /><Label htmlFor={`q${index}-${choiceIndex}`} className="flex-1 cursor-pointer">{choice}</Label></div>)}</RadioGroup>{checked && <div className={cn("mt-3 flex gap-2 rounded-md p-3 text-sm", correct ? "bg-accent/60" : "bg-destructive/10")} >{correct ? <CheckCircle2 className="size-5 shrink-0 text-primary" /> : <CircleAlert className="size-5 shrink-0 text-destructive" />}<span><span className="mb-1 block font-semibold">{exerciseReaction(correct, index)}</span>{exercise.explanation}</span></div>}</fieldset>;
             })}
           </div>
           {checked && <div className="mt-7 rounded-lg border bg-card p-5 text-center"><p className="font-display text-3xl font-bold">{score}%</p><p className="mt-1 text-sm text-muted-foreground">{score >= 70 ? "Passed. Suspiciously competent." : "Not there yet. Review, retry, annoyingly improve."}</p></div>}

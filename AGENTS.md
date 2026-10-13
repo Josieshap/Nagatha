@@ -17,3 +17,4 @@
 - The iOS `ios/` folder is generated on a Mac with `npx cap add ios` (see IOS-SETUP.md); never commit hand-made iOS stubs from the sandbox.
 - Support and privacy pages are public leaf routes with their own metadata, so App Store visitors can access contact information without signing in.
 - All AI system prompts use the shared server-only voice composer in src/lib/nagatha-voice.server.ts; mode instructions add domain rules without replacing the persona, preventing chat and estimates from drifting apart.
+- Static lesson personality and exercise reactions live in src/lib/lesson-voice.ts, separate from curriculum facts and answer keys so tone changes cannot alter teaching correctness.
