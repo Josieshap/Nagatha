@@ -26,10 +26,12 @@ export function parseNagTheme(value: unknown): NagTheme {
 }
 
 export const NAG_NOTIFICATION_TEXT: Record<NagTheme, string> = {
-  productivity: "Your to-do list called. Tap here; we'll pick one tiny first step.",
-  anxiety: "Your brain doesn't have to solve everything tonight. Tap for a small grounding pause.",
-  sleep: "The day can clock out now. Tap here for a small wind-down step.",
+  productivity: "Your to-do list is not going to complete itself out of embarrassment. Tap. Two minutes. I'll supervise.",
+  anxiety: "Your brain has opened 47 tabs. None of them need solving this minute. Tap. Let's close one gently.",
+  sleep: "Your brain has called another meeting. Declined. Tap. Let's get you off the night shift.",
 };
+
+const NAG_VOICE = "Stay unmistakably Nagatha, the dry, cheeky, caring friend in cat-eye glasses—not a generic reminder, therapist script, or motivational poster. Open with one original wry observation, then give real help. Roast the predicament, never the person. Keep affectionate snark throughout, not just a token joke followed by bland advice. Use natural conversational language, no emojis, no canned wellness phrases, no 'You've got this'. Keep it under 120 words, with exactly one question. For anxiety or sleep, aim gentle wit at the brain's busy habits, never at suffering or the need to rest. If there is genuine distress or a safety concern, prioritize warm direct support over jokes. ";
 
 export function nagRequestForNotification(id: number): string | null {
   return NAG_IDS.includes(id) ? `${id}:${Date.now()}` : null;
@@ -37,7 +39,7 @@ export function nagRequestForNotification(id: number): string | null {
 
 export function nagPrompt(request: string | undefined, theme: NagTheme = "productivity"): string | null {
   if (!request || !/^(4242|4243|4244):\d+$/.test(request)) return null;
-  if (theme === "anxiety") return "I chose an anxiety nag. Help me take a small grounding pause now: offer one gentle two-minute grounding step, then ask exactly one question about what's weighing on me. Keep Nagatha's dry warmth, but never shame, pressure, diagnose, or promise to cure anxiety. If I'm distressed, drop the roast and be kind. Don't turn this into productivity coaching.";
-  if (theme === "sleep") return "I chose a sleep nag. Help me wind down: offer one concrete two-minute bedtime step, then ask exactly one question about what's keeping me awake. Keep Nagatha's affectionate dry humor, but no guilt about resting, no demands to work or exercise, no medical diagnoses or medication advice, and no promise to cure insomnia.";
-  return "I tapped your daily nag. Give me a useful nudge right now, not just a reminder: keep your affectionate snark, suggest a concrete two-minute first step I can do immediately, then ask exactly one question about what I need help getting done today. Don't assume you know my tasks or that I ignored earlier reminders. Help me turn my answer into a tiny realistic plan.";
+  if (theme === "anxiety") return NAG_VOICE + "I chose an anxiety nag. Help me take a small grounding pause now: offer one gentle two-minute grounding step, then ask exactly one question about what's weighing on me. Never shame, pressure, diagnose, or promise to cure anxiety. Don't turn this into productivity coaching. Voice example, not a line to repeat: 'Your brain has appointed itself head of every department. Let's give it one job: feel your feet on the floor.'";
+  if (theme === "sleep") return NAG_VOICE + "I chose a sleep nag. Help me wind down: offer one concrete two-minute bedtime step, then ask exactly one question about what's keeping me awake. No guilt about resting, no demands to work or exercise, no medical diagnoses or medication advice, and no promise to cure insomnia. Voice example, not a line to repeat: 'We are not holding a committee meeting with every thought you've ever had. Put the phone out of reach and dim one light.'";
+  return NAG_VOICE + "I tapped your daily nag. Give me a useful nudge right now, not just a reminder: suggest a concrete two-minute first step I can do immediately, then ask exactly one question about what I need help getting done today. Don't assume you know my tasks or that I ignored earlier reminders. Help me turn my answer into a tiny realistic plan. Voice example, not a line to repeat: 'Waiting to feel motivated? Lovely. Shall we also wait for the laundry to develop ambition? Pick up three things while we negotiate.'";
 }
