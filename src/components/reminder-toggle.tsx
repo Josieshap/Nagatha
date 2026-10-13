@@ -28,7 +28,7 @@ export function ReminderToggle() {
   async function apply(nextHour: string, nextMode: ReminderMode) {
     const ok = await setDailyReminder(nextHour === "off" ? null : Number(nextHour), nextMode);
     if (!ok) {
-      toast.error("Notifications are off. Turn them on for Nagatha in Settings.");
+      toast.error("Nags are off. Allow notifications for Nagatha in your phone Settings.");
       return false;
     }
     setHour(nextHour);
@@ -40,7 +40,7 @@ export function ReminderToggle() {
 
   async function changeHour(value: string) {
     if (await apply(value, mode))
-      toast.success(value === "off" ? "Reminders off. Bold choice." : "Fine. I'll nag you daily.");
+      toast.success(value === "off" ? "Nags off. Bold choice." : "Daily nag set. Tap it and we'll make a tiny plan.");
   }
 
   async function changeMode(value: ReminderMode) {
@@ -51,7 +51,7 @@ export function ReminderToggle() {
     } else if (!(await apply(hour, value))) return;
     toast.success(
       value === "nuke"
-        ? "Nuke mode. Buzzing, sound, and two follow-ups if you ignore me."
+         ? "Persistent nag. Sound, a buzz preview, and two extra nudges. Tap any nag for help."
         : "Gentle mode. A quiet tap. Don't make me regret it.",
     );
   }
@@ -65,7 +65,7 @@ export function ReminderToggle() {
           className="rounded-md border bg-background px-2 py-1 text-sm text-foreground"
           value={hour}
           onChange={(e) => void changeHour(e.target.value)}
-          aria-label="Daily reminder time"
+           aria-label="Daily nag time"
         >
           <option value="off">Off</option>
           {HOURS.map((h) => (
@@ -82,10 +82,10 @@ export function ReminderToggle() {
           className="rounded-md border bg-background px-2 py-1 text-sm text-foreground"
           value={mode}
           onChange={(e) => void changeMode(e.target.value as ReminderMode)}
-          aria-label="Reminder style"
+           aria-label="Nag style"
         >
           <option value="gentle">Gentle</option>
-          <option value="nuke">Nuke (buzz)</option>
+           <option value="nuke">Persistent nag</option>
         </select>
       </label>
     </div>
