@@ -1,8 +1,25 @@
 import { describe, it as test } from "node:test";
 import assert from "node:assert/strict";
-import { nagPrompt, nagRequestForNotification, parseNagTheme } from "./nags";
+import { nagPrompt, nagRequestForNotification, parseNagTheme, parseNagTime, normalizeNagTime, nagTimeAfter } from "./nags";
 
 describe("helpful nag destinations", () => {
+  test("custom daily nag time preserves any hour and minute", () => {
+    assert.deepEqual(parseNagTime("21:37"), { hour: 21, minute: 37 });
+    assert.deepEqual(parseNagTime("00:00"), { hour: 0, minute: 0 });
+    assert.equal(parseNagTime("24:00"), null);
+    assert.equal(parseNagTime("09:60"), null);
+    assert.equal(parseNagTime(""), null);
+  });
+  test("old preset hours remain readable", () => {
+    assert.equal(normalizeNagTime("9"), "09:00");
+    assert.equal(normalizeNagTime("19"), "19:00");
+    assert.equal(normalizeNagTime("21:37"), "21:37");
+    assert.equal(normalizeNagTime("off"), "off");
+  });
+  test("persistent follow-ups stay ten and twenty minutes later across midnight", () => {
+    assert.deepEqual(nagTimeAfter({ hour: 23, minute: 55 }, 10), { hour: 0, minute: 5 });
+    assert.deepEqual(nagTimeAfter({ hour: 23, minute: 55 }, 20), { hour: 0, minute: 15 });
+  });
   test("each daily nag and follow-up opens coaching", () => {
     for (const id of [4242, 4243, 4244]) {
       const request = nagRequestForNotification(id);

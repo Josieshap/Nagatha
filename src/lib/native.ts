@@ -1,7 +1,7 @@
 // Thin bridge for phone features. Uses the native app shell's plugins when Nagatha
 // runs inside a wrapped iOS/Android app, and falls back to web APIs otherwise.
 import { LocalNotifications, type LocalNotificationSchema } from "@capacitor/local-notifications";
-import { NAG_IDS, NAG_NOTIFICATION_TEXT, NAG_THEME_KEY, parseNagTheme, nagRequestForNotification, type NagTheme } from "./nags";
+import { NAG_IDS, NAG_NOTIFICATION_TEXT, NAG_THEME_KEY, parseNagTheme, nagRequestForNotification, parseNagTime, nagTimeAfter, type NagTheme } from "./nags";
 
 type CapacitorGlobal = {
   isNativePlatform?: () => boolean;
@@ -107,27 +107,33 @@ export async function nukeBuzz(): Promise<void> {
   navigator.vibrate?.([400, 150, 400, 150, 400]);
 }
 
-export async function setDailyReminder(hour: number | null, mode: ReminderMode = "gentle", theme: NagTheme = parseNagTheme(typeof localStorage === "undefined" ? null : localStorage.getItem(NAG_THEME_KEY))): Promise<boolean> {
+export async function setDailyReminder(value: string | number | null, mode: ReminderMode = "gentle", theme: NagTheme = parseNagTheme(typeof localStorage === "undefined" ? null : localStorage.getItem(NAG_THEME_KEY))): Promise<boolean> {
   if (!isNativeApp()) return false;
+  const time = parseNagTime(typeof value === "number" ? `${String(value).padStart(2, "0")}:00` : value);
+  if (value !== null && !time) return false;
   const ln = LocalNotifications;
-  await ln.cancel({ notifications: NAG_IDS.map((id) => ({ id })) });
-  if (hour === null) return true;
+  if (value === null) {
+    await ln.cancel({ notifications: NAG_IDS.map((id) => ({ id })) });
+    return true;
+  }
+  if (!time) return false;
   const perm = await ln.requestPermissions();
   if (perm?.display !== "granted") return false;
+  await ln.cancel({ notifications: NAG_IDS.map((id) => ({ id })) });
   const notifications: LocalNotificationSchema[] = [
       {
         id: REMINDER_ID,
         title: "Your daily nag",
         body: NAG_NOTIFICATION_TEXT[theme],
-        schedule: { on: { hour, minute: 0 }, repeats: true, allowWhileIdle: true },
+        schedule: { on: time, repeats: true, allowWhileIdle: true },
         ...(mode === "nuke" ? { sound: "default" } : {}),
       },
       ...(mode === "nuke"
         ? [
              { id: REMINDER_ID + 1, title: "A nag, not a lecture", body: NAG_NOTIFICATION_TEXT[theme], sound: "default",
-              schedule: { on: { hour, minute: 10 }, repeats: true, allowWhileIdle: true } },
+               schedule: { on: nagTimeAfter(time, 10), repeats: true, allowWhileIdle: true } },
              { id: REMINDER_ID + 2, title: "One tiny step", body: NAG_NOTIFICATION_TEXT[theme], sound: "default",
-              schedule: { on: { hour, minute: 20 }, repeats: true, allowWhileIdle: true } },
+               schedule: { on: nagTimeAfter(time, 20), repeats: true, allowWhileIdle: true } },
           ]
         : []),
     ];

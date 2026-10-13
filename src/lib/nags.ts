@@ -1,4 +1,23 @@
+import { z } from "zod";
+
 export const NAG_IDS = [4242, 4243, 4244];
+const nagTimeSchema = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/);
+export function parseNagTime(value: unknown): { hour: number; minute: number } | null {
+  const result = nagTimeSchema.safeParse(value);
+  if (!result.success) return null;
+  const [hour, minute] = result.data.split(":").map(Number);
+  if (hour === undefined || minute === undefined) return null;
+  return { hour, minute };
+}
+export function normalizeNagTime(value: string | null): string {
+  if (value && parseNagTime(value)) return value;
+  if (value && /^(\d|1\d|2[0-3])$/.test(value)) return `${value.padStart(2, "0")}:00`;
+  return "off";
+}
+export function nagTimeAfter(time: { hour: number; minute: number }, offset: number) {
+  const total = (time.hour * 60 + time.minute + offset) % 1440;
+  return { hour: Math.floor(total / 60), minute: total % 60 };
+}
 export const NAG_THEME_KEY = "nagatha:nag-theme";
 export const NAG_THEMES = ["productivity", "anxiety", "sleep"] as const;
 export type NagTheme = (typeof NAG_THEMES)[number];
