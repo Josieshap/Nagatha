@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Briefcase, BookOpen, Dumbbell, Flame, Home, Route as RouteIcon, Timer } from "lucide-react";
@@ -23,7 +23,7 @@ import { Attachment, AttachmentPreview, AttachmentRemove, Attachments } from "@/
 import mascot from "@/assets/nagatha-idle.png";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { nagPrompt } from "@/lib/nags";
+import { nagPrompt, NAG_THEME_KEY, parseNagTheme, type NagTheme } from "@/lib/nags";
 
 export const Route = createFileRoute("/_authenticated/chat/")({
   validateSearch: (search: Record<string, unknown>): { nag?: string } => {
@@ -84,7 +84,8 @@ function PhotoPreviews() {
 
 function NewChat() {
   const { nag } = Route.useSearch();
-  const handledNag = useRef<string | undefined>(undefined);
+  const [nagRequest, setNagRequest] = useState<string | undefined>();
+  const [nagTheme, setNagTheme] = useState<NagTheme>("productivity");
   const navigate = useNavigate();
   const makeThread = useServerFn(createThread);
   const [busy, setBusy] = useState(false);
@@ -125,12 +126,17 @@ function NewChat() {
 
   useEffect(() => {
     const request = nag ?? sessionStorage.getItem("nagatha:pending-nag") ?? undefined;
-    const prompt = nagPrompt(request);
-    if (!prompt || !request || handledNag.current === request || busy) return;
-    handledNag.current = request;
+    if (nagPrompt(request)) setNagRequest(request);
+    setNagTheme(parseNagTheme(localStorage.getItem(NAG_THEME_KEY)));
+  }, [nag]);
+
+  const startNag = async () => {
+    const prompt = nagPrompt(nagRequest, nagTheme);
+    if (!prompt) return;
+    localStorage.setItem(NAG_THEME_KEY, nagTheme);
+    await startThread(prompt);
     sessionStorage.removeItem("nagatha:pending-nag");
-    void startThread(prompt);
-  }, [nag, busy, startThread]);
+  };
 
   const handleSubmit = (message: PromptInputMessage) => {
     return startThread(message.text, message.files);
@@ -147,8 +153,17 @@ function NewChat() {
           height={1024}
         />
         <h1 className="font-display mt-5 text-center text-2xl font-bold md:text-3xl">
-          What should Nagatha help with today?
+          {nagRequest ? "What kind of nag do you need?" : "What should Nagatha help with today?"}
         </h1>
+        {nagRequest ? <div className="mt-5 w-full">
+          <div className="grid grid-cols-3 gap-2" role="group" aria-label="Choose your nag theme">
+            {(["productivity", "anxiety", "sleep"] as const).map((theme) => <Button key={theme} variant={nagTheme === theme ? "default" : "outline"} aria-pressed={nagTheme === theme} disabled={busy} onClick={() => setNagTheme(theme)} className="px-2">
+              {theme === "productivity" ? "Productivity" : theme === "anxiety" ? "Anxiety" : "Sleep"}
+            </Button>)}
+          </div>
+          <p className="mt-4 text-center text-sm text-muted-foreground">{nagTheme === "productivity" ? "One tiny step. Not a complete personality renovation." : nagTheme === "anxiety" ? "Less mental noise. No lectures about trying harder." : "Permission to clock out. Even your brain needs office hours."}</p>
+          <Button className="mt-5 w-full" disabled={busy} onClick={() => void startNag()}>{busy ? "Warming up the whistle…" : "Give me my nag"}</Button>
+        </div> : <>
         <p className="mt-2 max-w-md text-center text-sm text-muted-foreground">
           Work, chores, that exercise you swore you'd start in January — pick your poison.
           Nagatha brings the whistle.
@@ -241,6 +256,7 @@ function NewChat() {
             </PromptInputFooter>
           </PromptInput>
         </div>
+        </>}
       </div>
     </div>
   );
