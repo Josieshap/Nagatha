@@ -1,5 +1,7 @@
 # Roadmap
 
+- [x] Add user-provided privacy/support contact and copyright details, with a public support page.
+
 - [x] Enlarge Nagatha’s chat portraits for mobile visibility.
 - [x] Add tutoring support for Spanish, Italian, French, German, Korean, Math, and English.
 - [x] Add delete and share controls for saved chat history.
