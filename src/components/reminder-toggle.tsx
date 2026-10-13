@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
-import { BellRing, Zap, Heart } from "lucide-react";
-import { NAG_THEME_KEY, parseNagTheme, type NagTheme } from "@/lib/nags";
+import { BellRing, Zap, Heart, Check } from "lucide-react";
+import { NAG_THEME_KEY, parseNagTheme, parseNagTime, normalizeNagTime, type NagTheme } from "@/lib/nags";
+import { Switch } from "@/components/ui/switch";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import {
   isNativeApp,
@@ -11,24 +14,26 @@ import {
   type ReminderMode,
 } from "@/lib/native";
 
-const HOURS = [7, 9, 12, 17, 19];
-
 export function ReminderToggle() {
   const [native, setNative] = useState(false);
   const [hour, setHour] = useState<string>("off");
   const [mode, setMode] = useState<ReminderMode>("gentle");
   const [theme, setTheme] = useState<NagTheme>("productivity");
+  const [draftTime, setDraftTime] = useState("09:00");
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     setNative(isNativeApp());
-    setHour(localStorage.getItem(REMINDER_KEY) ?? "off");
+    const saved = normalizeNagTime(localStorage.getItem(REMINDER_KEY));
+    setHour(saved);
+    if (saved !== "off") setDraftTime(saved);
     setMode((localStorage.getItem(REMINDER_MODE_KEY) as ReminderMode) ?? "gentle");
     setTheme(parseNagTheme(localStorage.getItem(NAG_THEME_KEY)));
   }, []);
 
   async function changeTheme(value: string) {
     const next = parseNagTheme(value);
-    if (native && hour !== "off" && !(await setDailyReminder(Number(hour), mode, next))) {
+    if (native && hour !== "off" && !(await setDailyReminder(hour, mode, next))) {
       toast.error("Couldn't update your nags. Check notification permissions and try again.");
       return;
     }
@@ -38,7 +43,18 @@ export function ReminderToggle() {
   }
 
   async function apply(nextHour: string, nextMode: ReminderMode) {
-    const ok = await setDailyReminder(nextHour === "off" ? null : Number(nextHour), nextMode);
+    if (nextHour !== "off" && !parseNagTime(nextHour)) {
+      toast.error("Choose a valid hour and minute.");
+      return false;
+    }
+    setSaving(true);
+    let ok = false;
+    try {
+      ok = await setDailyReminder(nextHour === "off" ? null : nextHour, nextMode, theme);
+    } catch {
+      toast.error("Couldn't save your nag. Try again.");
+      return false;
+    } finally { setSaving(false); }
     if (!ok) {
       toast.error("Nags are off. Allow notifications for Nagatha in your phone Settings.");
       return false;
@@ -83,20 +99,13 @@ export function ReminderToggle() {
       <label className="flex w-full items-center gap-2 px-4 py-2 text-sm text-muted-foreground">
         <BellRing className="size-4" />
         <span className="flex-1">Daily nag</span>
-        <select
-          className="rounded-md border bg-background px-2 py-1 text-sm text-foreground"
-          value={hour}
-          onChange={(e) => void changeHour(e.target.value)}
-           aria-label="Daily nag time"
-        >
-          <option value="off">Off</option>
-          {HOURS.map((h) => (
-            <option key={h} value={String(h)}>
-              {h === 12 ? "12 pm" : h > 12 ? `${h - 12} pm` : `${h} am`}
-            </option>
-          ))}
-        </select>
+        <Switch checked={hour !== "off"} disabled={saving} onCheckedChange={(enabled) => void changeHour(enabled ? draftTime : "off")} aria-label="Enable daily nag" />
       </label>
+      <div className="flex w-full items-center gap-2 px-4 py-2">
+        <label htmlFor="nag-custom-time" className="flex-1 text-sm text-muted-foreground">Nag time</label>
+        <Input id="nag-custom-time" type="time" step={60} aria-label="Daily nag time" value={draftTime} onChange={(e) => setDraftTime(e.target.value)} className="w-32 min-w-0" disabled={saving} />
+        <Button size="icon" variant="outline" title="Save nag time" aria-label="Save nag time" disabled={saving || !parseNagTime(draftTime)} onClick={() => void changeHour(draftTime)}><Check className="size-4" /></Button>
+      </div>
       <label className="flex w-full items-center gap-2 px-4 py-2 text-sm text-muted-foreground">
         <Zap className="size-4" />
         <span className="flex-1">Nag style</span>
