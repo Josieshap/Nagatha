@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { listThreads, deleteThread } from "@/lib/chat.functions";
 import { deleteAccount } from "@/lib/account.functions";
+import { ReminderToggle } from "@/components/reminder-toggle";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
@@ -147,6 +148,7 @@ function ThreadSidebar({ onNavigate }: { onNavigate?: () => void }) {
 
       <div className="border-t border-sidebar-border px-3 py-3">
         {email && <p className="truncate px-2 pb-2 text-xs text-muted-foreground">{email}</p>}
+        <ReminderToggle />
         <Button
           variant="ghost"
           className="w-full justify-start gap-2 text-muted-foreground"

@@ -71,3 +71,18 @@ npx cap open ios
 - If you change the website in Lovable later, the app picks it up
   automatically — no new app build is needed, because the shell loads the live
   site. Only rebuild the app when you change the native shell itself.
+
+## Native features (camera, reminders, launch screen)
+
+After `git pull` + `npm install`, run `npx cap sync ios`. Then in Xcode open
+`App/App/Info.plist` and add these rows (Apple rejects the app without them):
+
+| Key | Value |
+| --- | --- |
+| Privacy - Camera Usage Description | Nagatha uses the camera so you can show her your homework or chores. |
+| Privacy - Photo Library Usage Description | Nagatha lets you pick a photo of your work to get help with it. |
+| Privacy - Photo Library Additions Usage Description | Nagatha may save photos you take in the app. |
+
+Features Apple reviewers will see: native camera, daily local reminder
+notifications (History panel → "Daily nag"), haptics, native share sheet,
+Sign in with Apple, in-app account deletion, launch screen, offline screen.

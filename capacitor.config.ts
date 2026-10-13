@@ -18,6 +18,10 @@ const config: CapacitorConfig = {
     url: "https://nagatha.lovable.app",
     androidScheme: "https",
   },
+  plugins: {
+    SplashScreen: { launchShowDuration: 2000, backgroundColor: "#f6efe3", showSpinner: false },
+    LocalNotifications: { iconColor: "#c2410c" },
+  },
   ios: {
     contentInset: "always",
   },

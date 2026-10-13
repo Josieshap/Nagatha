@@ -47,3 +47,82 @@ export async function nativeShare(opts: { title: string; text?: string; url: str
   }
   return false;
 }
+
+function plugin(name: string) {
+  return cap()?.Plugins?.[name];
+}
+
+/** Opens the native camera (app) or the phone camera via a file input (web). */
+export async function takePhoto(): Promise<File | null> {
+  const camera = plugin("Camera");
+  if (camera?.["getPhoto"]) {
+    try {
+      const photo = (await camera["getPhoto"]({
+        quality: 80,
+        resultType: "dataUrl",
+        source: "PROMPT",
+        width: 1600,
+        correctOrientation: true,
+        promptLabelHeader: "Show Nagatha your work",
+        promptLabelPhoto: "Choose from library",
+        promptLabelPicture: "Take a photo",
+      })) as { dataUrl?: string; format?: string };
+      if (!photo.dataUrl) return null;
+      const blob = await (await fetch(photo.dataUrl)).blob();
+      const ext = photo.format ?? "jpeg";
+      return new File([blob], `photo-${Date.now()}.${ext}`, { type: blob.type || `image/${ext}` });
+    } catch {
+      return null; // user cancelled
+    }
+  }
+  return new Promise((resolve) => {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.setAttribute("capture", "environment");
+    input.onchange = () => resolve(input.files?.[0] ?? null);
+    input.click();
+  });
+}
+
+const REMINDER_ID = 4242;
+export const REMINDER_KEY = "nagatha:daily-reminder";
+
+/** Schedules a daily local notification at the given hour. Returns false if not allowed. */
+export async function setDailyReminder(hour: number | null): Promise<boolean> {
+  const ln = plugin("LocalNotifications");
+  if (!ln) return false;
+  await ln["cancel"]?.({ notifications: [{ id: REMINDER_ID }] });
+  if (hour === null) return true;
+  const perm = (await ln["requestPermissions"]?.()) as { display?: string } | undefined;
+  if (perm?.display !== "granted") return false;
+  const lines = [
+    "Your to-do list called. It's lonely.",
+    "Five minutes. That's all I'm asking. Then we'll see.",
+    "The couch will still be there later. Get up.",
+  ];
+  await ln["schedule"]?.({
+    notifications: [
+      {
+        id: REMINDER_ID,
+        title: "Nagatha",
+        body: lines[new Date().getDate() % lines.length],
+        schedule: { on: { hour, minute: 0 }, repeats: true, allowWhileIdle: true },
+      },
+    ],
+  });
+  return true;
+}
+
+/** Styles the native status bar and hides the launch screen once the web app is ready. */
+export async function initNativeShell(): Promise<void> {
+  if (!isNativeApp()) return;
+  try {
+    await plugin("StatusBar")?.["setStyle"]?.({ style: "LIGHT" });
+    await plugin("SplashScreen")?.["hide"]?.({ fadeOutDuration: 250 });
+    const app = plugin("App");
+    await app?.["addListener"]?.("backButton", () => window.history.back());
+  } catch {
+    // Native polish only.
+  }
+}

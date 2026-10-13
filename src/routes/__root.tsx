@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import facepalmNagatha from "@/assets/nagatha-facepalm.png";
 import { OfflineBanner } from "@/components/offline-banner";
+import { NativeShell } from "@/components/native-shell";
 
 function NotFoundComponent() {
   return (
@@ -157,6 +158,7 @@ function RootComponent() {
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
       <OfflineBanner />
+      <NativeShell />
       <Toaster />
     </QueryClientProvider>
   );
