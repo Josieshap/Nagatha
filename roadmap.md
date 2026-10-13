@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Restore super-snarky, never-mean Nagatha across all coaching and learning experiences; verify real replies.
+- [x] Restore super-snarky, never-mean Nagatha across coaching and learning; verified signed-in motivation, tutoring follow-up, saved reply reload, task estimate, and sleep nag; 12 tests pass.
 
 - [x] Add user-provided privacy/support contact and copyright details, with a public support page.
 
