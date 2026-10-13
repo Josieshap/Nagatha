@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Restore super-snarky, never-mean Nagatha across all coaching and learning experiences; verify real replies.
+
 - [x] Add user-provided privacy/support contact and copyright details, with a public support page.
 
 - [x] Enlarge Nagatha’s chat portraits for mobile visibility.
