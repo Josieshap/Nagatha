@@ -89,10 +89,26 @@ const REMINDER_ID = 4242;
 export const REMINDER_KEY = "nagatha:daily-reminder";
 
 /** Schedules a daily local notification at the given hour. Returns false if not allowed. */
-export async function setDailyReminder(hour: number | null): Promise<boolean> {
+export const REMINDER_MODE_KEY = "nagatha:reminder-mode";
+export type ReminderMode = "gentle" | "nuke";
+
+/** Buzzes the phone hard, three times. */
+export async function nukeBuzz(): Promise<void> {
+  const h = plugin("Haptics");
+  if (h?.["vibrate"]) {
+    for (let i = 0; i < 3; i++) {
+      await h["vibrate"]({ duration: 400 });
+      await new Promise((r) => setTimeout(r, 500));
+    }
+    return;
+  }
+  navigator.vibrate?.([400, 150, 400, 150, 400]);
+}
+
+export async function setDailyReminder(hour: number | null, mode: ReminderMode = "gentle"): Promise<boolean> {
   const ln = plugin("LocalNotifications");
   if (!ln) return false;
-  await ln["cancel"]?.({ notifications: [{ id: REMINDER_ID }] });
+  await ln["cancel"]?.({ notifications: [{ id: REMINDER_ID }, { id: REMINDER_ID + 1 }, { id: REMINDER_ID + 2 }] });
   if (hour === null) return true;
   const perm = (await ln["requestPermissions"]?.()) as { display?: string } | undefined;
   if (perm?.display !== "granted") return false;
@@ -108,7 +124,16 @@ export async function setDailyReminder(hour: number | null): Promise<boolean> {
         title: "Nagatha",
         body: lines[new Date().getDate() % lines.length],
         schedule: { on: { hour, minute: 0 }, repeats: true, allowWhileIdle: true },
+        ...(mode === "nuke" ? { sound: "default" } : { silent: true }),
       },
+      ...(mode === "nuke"
+        ? [
+            { id: REMINDER_ID + 1, title: "Nagatha", body: "Still waiting. I can do this all day.", sound: "default",
+              schedule: { on: { hour, minute: 10 }, repeats: true, allowWhileIdle: true } },
+            { id: REMINDER_ID + 2, title: "Nagatha", body: "Final warning. Up. Now.", sound: "default",
+              schedule: { on: { hour, minute: 20 }, repeats: true, allowWhileIdle: true } },
+          ]
+        : []),
     ],
   });
   return true;
