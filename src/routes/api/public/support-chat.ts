@@ -1,10 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createOpenAI } from "@ai-sdk/openai";
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
-import {
-  createLovableAiGatewayRunIdFetch,
-  getLovableAiGatewayResponseHeaders,
-} from "@/lib/ai-gateway.server";
+import { createLovableAiGatewayRunIdFetch } from "@/lib/ai-gateway.server";
 import { nagathaSystemPrompt } from "@/lib/nagatha-voice.server";
 
 // Public by design: answers app-support questions only, reads/writes no user data.
@@ -66,9 +63,6 @@ export const Route = createFileRoute("/api/public/support-chat")({
         const response = result.toUIMessageStreamResponse({
           onError: () => "Nagatha's help desk hit a snag. Try again, or email forkyeahbaby@gmail.com.",
         });
-        for (const [k, v] of Object.entries(getLovableAiGatewayResponseHeaders?.(runIdFetch) ?? {})) {
-          response.headers.set(k, v as string);
-        }
         return response;
       },
     },
