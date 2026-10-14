@@ -36,7 +36,7 @@ export const Route = createFileRoute("/api/public/support-chat")({
         if (!messages.length || tooLong || messages.at(-1)?.role !== "user") {
           return new Response("Invalid request", { status: 400 });
         }
-        const key = process.env.LOVABLE_API_KEY;
+        const key = process.env["LOVABLE_API_KEY"];
         if (!key) return new Response("Missing LOVABLE_API_KEY", { status: 500 });
 
         const runIdFetch = createLovableAiGatewayRunIdFetch();

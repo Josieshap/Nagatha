@@ -34,3 +34,6 @@
 - [x] Replace crowded app header with a readable hamburger menu and verify navigation on phone and desktop.
 - [x] Rename nuke reminders to nags and make notification taps open useful coaching; verified saved chat and a concrete AI reply (phone delivery still needs a real-device check).
 - [x] Add productivity, anxiety, and sleep nag themes with a choice before the reply; verified theme selection, sleep/anxiety replies, remembered preference, and saved chat reload.
+
+- [x] Nagatha help desk page (/help) linked from support and privacy
+- [x] Apple and Google sign-in turned back on
