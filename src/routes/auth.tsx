@@ -7,8 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import mascot from "@/assets/nagatha-idle.png";
 
-// Hidden until Apple/Google sign-in is verified inside the native app (it currently bounces to the browser).
-const SHOW_SOCIAL_SIGN_IN = false;
+// Apple/Google sign-in; accounts share the same saved progress and nag settings as email sign-in.
+const SHOW_SOCIAL_SIGN_IN = true;
 
 export const Route = createFileRoute("/auth")({
   head: () => ({

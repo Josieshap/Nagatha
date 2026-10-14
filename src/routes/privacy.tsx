@@ -112,6 +112,8 @@ function PrivacyPage() {
         ))}
         <footer className="mt-10 border-t border-border pt-6 text-sm text-muted-foreground">
           <Link to="/support" className="underline underline-offset-4">Contact support</Link>
+          {" · "}
+          <Link to="/help" className="underline underline-offset-4">Ask Nagatha</Link>
           <p className="mt-3">© 2026 Nagatha. All rights reserved.</p>
         </footer>
       </article>

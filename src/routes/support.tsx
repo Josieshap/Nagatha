@@ -27,6 +27,11 @@ function SupportPage() {
           <span className="font-display text-xl font-bold">Nagatha</span>
         </Link>
         <h1 className="mt-8 font-display text-4xl font-bold">Nagatha Support</h1>
+        <section className="mt-6 rounded-2xl border bg-card p-5">
+          <h2 className="font-display text-xl font-semibold">Ask Nagatha first</h2>
+          <p className="mt-2 text-sm text-muted-foreground">She answers app questions instantly. With commentary.</p>
+          <Link to="/help" className="mt-4 inline-flex rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground">Open the help desk</Link>
+        </section>
         <p className="mt-6 leading-relaxed">Even Nagatha occasionally needs backup. For help with your account, chats, lessons or daily nags, email us.</p>
         <a href="mailto:forkyeahbaby@gmail.com" className="mt-6 inline-block break-all text-primary underline underline-offset-4">forkyeahbaby@gmail.com</a>
         <p className="mt-6 leading-relaxed">Tell us what happened and whether you’re using the iPhone app or the website. Please don’t send passwords or sensitive photos.</p>

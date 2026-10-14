@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as HelpRouteImport } from './routes/help'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as SupportRouteImport } from './routes/support'
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
@@ -23,6 +24,7 @@ import { Route as AuthenticatedChatLessonsRouteImport } from './routes/_authenti
 import { Route as AuthenticatedChatPlannerRouteImport } from './routes/_authenticated/chat.planner'
 import { Route as AuthenticatedChatProgressRouteImport } from './routes/_authenticated/chat.progress'
 import { Route as AuthenticatedChatRealityCheckRouteImport } from './routes/_authenticated/chat.reality-check'
+import { Route as ApiPublicSupportChatRouteImport } from './routes/api/public/support-chat'
 import { Route as AuthenticatedChatCourseSubjectIdRouteImport } from './routes/_authenticated/chat.course.$subjectId'
 import { Route as AuthenticatedChatLessonSubjectIdLessonIdRouteImport } from './routes/_authenticated/chat.lesson.$subjectId.$lessonId'
 
@@ -38,6 +40,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HelpRoute = HelpRouteImport.update({
+  id: '/help',
+  path: '/help',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -100,6 +107,11 @@ const AuthenticatedChatRealityCheckRoute =
     path: '/reality-check',
     getParentRoute: () => AuthenticatedChatRoute,
   } as any)
+const ApiPublicSupportChatRoute = ApiPublicSupportChatRouteImport.update({
+  id: '/api/public/support-chat',
+  path: '/api/public/support-chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedChatCourseSubjectIdRoute =
   AuthenticatedChatCourseSubjectIdRouteImport.update({
     id: '/course/$subjectId',
@@ -116,6 +128,7 @@ const AuthenticatedChatLessonSubjectIdLessonIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/help': typeof HelpRoute
   '/privacy': typeof PrivacyRoute
   '/support': typeof SupportRoute
   '/chat': typeof AuthenticatedChatRouteWithChildren
@@ -126,6 +139,7 @@ export interface FileRoutesByFullPath {
   '/chat/planner': typeof AuthenticatedChatPlannerRoute
   '/chat/progress': typeof AuthenticatedChatProgressRoute
   '/chat/reality-check': typeof AuthenticatedChatRealityCheckRoute
+  '/api/public/support-chat': typeof ApiPublicSupportChatRoute
   '/chat/': typeof AuthenticatedChatIndexRoute
   '/chat/course/$subjectId': typeof AuthenticatedChatCourseSubjectIdRoute
   '/chat/lesson/$subjectId/$lessonId': typeof AuthenticatedChatLessonSubjectIdLessonIdRoute
@@ -133,6 +147,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/help': typeof HelpRoute
   '/privacy': typeof PrivacyRoute
   '/support': typeof SupportRoute
   '/api/chat': typeof ApiChatRoute
@@ -142,6 +157,7 @@ export interface FileRoutesByTo {
   '/chat/planner': typeof AuthenticatedChatPlannerRoute
   '/chat/progress': typeof AuthenticatedChatProgressRoute
   '/chat/reality-check': typeof AuthenticatedChatRealityCheckRoute
+  '/api/public/support-chat': typeof ApiPublicSupportChatRoute
   '/chat': typeof AuthenticatedChatIndexRoute
   '/chat/course/$subjectId': typeof AuthenticatedChatCourseSubjectIdRoute
   '/chat/lesson/$subjectId/$lessonId': typeof AuthenticatedChatLessonSubjectIdLessonIdRoute
@@ -151,6 +167,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/help': typeof HelpRoute
   '/privacy': typeof PrivacyRoute
   '/support': typeof SupportRoute
   '/_authenticated/chat': typeof AuthenticatedChatRouteWithChildren
@@ -161,6 +178,7 @@ export interface FileRoutesById {
   '/_authenticated/chat/planner': typeof AuthenticatedChatPlannerRoute
   '/_authenticated/chat/progress': typeof AuthenticatedChatProgressRoute
   '/_authenticated/chat/reality-check': typeof AuthenticatedChatRealityCheckRoute
+  '/api/public/support-chat': typeof ApiPublicSupportChatRoute
   '/_authenticated/chat/': typeof AuthenticatedChatIndexRoute
   '/_authenticated/chat/course/$subjectId': typeof AuthenticatedChatCourseSubjectIdRoute
   '/_authenticated/chat/lesson/$subjectId/$lessonId': typeof AuthenticatedChatLessonSubjectIdLessonIdRoute
@@ -170,6 +188,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/help'
     | '/privacy'
     | '/support'
     | '/chat'
@@ -180,6 +199,7 @@ export interface FileRouteTypes {
     | '/chat/planner'
     | '/chat/progress'
     | '/chat/reality-check'
+    | '/api/public/support-chat'
     | '/chat/'
     | '/chat/course/$subjectId'
     | '/chat/lesson/$subjectId/$lessonId'
@@ -187,6 +207,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/help'
     | '/privacy'
     | '/support'
     | '/api/chat'
@@ -196,6 +217,7 @@ export interface FileRouteTypes {
     | '/chat/planner'
     | '/chat/progress'
     | '/chat/reality-check'
+    | '/api/public/support-chat'
     | '/chat'
     | '/chat/course/$subjectId'
     | '/chat/lesson/$subjectId/$lessonId'
@@ -204,6 +226,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/help'
     | '/privacy'
     | '/support'
     | '/_authenticated/chat'
@@ -214,6 +237,7 @@ export interface FileRouteTypes {
     | '/_authenticated/chat/planner'
     | '/_authenticated/chat/progress'
     | '/_authenticated/chat/reality-check'
+    | '/api/public/support-chat'
     | '/_authenticated/chat/'
     | '/_authenticated/chat/course/$subjectId'
     | '/_authenticated/chat/lesson/$subjectId/$lessonId'
@@ -223,10 +247,12 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  HelpRoute: typeof HelpRoute
   PrivacyRoute: typeof PrivacyRoute
   SupportRoute: typeof SupportRoute
   ApiChatRoute: typeof ApiChatRoute
   ShareTokenRoute: typeof ShareTokenRoute
+  ApiPublicSupportChatRoute: typeof ApiPublicSupportChatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -250,6 +276,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/help': {
+      id: '/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof HelpRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -329,6 +362,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedChatRealityCheckRouteImport
       parentRoute: typeof AuthenticatedChatRoute
     }
+    '/api/public/support-chat': {
+      id: '/api/public/support-chat'
+      path: '/api/public/support-chat'
+      fullPath: '/api/public/support-chat'
+      preLoaderRoute: typeof ApiPublicSupportChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/chat/course/$subjectId': {
       id: '/_authenticated/chat/course/$subjectId'
       path: '/course/$subjectId'
@@ -387,10 +427,12 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  HelpRoute: HelpRoute,
   PrivacyRoute: PrivacyRoute,
   SupportRoute: SupportRoute,
   ApiChatRoute: ApiChatRoute,
   ShareTokenRoute: ShareTokenRoute,
+  ApiPublicSupportChatRoute: ApiPublicSupportChatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
