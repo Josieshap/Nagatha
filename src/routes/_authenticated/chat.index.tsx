@@ -24,6 +24,7 @@ import mascot from "@/assets/nagatha-idle.png";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { nagPrompt, NAG_THEME_KEY, parseNagTheme, type NagTheme } from "@/lib/nags";
+import { loadNagSettings, saveNagSettings } from "@/lib/nag-settings";
 
 export const Route = createFileRoute("/_authenticated/chat/")({
   validateSearch: (search: Record<string, unknown>): { nag?: string } => {
@@ -128,12 +129,16 @@ function NewChat() {
     const request = nag ?? sessionStorage.getItem("nagatha:pending-nag") ?? undefined;
     if (nagPrompt(request)) setNagRequest(request);
     setNagTheme(parseNagTheme(localStorage.getItem(NAG_THEME_KEY)));
+    void loadNagSettings().then((s) => {
+      if (s) setNagTheme(parseNagTheme(s.nag_theme));
+    });
   }, [nag]);
 
   const startNag = async () => {
     const prompt = nagPrompt(nagRequest, nagTheme);
     if (!prompt) return;
     localStorage.setItem(NAG_THEME_KEY, nagTheme);
+    void saveNagSettings({ nag_theme: nagTheme });
     await startThread(prompt);
     sessionStorage.removeItem("nagatha:pending-nag");
   };
