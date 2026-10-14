@@ -7,6 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import mascot from "@/assets/nagatha-idle.png";
 
+// Hidden until Apple/Google sign-in is verified inside the native app (it currently bounces to the browser).
+const SHOW_SOCIAL_SIGN_IN = false;
+
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
@@ -137,50 +140,34 @@ function AuthPage() {
             </Button>
           </form>
 
-          <div className="my-4 flex items-center gap-3 text-xs text-muted-foreground">
-            <div className="h-px flex-1 bg-border" />
-            or
-            <div className="h-px flex-1 bg-border" />
-          </div>
+          {SHOW_SOCIAL_SIGN_IN && (
+            <>
+              <div className="my-4 flex items-center gap-3 text-xs text-muted-foreground">
+                <div className="h-px flex-1 bg-border" />
+                or
+                <div className="h-px flex-1 bg-border" />
+              </div>
 
-          <div className="flex flex-col gap-2">
-            <Button
-              type="button"
-              className="w-full bg-foreground text-background hover:bg-foreground/90"
-              disabled={busy}
-              onClick={() => void handleOAuth("apple")}
-            >
-              Continue with Apple
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              disabled={busy}
-              onClick={() => void handleOAuth("google")}
-            >
-              Continue with Google
-            </Button>
-          </div>
-
-          <button
-            type="button"
-            className="mt-4 w-full text-center text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
-            onClick={() => {
-              setMode(mode === "signin" ? "signup" : "signin");
-              setError(null);
-              setNotice(null);
-            }}
-          >
-            {mode === "signin" ? "New here? Create an account" : "Already have an account? Sign in"}
-          </button>
-        </div>
-        <p className="mt-6 text-center text-xs text-muted-foreground">
-          <Link to="/privacy" className="underline underline-offset-4 hover:text-foreground">
-            Privacy policy
-          </Link>
-        </p>
-      </div>
-    </div>
+              <div className="flex flex-col gap-2">
+                <Button
+                  type="button"
+                  className="w-full bg-foreground text-background hover:bg-foreground/90"
+                  disabled={busy}
+                  onClick={() => void handleOAuth("apple")}
+                >
+                  Continue with Apple
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full"
+                  disabled={busy}
+                  onClick={() => void handleOAuth("google")}
+                >
+                  Continue with Google
+                </Button>
+              </div>
+            </>
+          )}
   );
 }
