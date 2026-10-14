@@ -169,5 +169,25 @@ function AuthPage() {
               </div>
             </>
           )}
+
+          <button
+            type="button"
+            className="mt-4 w-full text-center text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+            onClick={() => {
+              setMode(mode === "signin" ? "signup" : "signin");
+              setError(null);
+              setNotice(null);
+            }}
+          >
+            {mode === "signin" ? "New here? Create an account" : "Already have an account? Sign in"}
+          </button>
+        </div>
+        <p className="mt-6 text-center text-xs text-muted-foreground">
+          <Link to="/privacy" className="underline underline-offset-4 hover:text-foreground">
+            Privacy policy
+          </Link>
+        </p>
+      </div>
+    </div>
   );
 }
