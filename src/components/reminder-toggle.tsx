@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { BellRing, Zap, Heart, Check } from "lucide-react";
 import { NAG_THEME_KEY, parseNagTheme, parseNagTime, normalizeNagTime, type NagTheme } from "@/lib/nags";
+import { loadNagSettings, saveNagSettings } from "@/lib/nag-settings";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -23,12 +24,32 @@ export function ReminderToggle() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    setNative(isNativeApp());
+    const isNative = isNativeApp();
+    setNative(isNative);
     const saved = normalizeNagTime(localStorage.getItem(REMINDER_KEY));
     setHour(saved);
     if (saved !== "off") setDraftTime(saved);
     setMode((localStorage.getItem(REMINDER_MODE_KEY) as ReminderMode) ?? "gentle");
     setTheme(parseNagTheme(localStorage.getItem(NAG_THEME_KEY)));
+
+    // Account copy wins: restores nags on a new phone or after reinstalling.
+    void loadNagSettings().then(async (s) => {
+      if (!s) {
+        void saveNagSettings({ nag_time: saved, nag_mode: localStorage.getItem(REMINDER_MODE_KEY) ?? "gentle", nag_theme: parseNagTheme(localStorage.getItem(NAG_THEME_KEY)) });
+        return;
+      }
+      const t = normalizeNagTime(s.nag_time);
+      const m: ReminderMode = s.nag_mode === "nuke" ? "nuke" : "gentle";
+      const th = parseNagTheme(s.nag_theme);
+      setHour(t);
+      if (t !== "off") setDraftTime(t);
+      setMode(m);
+      setTheme(th);
+      localStorage.setItem(REMINDER_KEY, t);
+      localStorage.setItem(REMINDER_MODE_KEY, m);
+      localStorage.setItem(NAG_THEME_KEY, th);
+      if (isNative && t !== saved) await setDailyReminder(t === "off" ? null : t, m, th);
+    });
   }, []);
 
   async function changeTheme(value: string) {
@@ -39,6 +60,7 @@ export function ReminderToggle() {
     }
     setTheme(next);
     localStorage.setItem(NAG_THEME_KEY, next);
+    void saveNagSettings({ nag_theme: next });
     toast.success("Nag theme saved.");
   }
 
@@ -63,6 +85,7 @@ export function ReminderToggle() {
     setMode(nextMode);
     localStorage.setItem(REMINDER_KEY, nextHour);
     localStorage.setItem(REMINDER_MODE_KEY, nextMode);
+    void saveNagSettings({ nag_time: nextHour, nag_mode: nextMode });
     return true;
   }
 
@@ -76,6 +99,7 @@ export function ReminderToggle() {
     if (hour === "off") {
       setMode(value);
       localStorage.setItem(REMINDER_MODE_KEY, value);
+      void saveNagSettings({ nag_mode: value });
     } else if (!(await apply(hour, value))) return;
     toast.success(
       value === "nuke"

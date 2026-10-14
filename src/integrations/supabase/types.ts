@@ -88,6 +88,30 @@ export type Database = {
           },
         ]
       }
+      nag_settings: {
+        Row: {
+          nag_mode: string
+          nag_theme: string
+          nag_time: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          nag_mode?: string
+          nag_theme?: string
+          nag_time?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          nag_mode?: string
+          nag_theme?: string
+          nag_time?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       tasks: {
         Row: {
           completed_at: string | null
