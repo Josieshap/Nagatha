@@ -121,7 +121,8 @@ function HelpPage() {
       </form>
       <p className="pb-3 text-center text-xs text-muted-foreground">
         Need a human? <a className="underline" href="mailto:forkyeahbaby@gmail.com">forkyeahbaby@gmail.com</a> ·{" "}
-        <Link to="/privacy" className="underline">Privacy</Link>
+        <Link to="/privacy" className="underline">Privacy</Link> ·{" "}
+        <Link to="/terms" className="underline">Terms</Link>
       </p>
     </div>
   );

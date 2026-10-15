@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { NAGATHA_MOODS } from "@/lib/nagatha-mood";
-import { FREE_DAILY_MESSAGES, PRO_PLANS, TERMS_URL } from "@/lib/plans";
+import { FREE_DAILY_MESSAGES, PRO_PLANS } from "@/lib/plans";
 
 const comingSoon = (what: string) =>
   toast.message(`${what} is coming soon.`, {
@@ -39,7 +39,7 @@ export function ProPaywall({ open, onOpenChange }: { open: boolean; onOpenChange
               key={plan.id}
               variant={plan.highlight ? "default" : "outline"}
               className="h-auto flex-col gap-0.5 whitespace-normal py-2"
-              onClick={() => comingSoon(plan.id === "lifetime" ? "Nagatha Forever" : "Nagatha Pro")}
+              onClick={() => comingSoon(plan.id === "lifetime" ? "Nagatha Lifetime" : "Nagatha Pro")}
             >
               <span className="font-semibold">{plan.label}</span>
               <span className="text-xs font-normal opacity-80">{plan.note}</span>
@@ -48,11 +48,11 @@ export function ProPaywall({ open, onOpenChange }: { open: boolean; onOpenChange
           <Button variant="ghost" onClick={() => onOpenChange(false)}>Fine, I'll wait until tomorrow</Button>
         </div>
         <p className="text-center text-[11px] leading-snug text-muted-foreground">
-          Subscriptions renew automatically unless canceled at least 24 hours before the end of the current period. Manage or cancel anytime in your Apple ID account settings. Nagatha Forever is a one-time purchase.
+          Subscriptions renew automatically unless canceled at least 24 hours before the end of the current period. Manage or cancel anytime in your Apple ID account settings. Nagatha Lifetime is a one-time purchase.
         </p>
         <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs">
           <button type="button" className="underline" onClick={() => comingSoon("Restore Purchases")}>Restore Purchases</button>
-          <a className="underline" href={TERMS_URL} target="_blank" rel="noreferrer">Terms of Use</a>
+          <Link className="underline" to="/terms">Terms of Use</Link>
           <Link className="underline" to="/privacy">Privacy Policy</Link>
         </div>
       </DialogContent>
