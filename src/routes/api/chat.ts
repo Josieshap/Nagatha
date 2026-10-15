@@ -111,6 +111,15 @@ export const Route = createFileRoute("/api/chat")({
         }
         const displayText = userText || "Photo reference";
 
+        // Free tier: 5 messages per day; Pro and admins are unlimited.
+        const { data: quota, error: quotaError } = await supabase.rpc("consume_daily_message", { _limit: 5 });
+        if (quotaError) {
+          return new Response("Could not check your daily messages", { status: 500 });
+        }
+        if (quota && typeof quota === "object" && (quota as { allowed?: boolean }).allowed === false) {
+          return new Response("DAILY_LIMIT_REACHED", { status: 402 });
+        }
+
         // Full history from the database — the source of truth.
         const { data: history } = await supabase
           .from("messages")

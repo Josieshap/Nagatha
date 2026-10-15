@@ -37,3 +37,5 @@
 
 - [x] Nagatha help desk page (/help) linked from support and privacy
 - [x] Apple and Google sign-in turned back on
+- [x] Freemium: 5 free AI messages/day (Pacific time), Pro unlimited; paywall screen (purchases pending Apple IAP)
+- [ ] Connect Apple in-app subscriptions to Nagatha Pro
