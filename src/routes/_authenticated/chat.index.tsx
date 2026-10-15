@@ -120,7 +120,7 @@ function NewChat() {
       void navigate({ to: "/chat/$threadId", params: { threadId: thread.id } });
     } catch (err) {
       console.error(err);
-      toast.error("Couldn't start a chat. Even Nagatha needs a coffee break sometimes.");
+      toast.error("Error: the chat could not be started. Please try again.");
       setBusy(false);
     }
   }, [busy, makeThread, navigate]);
@@ -238,7 +238,7 @@ function NewChat() {
             multiple
             maxFiles={3}
             maxFileSize={10 * 1024 * 1024}
-            onError={({ code }) => toast.error(code === "max_files" ? "Three photos at a time, paparazzi." : code === "max_file_size" ? "That photo is over 10 MB." : "Please choose a JPG, PNG, WebP, or GIF photo.")}
+            onError={({ code }) => toast.error(code === "max_files" ? "You can add up to 3 photos at a time." : code === "max_file_size" ? "That photo is over 10 MB." : "Please choose a JPG, PNG, WebP, or GIF photo.")}
             onSubmit={handleSubmit}
           >
             <PhotoPreviews />

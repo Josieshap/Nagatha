@@ -65,7 +65,7 @@ function ThreadSidebar({ onNavigate }: { onNavigate?: () => void }) {
         void navigate({ to: "/chat" });
       }
     } catch {
-      toast.error("Couldn't delete that chat. Nagatha keeps receipts anyway.");
+      toast.error("Error: the chat was not deleted. Please try again.");
     }
   };
 
@@ -83,7 +83,7 @@ function ThreadSidebar({ onNavigate }: { onNavigate?: () => void }) {
       toast.success("Account deleted. She'll pretend she isn't hurt.");
       void navigate({ to: "/" });
     } catch {
-      toast.error("Couldn't delete your account. Try again in a moment.");
+      toast.error("Error: your account was not deleted. Please try again.");
       setDeleting(false);
     }
   };

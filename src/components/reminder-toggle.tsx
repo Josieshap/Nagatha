@@ -74,7 +74,7 @@ export function ReminderToggle() {
     try {
       ok = await setDailyReminder(nextHour === "off" ? null : nextHour, nextMode, theme);
     } catch {
-      toast.error("Couldn't save your nag. Try again.");
+      toast.error("Error: your nag was not saved. Please try again.");
       return false;
     } finally { setSaving(false); }
     if (!ok) {

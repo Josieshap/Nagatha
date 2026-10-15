@@ -42,7 +42,7 @@ function PlannerPage() {
       sessionStorage.setItem(PENDING_MESSAGE_KEY(thread.id), JSON.stringify({ text: prompt, files: [], attachments: [] }));
       void navigate({ to: "/chat/$threadId", params: { threadId: thread.id } });
     } catch {
-      toast.error("The plan did not save. Nagatha blames paperwork.");
+      toast.error("Error: the plan was not saved. Please try again.");
       setBusy(false);
     }
   };

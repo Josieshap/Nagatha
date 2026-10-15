@@ -37,7 +37,7 @@ function LessonPage() {
   const mutation = useMutation({
     mutationFn: (payload: { score: number; completed: boolean }) => save({ data: { subjectId: subjectId as SubjectId, lessonId, ...payload } }),
     onSuccess: () => void queryClient.invalidateQueries({ queryKey: ["lesson-progress"] }),
-    onError: () => toast.error("Your progress refused to save. Try once more."),
+    onError: () => toast.error("Error: your progress was not saved. Please try again."),
   });
   if (!subject || !lesson || !SUBJECT_IDS.includes(subjectId as SubjectId)) return null;
 

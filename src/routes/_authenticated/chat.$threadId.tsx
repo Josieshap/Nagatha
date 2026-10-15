@@ -76,7 +76,7 @@ function ThreadPage() {
       void navigate({ to: "/chat" });
       toast.success("Chat deleted. Evidence successfully destroyed.");
     } catch {
-      toast.error("Couldn't delete that chat. Nagatha keeps receipts anyway.");
+      toast.error("Error: the chat was not deleted. Please try again.");
     }
   };
 

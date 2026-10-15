@@ -217,7 +217,7 @@ export function ChatWindow({
         { body: { attachments: stored } },
       );
     } catch (uploadError) {
-      toast.error(uploadError instanceof Error ? uploadError.message : "Couldn't add that photo.");
+      toast.error(uploadError instanceof Error ? uploadError.message : "Error: the photo could not be added. Please try again.");
       throw uploadError;
     }
   };
@@ -228,7 +228,7 @@ export function ChatWindow({
       const { token } = await makeShareLink({ data: { threadId } });
       url = `${window.location.origin}/share/${token}`;
     } catch {
-      toast.error("Couldn't make a share link. Try again in a moment.");
+      toast.error("Error: the share link could not be created. Please try again.");
       return;
     }
     try {
@@ -361,7 +361,7 @@ export function ChatWindow({
             multiple
             maxFiles={3}
             maxFileSize={10 * 1024 * 1024}
-            onError={({ code }) => toast.error(code === "max_files" ? "Three photos at a time, paparazzi." : code === "max_file_size" ? "That photo is over 10 MB." : "Please choose a JPG, PNG, WebP, or GIF photo.")}
+            onError={({ code }) => toast.error(code === "max_files" ? "You can add up to 3 photos at a time." : code === "max_file_size" ? "That photo is over 10 MB." : "Please choose a JPG, PNG, WebP, or GIF photo.")}
             onSubmit={handleSubmit}
           >
             <PhotoPreviews />
