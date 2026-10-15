@@ -1,5 +1,6 @@
 import { haptic, nativeShare, takePhoto } from "@/lib/native";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { ProPaywall } from "@/components/pro-paywall";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type FileUIPart, type UIMessage } from "ai";
 import { useQueryClient } from "@tanstack/react-query";
@@ -115,6 +116,7 @@ export function ChatWindow({
 }) {
   const queryClient = useQueryClient();
   const makeShareLink = useServerFn(createShareLink);
+  const [paywallOpen, setPaywallOpen] = useState(false);
 
   const transport = useMemo(
     () =>
@@ -137,6 +139,10 @@ export function ChatWindow({
       void queryClient.invalidateQueries({ queryKey: ["threads"] });
     },
     onError: (err) => {
+      if (err.message.includes("DAILY_LIMIT_REACHED")) {
+        setPaywallOpen(true);
+        return;
+      }
       console.error(err);
       toast.error("Nagatha choked on her coffee. Give that another shot.");
     },
@@ -231,6 +237,7 @@ export function ChatWindow({
 
   return (
     <div className="flex min-h-0 min-w-0 flex-1 overflow-hidden">
+      <ProPaywall open={paywallOpen} onOpenChange={setPaywallOpen} />
       {messages.length > 0 && (
         <aside className="hidden w-48 shrink-0 flex-col items-center border-r bg-card/40 px-4 py-8 text-center lg:flex">
           <img key={mood} src={moodInfo.src} alt={moodInfo.alt} className="w-full max-w-44 animate-in object-contain fade-in zoom-in-75 duration-300" width={1024} height={1024} />
@@ -330,7 +337,7 @@ export function ChatWindow({
             </Message>
           )}
 
-          {status === "error" && error && (
+          {status === "error" && error && !error.message.includes("DAILY_LIMIT_REACHED") && (
             <p className="text-center text-sm font-medium text-destructive">
               That one got away from us. Try sending it again.
             </p>
