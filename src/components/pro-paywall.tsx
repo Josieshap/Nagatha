@@ -1,4 +1,5 @@
 import { Check } from "lucide-react";
+import { Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -9,19 +10,20 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { NAGATHA_MOODS } from "@/lib/nagatha-mood";
+import { FREE_DAILY_MESSAGES, PRO_PLANS, TERMS_URL } from "@/lib/plans";
+
+const comingSoon = (what: string) =>
+  toast.message(`${what} is coming soon.`, {
+    description: `Purchases open once the App Store subscription is approved. Your ${FREE_DAILY_MESSAGES} free messages reset tomorrow.`,
+  });
 
 export function ProPaywall({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
-  const upgrade = (plan: string) => {
-    toast.message(`Nagatha Pro (${plan}) is coming soon.`, {
-      description: "Purchases open once the App Store subscription is approved. Your 5 free messages reset tomorrow.",
-    });
-  };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-sm">
+      <DialogContent className="max-h-[90dvh] max-w-sm overflow-y-auto">
         <DialogHeader className="items-center text-center">
-          <img src={NAGATHA_MOODS.idle.src} alt={NAGATHA_MOODS.idle.alt} className="size-24 object-contain" width={1024} height={1024} />
-          <DialogTitle className="font-display text-xl">That's your 5 free messages for today.</DialogTitle>
+          <img src={NAGATHA_MOODS.idle.src} alt={NAGATHA_MOODS.idle.alt} className="size-20 object-contain" width={1024} height={1024} />
+          <DialogTitle className="font-display text-xl">That's your {FREE_DAILY_MESSAGES} free messages for today.</DialogTitle>
           <DialogDescription>
             I'd keep going, but I'm not running a charity. Come back tomorrow, or go Pro and keep me on call.
           </DialogDescription>
@@ -32,9 +34,26 @@ export function ProPaywall({ open, onOpenChange }: { open: boolean; onOpenChange
           ))}
         </ul>
         <div className="grid gap-2">
-          <Button onClick={() => upgrade("monthly")}>Try Pro free for 7 days, then $4.99/month</Button>
-          <Button variant="outline" onClick={() => upgrade("yearly")}>$34.99/year (save 40%)</Button>
+          {PRO_PLANS.map((plan) => (
+            <Button
+              key={plan.id}
+              variant={plan.highlight ? "default" : "outline"}
+              className="h-auto flex-col gap-0.5 whitespace-normal py-2"
+              onClick={() => comingSoon(plan.id === "lifetime" ? "Nagatha Forever" : "Nagatha Pro")}
+            >
+              <span className="font-semibold">{plan.label}</span>
+              <span className="text-xs font-normal opacity-80">{plan.note}</span>
+            </Button>
+          ))}
           <Button variant="ghost" onClick={() => onOpenChange(false)}>Fine, I'll wait until tomorrow</Button>
+        </div>
+        <p className="text-center text-[11px] leading-snug text-muted-foreground">
+          Subscriptions renew automatically unless canceled at least 24 hours before the end of the current period. Manage or cancel anytime in your Apple ID account settings. Nagatha Forever is a one-time purchase.
+        </p>
+        <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs">
+          <button type="button" className="underline" onClick={() => comingSoon("Restore Purchases")}>Restore Purchases</button>
+          <a className="underline" href={TERMS_URL} target="_blank" rel="noreferrer">Terms of Use</a>
+          <Link className="underline" to="/privacy">Privacy Policy</Link>
         </div>
       </DialogContent>
     </Dialog>

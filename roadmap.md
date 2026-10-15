@@ -39,3 +39,5 @@
 - [x] Apple and Google sign-in turned back on
 - [x] Freemium: 5 free AI messages/day (Pacific time), Pro unlimited; paywall screen (purchases pending Apple IAP)
 - [ ] Connect Apple in-app subscriptions to Nagatha Pro
+- [x] Free limit 10/day as one setting, lifetime plan, usage counter, Apple-required paywall links
+- [ ] Connect Apple payments via RevenueCat
