@@ -180,6 +180,13 @@ function Landing() {
           </Button>
         </section>
       </main>
+      <footer className="pb-8 text-center text-sm text-muted-foreground">
+        <Link to="/help" className="underline underline-offset-4">Help</Link>
+        {" · "}
+        <Link to="/privacy" className="underline underline-offset-4">Privacy Policy</Link>
+        {" · "}
+        <Link to="/terms" className="underline underline-offset-4">Terms of Use</Link>
+      </footer>
     </div>
   );
 }
