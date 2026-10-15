@@ -92,11 +92,11 @@ function HelpPage() {
             </Message>
           ))}
           {status === "submitted" && (
-            <p className="font-display text-sm italic text-muted-foreground">Nagatha is sighing and typing…</p>
+            <p role="status" className="font-display text-sm italic text-muted-foreground">Nagatha is sighing and typing…</p>
           )}
           {error && (
-            <p className="text-sm text-destructive">
-              The help desk hit a snag. Try again, or email forkyeahbaby@gmail.com.
+            <p role="alert" className="text-sm font-medium text-destructive">
+              Error: your question was not sent. Try again, or email forkyeahbaby@gmail.com.
             </p>
           )}
         </ConversationContent>
@@ -116,16 +116,16 @@ function HelpPage() {
           aria-label="Your question"
           maxLength={2000}
           rows={1}
-          autoFocus
           className="min-h-11 resize-none"
         />
         <Button type="submit" disabled={busy || !input.trim()}>Ask</Button>
       </form>
-      <p className="pb-3 text-center text-xs text-muted-foreground">
+      </main>
+      <footer className="pb-3 text-center text-xs text-muted-foreground">
         Need a human? <a className="underline" href="mailto:forkyeahbaby@gmail.com">forkyeahbaby@gmail.com</a> ·{" "}
         <Link to="/privacy" className="underline">Privacy</Link> ·{" "}
         <Link to="/terms" className="underline">Terms</Link>
-      </p>
+      </footer>
     </div>
   );
 }
