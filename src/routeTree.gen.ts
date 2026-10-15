@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as HelpRouteImport } from './routes/help'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as SupportRouteImport } from './routes/support'
+import { Route as TermsRouteImport } from './routes/terms'
 import { Route as AuthenticatedChatRouteImport } from './routes/_authenticated/chat'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ShareTokenRouteImport } from './routes/share.$token'
@@ -56,6 +57,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
 const SupportRoute = SupportRouteImport.update({
   id: '/support',
   path: '/support',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsRoute = TermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedChatRoute = AuthenticatedChatRouteImport.update({
@@ -137,6 +143,7 @@ export interface FileRoutesByFullPath {
   '/help': typeof HelpRoute
   '/privacy': typeof PrivacyRoute
   '/support': typeof SupportRoute
+  '/terms': typeof TermsRoute
   '/chat': typeof AuthenticatedChatRouteWithChildren
   '/api/chat': typeof ApiChatRoute
   '/share/$token': typeof ShareTokenRoute
@@ -157,6 +164,7 @@ export interface FileRoutesByTo {
   '/help': typeof HelpRoute
   '/privacy': typeof PrivacyRoute
   '/support': typeof SupportRoute
+  '/terms': typeof TermsRoute
   '/api/chat': typeof ApiChatRoute
   '/share/$token': typeof ShareTokenRoute
   '/chat/$threadId': typeof AuthenticatedChatThreadIdRoute
@@ -178,6 +186,7 @@ export interface FileRoutesById {
   '/help': typeof HelpRoute
   '/privacy': typeof PrivacyRoute
   '/support': typeof SupportRoute
+  '/terms': typeof TermsRoute
   '/_authenticated/chat': typeof AuthenticatedChatRouteWithChildren
   '/api/chat': typeof ApiChatRoute
   '/share/$token': typeof ShareTokenRoute
@@ -200,6 +209,7 @@ export interface FileRouteTypes {
     | '/help'
     | '/privacy'
     | '/support'
+    | '/terms'
     | '/chat'
     | '/api/chat'
     | '/share/$token'
@@ -220,6 +230,7 @@ export interface FileRouteTypes {
     | '/help'
     | '/privacy'
     | '/support'
+    | '/terms'
     | '/api/chat'
     | '/share/$token'
     | '/chat/$threadId'
@@ -240,6 +251,7 @@ export interface FileRouteTypes {
     | '/help'
     | '/privacy'
     | '/support'
+    | '/terms'
     | '/_authenticated/chat'
     | '/api/chat'
     | '/share/$token'
@@ -262,6 +274,7 @@ export interface RootRouteChildren {
   HelpRoute: typeof HelpRoute
   PrivacyRoute: typeof PrivacyRoute
   SupportRoute: typeof SupportRoute
+  TermsRoute: typeof TermsRoute
   ApiChatRoute: typeof ApiChatRoute
   ShareTokenRoute: typeof ShareTokenRoute
   ApiPublicSupportChatRoute: typeof ApiPublicSupportChatRoute
@@ -309,6 +322,13 @@ declare module '@tanstack/react-router' {
       path: '/support'
       fullPath: '/support'
       preLoaderRoute: typeof SupportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms': {
+      id: '/terms'
+      path: '/terms'
+      fullPath: '/terms'
+      preLoaderRoute: typeof TermsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/chat': {
@@ -451,6 +471,7 @@ const rootRouteChildren: RootRouteChildren = {
   HelpRoute: HelpRoute,
   PrivacyRoute: PrivacyRoute,
   SupportRoute: SupportRoute,
+  TermsRoute: TermsRoute,
   ApiChatRoute: ApiChatRoute,
   ShareTokenRoute: ShareTokenRoute,
   ApiPublicSupportChatRoute: ApiPublicSupportChatRoute,
