@@ -7,6 +7,7 @@ import { Message, MessageContent, MessageResponse } from "@/components/ai-elemen
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import mascot from "@/assets/nagatha-idle.png";
+import { ThemeToggle } from "@/lib/theme";
 
 const TITLE = "Ask Nagatha — Help Desk";
 const DESCRIPTION =
@@ -58,6 +59,7 @@ function HelpPage() {
           <img src={mascot} alt="" className="size-10" width={1024} height={1024} />
           <span className="font-display text-lg font-bold">Nagatha Help Desk</span>
         </Link>
+        <ThemeToggle className="ml-auto" />
       </header>
 
       <main id="main-content" tabIndex={-1} className="flex min-h-0 flex-1 flex-col focus:outline-none">
