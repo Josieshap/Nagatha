@@ -2,7 +2,7 @@ import { createFileRoute, Link, Outlet, useNavigate, useParams, useRouterState }
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { BarChart3, BookOpen, History, ListChecks, LogOut, Menu, MessageSquare, Plus, Route as RouteIcon, Timer, Trash2, UserX } from "lucide-react";
+import { BarChart3, BookOpen, LifeBuoy, History, ListChecks, LogOut, Menu, MessageSquare, Plus, Route as RouteIcon, Timer, Trash2, UserX } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { listThreads, deleteThread } from "@/lib/chat.functions";
@@ -200,6 +200,7 @@ function ChatLayout() {
     { to: "/chat/progress", label: "Progress", icon: ListChecks },
     { to: "/chat/lessons", label: "Lessons", icon: BookOpen },
     { to: "/chat/planner", label: "Lesson plan", icon: RouteIcon },
+    { to: "/help", label: "Help", icon: LifeBuoy },
   ] as const;
   const currentPage = pathname.startsWith("/chat/course/") || pathname.startsWith("/chat/lesson/")
     ? "Lessons"
