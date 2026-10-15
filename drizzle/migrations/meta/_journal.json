@@ -15,6 +15,13 @@
       "when": 1792046626031,
       "tag": "0001_admin_roles",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792047441363,
+      "tag": "0002_daily_message_limit",
+      "breakpoints": true
     }
   ]
 }

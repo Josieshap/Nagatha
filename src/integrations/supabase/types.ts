@@ -169,6 +169,24 @@ export type Database = {
         }
         Relationships: []
       }
+      user_daily_usage: {
+        Row: {
+          message_count: number
+          usage_date: string
+          user_id: string
+        }
+        Insert: {
+          message_count?: number
+          usage_date: string
+          user_id: string
+        }
+        Update: {
+          message_count?: number
+          usage_date?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
@@ -187,11 +205,33 @@ export type Database = {
         }
         Relationships: []
       }
+      user_subscriptions: {
+        Row: {
+          expires_at: string | null
+          is_pro: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          expires_at?: string | null
+          is_pro?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          expires_at?: string | null
+          is_pro?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      consume_daily_message: { Args: { _limit?: number }; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -199,6 +239,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_pro: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "user"
