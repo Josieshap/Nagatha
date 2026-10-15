@@ -18,6 +18,11 @@ export const deleteAccount = createServerFn({ method: "POST" })
       else await bucket.remove([prefix]);
     }
 
+    // Tables without a cascading link to the account are cleared explicitly.
+    await supabaseAdmin.from("nag_settings").delete().eq("user_id", userId);
+    await supabaseAdmin.from("user_daily_usage").delete().eq("user_id", userId);
+    await supabaseAdmin.from("user_subscriptions").delete().eq("user_id", userId);
+
     const { error } = await supabaseAdmin.auth.admin.deleteUser(userId);
     if (error) throw new Error(error.message);
     return { ok: true };

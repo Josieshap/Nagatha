@@ -1,6 +1,8 @@
 import { haptic, nativeShare, takePhoto } from "@/lib/native";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ProPaywall } from "@/components/pro-paywall";
+import { useQuery } from "@tanstack/react-query";
+import { getDailyUsage } from "@/lib/usage.functions";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type FileUIPart, type UIMessage } from "ai";
 import { useQueryClient } from "@tanstack/react-query";
@@ -117,6 +119,8 @@ export function ChatWindow({
   const queryClient = useQueryClient();
   const makeShareLink = useServerFn(createShareLink);
   const [paywallOpen, setPaywallOpen] = useState(false);
+  const fetchUsage = useServerFn(getDailyUsage);
+  const usage = useQuery({ queryKey: ["daily-usage"], queryFn: () => fetchUsage() });
 
   const transport = useMemo(
     () =>
@@ -137,10 +141,12 @@ export function ChatWindow({
     transport,
     onFinish: () => {
       void queryClient.invalidateQueries({ queryKey: ["threads"] });
+      void queryClient.invalidateQueries({ queryKey: ["daily-usage"] });
     },
     onError: (err) => {
       if (err.message.includes("DAILY_LIMIT_REACHED")) {
         setPaywallOpen(true);
+        void queryClient.invalidateQueries({ queryKey: ["daily-usage"] });
         return;
       }
       console.error(err);
@@ -376,6 +382,11 @@ export function ChatWindow({
               <PromptInputSubmit status={status} disabled={isLoading} />
             </PromptInputFooter>
           </PromptInput>
+          {usage.data && !usage.data.pro && (
+            <button type="button" onClick={() => setPaywallOpen(true)} className="mt-2 block w-full text-center text-xs font-semibold text-primary">
+              {usage.data.left} of {usage.data.limit} free messages left today
+            </button>
+          )}
           <p className="mt-2 text-center text-xs text-muted-foreground">
             Nagatha roasts with love. Your chores fear her.
           </p>

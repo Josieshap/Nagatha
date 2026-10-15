@@ -209,18 +209,21 @@ export type Database = {
         Row: {
           expires_at: string | null
           is_pro: boolean
+          plan: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
           expires_at?: string | null
           is_pro?: boolean
+          plan?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
           expires_at?: string | null
           is_pro?: boolean
+          plan?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -232,6 +235,7 @@ export type Database = {
     }
     Functions: {
       consume_daily_message: { Args: { _limit?: number }; Returns: Json }
+      get_daily_usage: { Args: { _limit: number }; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

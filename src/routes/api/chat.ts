@@ -9,6 +9,7 @@ import {
 } from "@/lib/ai-gateway.server";
 import { createUserSupabaseClient } from "@/lib/supabase-user.server";
 import { nagathaSystemPrompt } from "@/lib/nagatha-voice.server";
+import { FREE_DAILY_MESSAGES } from "@/lib/plans";
 
 const SYSTEM_PROMPT = nagathaSystemPrompt(`You are Nagatha, the user's tough-love accountability buddy: the sarcastic best friend who genuinely cares, and it shows.
 
@@ -111,8 +112,8 @@ export const Route = createFileRoute("/api/chat")({
         }
         const displayText = userText || "Photo reference";
 
-        // Free tier: 5 messages per day; Pro and admins are unlimited.
-        const { data: quota, error: quotaError } = await supabase.rpc("consume_daily_message", { _limit: 5 });
+        // Free tier: FREE_DAILY_MESSAGES per day; Pro and admins are unlimited.
+        const { data: quota, error: quotaError } = await supabase.rpc("consume_daily_message", { _limit: FREE_DAILY_MESSAGES });
         if (quotaError) {
           return new Response("Could not check your daily messages", { status: 500 });
         }
