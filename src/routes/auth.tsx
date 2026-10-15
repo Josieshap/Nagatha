@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import mascot from "@/assets/nagatha-idle.png";
+import { ThemeToggle } from "@/lib/theme";
 
 // Apple/Google sign-in; accounts share the same saved progress and nag settings as email sign-in.
 const SHOW_SOCIAL_SIGN_IN = true;
@@ -89,6 +90,9 @@ function AuthPage() {
   return (
     <main id="main-content" tabIndex={-1} className="bg-paper flex min-h-screen items-center justify-center px-4 py-10">
       <div className="w-full max-w-sm">
+        <div className="mb-4 flex justify-end">
+          <ThemeToggle />
+        </div>
         <div className="mb-8 flex flex-col items-center text-center">
           <img
             src={mascot}
