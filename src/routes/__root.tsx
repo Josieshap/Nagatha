@@ -18,6 +18,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import facepalmNagatha from "@/assets/nagatha-facepalm.png";
 import { OfflineBanner } from "@/components/offline-banner";
 import { NativeShell } from "@/components/native-shell";
+import { THEME_SCRIPT, ThemeProvider } from "@/lib/theme";
 
 function NotFoundComponent() {
   return (
@@ -90,7 +91,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { name: "theme-color", content: "#f6efe3" },
+      { name: "theme-color", media: "(prefers-color-scheme: light)", content: "#f6efe3" },
+      { name: "theme-color", media: "(prefers-color-scheme: dark)", content: "#261b17" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-title", content: "Nagatha" },
@@ -135,8 +137,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
         <HeadContent />
       </head>
       <body>
@@ -155,11 +158,13 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
-      <OfflineBanner />
-      <NativeShell />
-      <Toaster />
+      <ThemeProvider>
+        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+        <Outlet />
+        <OfflineBanner />
+        <NativeShell />
+        <Toaster />
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }
