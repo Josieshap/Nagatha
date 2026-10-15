@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { useState, type FormEvent } from "react";
-import { Conversation, ConversationContent } from "@/components/ai-elements/conversation";
+import { ChatAnnouncer, Conversation, ConversationContent } from "@/components/ai-elements/conversation";
 import { Message, MessageContent, MessageResponse } from "@/components/ai-elements/message";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -55,17 +55,20 @@ function HelpPage() {
     <div className="flex h-dvh flex-col bg-paper">
       <header className="mx-auto flex w-full max-w-2xl items-center gap-3 px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-3">
         <Link to="/" className="flex items-center gap-2">
-          <img src={mascot} alt="Nagatha" className="size-10" width={1024} height={1024} />
+          <img src={mascot} alt="" className="size-10" width={1024} height={1024} />
           <span className="font-display text-lg font-bold">Nagatha Help Desk</span>
         </Link>
       </header>
 
+      <main id="main-content" tabIndex={-1} className="flex min-h-0 flex-1 flex-col focus:outline-none">
+      <h1 className="sr-only">Nagatha Help Desk</h1>
+      <ChatAnnouncer status={status} lastAssistantText={([...messages].reverse().find((m) => m.role === "assistant")?.parts ?? []).map((p) => (p.type === "text" ? p.text : "")).join("")} />
       <Conversation className="mx-auto w-full max-w-2xl flex-1 min-h-0">
         <ConversationContent className="px-4">
           {messages.length === 0 && (
             <div className="flex flex-col items-center gap-4 py-6 text-center">
               <img src={mascot} alt="Nagatha behind the help desk" className="size-32" width={1024} height={1024} />
-              <h1 className="font-display text-2xl font-semibold">Something broken? Or just confusing?</h1>
+              <h2 className="font-display text-2xl font-semibold">Something broken? Or just confusing?</h2>
               <p className="max-w-md text-sm text-muted-foreground">
                 Ask me about signing in, nags, lessons or your account. I'll fix it or tell you who can.
               </p>
@@ -90,11 +93,11 @@ function HelpPage() {
             </Message>
           ))}
           {status === "submitted" && (
-            <p className="font-display text-sm italic text-muted-foreground">Nagatha is sighing and typing…</p>
+            <p role="status" className="font-display text-sm italic text-muted-foreground">Nagatha is sighing and typing…</p>
           )}
           {error && (
-            <p className="text-sm text-destructive">
-              The help desk hit a snag. Try again, or email forkyeahbaby@gmail.com.
+            <p role="alert" className="text-sm font-medium text-destructive">
+              Error: your question was not sent. Try again, or email forkyeahbaby@gmail.com.
             </p>
           )}
         </ConversationContent>
@@ -114,16 +117,16 @@ function HelpPage() {
           aria-label="Your question"
           maxLength={2000}
           rows={1}
-          autoFocus
           className="min-h-11 resize-none"
         />
         <Button type="submit" disabled={busy || !input.trim()}>Ask</Button>
       </form>
-      <p className="pb-3 text-center text-xs text-muted-foreground">
+      </main>
+      <footer className="pb-3 text-center text-xs text-muted-foreground">
         Need a human? <a className="underline" href="mailto:forkyeahbaby@gmail.com">forkyeahbaby@gmail.com</a> ·{" "}
         <Link to="/privacy" className="underline">Privacy</Link> ·{" "}
         <Link to="/terms" className="underline">Terms</Link>
-      </p>
+      </footer>
     </div>
   );
 }

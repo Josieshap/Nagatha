@@ -21,7 +21,7 @@ export const Route = createFileRoute("/_authenticated/chat/lesson/$subjectId/$le
     return { meta: [{ title }, { name: "description", content: description }, { property: "og:title", content: title }, { property: "og:description", content: description }, { property: "og:type", content: "article" }, { name: "twitter:card", content: "summary" }] };
   },
   component: LessonPage,
-  notFoundComponent: () => <main className="p-8">Nagatha cannot teach a lesson that does not exist. Yet.</main>,
+  notFoundComponent: () => <div className="p-8"><h1 className="font-display text-2xl font-bold">Lesson not found</h1><p className="mt-2">That lesson does not exist. Go back to Lessons and pick another one.</p></div>,
 });
 
 function LessonPage() {
@@ -37,7 +37,7 @@ function LessonPage() {
   const mutation = useMutation({
     mutationFn: (payload: { score: number; completed: boolean }) => save({ data: { subjectId: subjectId as SubjectId, lessonId, ...payload } }),
     onSuccess: () => void queryClient.invalidateQueries({ queryKey: ["lesson-progress"] }),
-    onError: () => toast.error("Your progress refused to save. Try once more."),
+    onError: () => toast.error("Error: your progress was not saved. Please try again."),
   });
   if (!subject || !lesson || !SUBJECT_IDS.includes(subjectId as SubjectId)) return null;
 
@@ -50,7 +50,7 @@ function LessonPage() {
   };
 
   return (
-    <main className="flex-1 overflow-y-auto bg-paper">
+    <div className="flex-1 overflow-y-auto bg-paper">
       <article className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6">
         <Button asChild variant="ghost" size="sm"><Link to="/chat/course/$subjectId" params={{ subjectId }}><ArrowLeft />{subject.name}</Link></Button>
         <header className="mt-5 border-b pb-6">
@@ -78,6 +78,6 @@ function LessonPage() {
           </div>
         </section>
       </article>
-    </main>
+    </div>
   );
 }

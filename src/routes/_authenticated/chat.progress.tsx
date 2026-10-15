@@ -8,6 +8,7 @@ import { addTask, deleteTask, listTasks, setTaskDone } from "@/lib/tasks.functio
 import { haptic } from "@/lib/native";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { NAGATHA_MOODS } from "@/lib/nagatha-mood";
@@ -47,6 +48,7 @@ function ProgressPage() {
   const toggleTask = useServerFn(setTaskDone);
   const removeTask = useServerFn(deleteTask);
   const [title, setTitle] = useState("");
+  const [announcement, setAnnouncement] = useState("");
 
   const { data: tasks, isLoading } = useQuery({
     queryKey: ["tasks"],
@@ -57,23 +59,30 @@ function ProgressPage() {
 
   const add = useMutation({
     mutationFn: (value: string) => createTask({ data: { title: value } }),
-    onSuccess: () => {
+    onSuccess: (_data, value) => {
       setTitle("");
+      setAnnouncement(`Added task: ${value}`);
       invalidate();
     },
-    onError: () => toast.error("That task didn't stick. Try again."),
+    onError: () => toast.error("Error: the task was not added. Please try again."),
   });
 
   const toggle = useMutation({
     mutationFn: (vars: { id: string; done: boolean }) => toggleTask({ data: vars }),
-    onSuccess: invalidate,
-    onError: () => toast.error("Couldn't update that one."),
+    onSuccess: (_data, vars) => {
+      setAnnouncement(vars.done ? "Task marked done." : "Task marked not done.");
+      invalidate();
+    },
+    onError: () => toast.error("Error: the task was not updated. Please try again."),
   });
 
   const remove = useMutation({
     mutationFn: (id: string) => removeTask({ data: { id } }),
-    onSuccess: invalidate,
-    onError: () => toast.error("Couldn't delete that one."),
+    onSuccess: () => {
+      setAnnouncement("Task deleted.");
+      invalidate();
+    },
+    onError: () => toast.error("Error: the task was not deleted. Please try again."),
   });
 
   const total = tasks?.length ?? 0;
@@ -82,7 +91,7 @@ function ProgressPage() {
   const mood = total > 0 && done === total ? NAGATHA_MOODS.cheer : NAGATHA_MOODS.checklist;
 
   return (
-    <main className="flex-1 overflow-y-auto bg-paper">
+    <div className="flex-1 overflow-y-auto bg-paper">
       <div className="mx-auto w-full max-w-2xl px-4 py-8">
         <header className="flex items-center gap-4">
           <img
@@ -120,8 +129,10 @@ function ProgressPage() {
           </div>
         </section>
 
+        <div role="status" aria-live="polite" className="sr-only">{announcement}</div>
+        <Label htmlFor="new-task" className="mt-6 block">New task</Label>
         <form
-          className="mt-6 flex gap-2"
+          className="mt-2 flex gap-2"
           onSubmit={(e) => {
             e.preventDefault();
             const value = title.trim();
@@ -132,8 +143,9 @@ function ProgressPage() {
           <Input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            id="new-task"
             placeholder="What are you avoiding today?"
-            aria-label="New task"
+            autoComplete="off"
             maxLength={200}
           />
           <Button type="submit" disabled={add.isPending || title.trim().length === 0}>
@@ -155,33 +167,36 @@ function ProgressPage() {
               className="group flex items-center gap-3 rounded-xl border border-border bg-card/70 px-4 py-3"
             >
               <Checkbox
+                id={`task-${task.id}`}
+                className="size-6"
                 checked={task.done}
                 onCheckedChange={(checked) => {
                   void haptic(checked === true ? "medium" : "light");
                   toggle.mutate({ id: task.id, done: checked === true });
                 }}
-                aria-label={`Mark ${task.title} as ${task.done ? "not done" : "done"}`}
               />
-              <span
+              <label
+                htmlFor={`task-${task.id}`}
                 className={cn(
-                  "min-w-0 flex-1 break-words text-sm",
+                  "min-w-0 flex-1 cursor-pointer break-words py-2 text-sm",
                   task.done && "text-muted-foreground line-through",
                 )}
               >
                 {task.title}
-              </span>
+              </label>
+              {task.done && <span className="shrink-0 rounded-full bg-secondary px-2 py-0.5 text-xs font-semibold text-secondary-foreground">Done</span>}
               <button
                 type="button"
                 aria-label={`Delete ${task.title}`}
                 onClick={() => remove.mutate(task.id)}
-                className="rounded-md p-1.5 text-muted-foreground opacity-0 transition-opacity hover:text-destructive focus-visible:opacity-100 group-hover:opacity-100"
+                className="inline-flex size-11 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:text-destructive focus-visible:outline-2 focus-visible:outline-ring"
               >
-                <Trash2 className="size-4" />
+                <Trash2 className="size-4" aria-hidden="true" />
               </button>
             </li>
           ))}
         </ul>
       </div>
-    </main>
+    </div>
   );
 }

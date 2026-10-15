@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
 import { createShareLink } from "@/lib/chat.functions";
 import {
+  ChatAnnouncer,
   Conversation,
   ConversationContent,
   ConversationScrollButton,
@@ -150,7 +151,7 @@ export function ChatWindow({
         return;
       }
       console.error(err);
-      toast.error("Nagatha choked on her coffee. Give that another shot.");
+      toast.error("Your message could not be sent. Please try again.");
     },
   });
 
@@ -216,7 +217,7 @@ export function ChatWindow({
         { body: { attachments: stored } },
       );
     } catch (uploadError) {
-      toast.error(uploadError instanceof Error ? uploadError.message : "Couldn't add that photo.");
+      toast.error(uploadError instanceof Error ? uploadError.message : "Error: the photo could not be added. Please try again.");
       throw uploadError;
     }
   };
@@ -227,7 +228,7 @@ export function ChatWindow({
       const { token } = await makeShareLink({ data: { threadId } });
       url = `${window.location.origin}/share/${token}`;
     } catch {
-      toast.error("Couldn't make a share link. Try again in a moment.");
+      toast.error("Error: the share link could not be created. Please try again.");
       return;
     }
     try {
@@ -291,6 +292,7 @@ export function ChatWindow({
         </div>
       )}
 
+      <ChatAnnouncer status={status} lastAssistantText={textOf([...messages].reverse().find((m) => m.role === "assistant") ?? { parts: [] } as unknown as UIMessage)} />
       <Conversation className="min-h-0 min-w-0 flex-1">
         <ConversationContent className="mx-auto w-full min-w-0 max-w-2xl gap-6 overflow-x-hidden px-3 py-5 sm:px-4 sm:py-6">
           {messages.length === 0 && !isLoading && (
@@ -344,8 +346,8 @@ export function ChatWindow({
           )}
 
           {status === "error" && error && !error.message.includes("DAILY_LIMIT_REACHED") && (
-            <p className="text-center text-sm font-medium text-destructive">
-              That one got away from us. Try sending it again.
+            <p role="alert" className="text-center text-sm font-medium text-destructive">
+              Error: your message was not sent. Please try sending it again.
             </p>
           )}
         </ConversationContent>
@@ -359,12 +361,11 @@ export function ChatWindow({
             multiple
             maxFiles={3}
             maxFileSize={10 * 1024 * 1024}
-            onError={({ code }) => toast.error(code === "max_files" ? "Three photos at a time, paparazzi." : code === "max_file_size" ? "That photo is over 10 MB." : "Please choose a JPG, PNG, WebP, or GIF photo.")}
+            onError={({ code }) => toast.error(code === "max_files" ? "You can add up to 3 photos at a time." : code === "max_file_size" ? "That photo is over 10 MB." : "Please choose a JPG, PNG, WebP, or GIF photo.")}
             onSubmit={handleSubmit}
           >
             <PhotoPreviews />
             <PromptInputTextarea
-              autoFocus
               placeholder={messages.some((message) => /Spanish|Italian|French|German|Korean|English|lesson|tutor/i.test(textOf(message))) ? "Ask a question about your lesson…" : "Ask Nagatha for help…"}
               aria-label="Message Nagatha"
             />

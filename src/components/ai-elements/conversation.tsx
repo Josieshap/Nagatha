@@ -5,20 +5,52 @@ import { cn } from "@/lib/utils";
 import type { UIMessage } from "ai";
 import { ArrowDownIcon, DownloadIcon } from "lucide-react";
 import type { ComponentProps } from "react";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { StickToBottom, useStickToBottomContext } from "use-stick-to-bottom";
 
 export type ConversationProps = ComponentProps<typeof StickToBottom>;
 
-export const Conversation = ({ className, ...props }: ConversationProps) => (
-  <StickToBottom
-    className={cn("relative flex-1 overflow-y-hidden", className)}
-    initial="smooth"
-    resize="smooth"
-    role="log"
-    {...props}
-  />
-);
+function usePrefersReducedMotion() {
+  const [reduced, setReduced] = useState(false);
+  useEffect(() => {
+    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReduced(query.matches);
+    const onChange = () => setReduced(query.matches);
+    query.addEventListener("change", onChange);
+    return () => query.removeEventListener("change", onChange);
+  }, []);
+  return reduced;
+}
+
+// role="log" gives screen readers a named message history; live announcements are handled
+// by a separate polite status region so streaming tokens are not read one by one.
+export const Conversation = ({ className, ...props }: ConversationProps) => {
+  const reduced = usePrefersReducedMotion();
+  return (
+    <StickToBottom
+      className={cn("relative flex-1 overflow-y-hidden", className)}
+      initial={reduced ? "instant" : "smooth"}
+      resize={reduced ? "instant" : "smooth"}
+      role="log"
+      aria-live="off"
+      aria-label="Conversation"
+      {...props}
+    />
+  );
+};
+
+export function ChatAnnouncer({ status, lastAssistantText }: { status: string; lastAssistantText: string }) {
+  const [message, setMessage] = useState("");
+  const [prev, setPrev] = useState(status);
+  useEffect(() => {
+    if (status === prev) return;
+    if (status === "submitted") setMessage("Message sent. Nagatha is writing a reply.");
+    else if (status === "ready" && (prev === "streaming" || prev === "submitted")) setMessage(`Nagatha replied: ${lastAssistantText}`);
+    else if (status === "error") setMessage("Error: the message could not be sent. Please try again.");
+    setPrev(status);
+  }, [status, prev, lastAssistantText]);
+  return <div role="status" aria-live="polite" aria-atomic="true" className="sr-only">{message}</div>;
+}
 
 export type ConversationContentProps = ComponentProps<
   typeof StickToBottom.Content

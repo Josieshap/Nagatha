@@ -105,7 +105,7 @@ function RealityCheck() {
     mutationFn: (value: string) => run({ data: { task: value } }),
     onError: (err) => {
       console.error(err);
-      toast.error("Nagatha lost her stopwatch. Try that again.");
+      toast.error("Error: the estimate could not be made. Please try again.");
     },
   });
 

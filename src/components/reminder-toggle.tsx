@@ -74,7 +74,7 @@ export function ReminderToggle() {
     try {
       ok = await setDailyReminder(nextHour === "off" ? null : nextHour, nextMode, theme);
     } catch {
-      toast.error("Couldn't save your nag. Try again.");
+      toast.error("Error: your nag was not saved. Please try again.");
       return false;
     } finally { setSaving(false); }
     if (!ok) {
@@ -111,9 +111,9 @@ export function ReminderToggle() {
   return (
     <div className="w-full">
       <label className="flex w-full items-center gap-2 px-4 py-2 text-sm text-muted-foreground">
-        <Heart className="size-4" />
+        <Heart className="size-4" aria-hidden="true" />
         <span className="flex-1">Nag theme</span>
-        <select className="rounded-md border bg-background px-2 py-1 text-sm text-foreground" value={theme} onChange={(e) => void changeTheme(e.target.value)} aria-label="Nag theme">
+        <select className="min-h-11 rounded-md border bg-background px-2 py-1 text-sm text-foreground" value={theme} onChange={(e) => void changeTheme(e.target.value)}>
           <option value="productivity">Productivity</option>
           <option value="anxiety">Anxiety</option>
           <option value="sleep">Sleep</option>
@@ -121,23 +121,23 @@ export function ReminderToggle() {
       </label>
       {native && <>
       <label className="flex w-full items-center gap-2 px-4 py-2 text-sm text-muted-foreground">
-        <BellRing className="size-4" />
+        <BellRing className="size-4" aria-hidden="true" />
         <span className="flex-1">Daily nag</span>
         <Switch checked={hour !== "off"} disabled={saving} onCheckedChange={(enabled) => void changeHour(enabled ? draftTime : "off")} aria-label="Enable daily nag" />
       </label>
       <div className="flex w-full items-center gap-2 px-4 py-2">
         <label htmlFor="nag-custom-time" className="flex-1 text-sm text-muted-foreground">Nag time</label>
-        <Input id="nag-custom-time" type="time" step={60} aria-label="Daily nag time" value={draftTime} onChange={(e) => setDraftTime(e.target.value)} className="w-32 min-w-0" disabled={saving} />
+        <Input id="nag-custom-time" type="time" step={60} value={draftTime} onChange={(e) => setDraftTime(e.target.value)} className="w-32 min-w-0" disabled={saving} />
         <Button size="icon" variant="outline" title="Save nag time" aria-label="Save nag time" disabled={saving || !parseNagTime(draftTime)} onClick={() => void changeHour(draftTime)}><Check className="size-4" /></Button>
       </div>
       <label className="flex w-full items-center gap-2 px-4 py-2 text-sm text-muted-foreground">
-        <Zap className="size-4" />
+        <Zap className="size-4" aria-hidden="true" />
         <span className="flex-1">Nag style</span>
         <select
-          className="rounded-md border bg-background px-2 py-1 text-sm text-foreground"
+          className="min-h-11 rounded-md border bg-background px-2 py-1 text-sm text-foreground"
           value={mode}
           onChange={(e) => void changeMode(e.target.value as ReminderMode)}
-           aria-label="Nag style"
+
         >
           <option value="gentle">Gentle</option>
            <option value="nuke">Persistent nag</option>

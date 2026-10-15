@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
@@ -56,7 +56,7 @@ function SharePage() {
         <div className="mt-6">{cta}</div>
       </header>
 
-      <main className="mx-auto mt-10 w-full max-w-2xl px-3 pb-16 sm:px-4">
+      <main id="main-content" tabIndex={-1} className="mx-auto mt-10 w-full max-w-2xl px-3 pb-16 sm:px-4">
         <div className="flex flex-col gap-6 rounded-2xl border bg-card/70 p-4 sm:p-6">
           {isLoading && <Shimmer className="text-sm">Fetching the receipts…</Shimmer>}
           {!isLoading && !data && (
@@ -86,6 +86,13 @@ function SharePage() {
           {cta}
         </div>
       </main>
+      <footer className="pb-8 text-center text-sm text-muted-foreground">
+        <Link to="/help" className="underline underline-offset-4">Help</Link>
+        {" · "}
+        <Link to="/privacy" className="underline underline-offset-4">Privacy Policy</Link>
+        {" · "}
+        <Link to="/terms" className="underline underline-offset-4">Terms of Use</Link>
+      </footer>
     </div>
   );
 }

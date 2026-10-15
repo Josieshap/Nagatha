@@ -2,7 +2,7 @@ import { createFileRoute, Link, Outlet, useNavigate, useParams, useRouterState }
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { BarChart3, BookOpen, History, ListChecks, LogOut, Menu, MessageSquare, Plus, Route as RouteIcon, Timer, Trash2, UserX } from "lucide-react";
+import { BarChart3, BookOpen, LifeBuoy, History, ListChecks, LogOut, Menu, MessageSquare, Plus, Route as RouteIcon, Timer, Trash2, UserX } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { listThreads, deleteThread } from "@/lib/chat.functions";
@@ -65,7 +65,7 @@ function ThreadSidebar({ onNavigate }: { onNavigate?: () => void }) {
         void navigate({ to: "/chat" });
       }
     } catch {
-      toast.error("Couldn't delete that chat. Nagatha keeps receipts anyway.");
+      toast.error("Error: the chat was not deleted. Please try again.");
     }
   };
 
@@ -83,7 +83,7 @@ function ThreadSidebar({ onNavigate }: { onNavigate?: () => void }) {
       toast.success("Account deleted. She'll pretend she isn't hurt.");
       void navigate({ to: "/" });
     } catch {
-      toast.error("Couldn't delete your account. Try again in a moment.");
+      toast.error("Error: your account was not deleted. Please try again.");
       setDeleting(false);
     }
   };
@@ -200,6 +200,7 @@ function ChatLayout() {
     { to: "/chat/progress", label: "Progress", icon: ListChecks },
     { to: "/chat/lessons", label: "Lessons", icon: BookOpen },
     { to: "/chat/planner", label: "Lesson plan", icon: RouteIcon },
+    { to: "/help", label: "Help", icon: LifeBuoy },
   ] as const;
   const currentPage = pathname.startsWith("/chat/course/") || pathname.startsWith("/chat/lesson/")
     ? "Lessons"
@@ -241,7 +242,7 @@ function ChatLayout() {
         </div>
         <Button asChild type="button" size="icon" variant="ghost" className="size-11"><Link to="/chat" aria-label="New chat" title="New chat"><Plus className="size-5" /></Link></Button>
       </header>
-      <main className="flex min-h-0 min-w-0 flex-1"><Outlet /></main>
+      <main id="main-content" tabIndex={-1} className="flex min-h-0 min-w-0 flex-1 focus:outline-none"><Outlet /></main>
     </div>
   );
 }

@@ -89,7 +89,7 @@ const SECTIONS: { h: string; p: string[] }[] = [
 
 function TermsPage() {
   return (
-    <main className="bg-paper min-h-screen px-4 py-10">
+    <main id="main-content" tabIndex={-1} className="bg-paper min-h-screen px-4 py-10">
       <article className="mx-auto max-w-2xl">
         <Link to="/" className="flex items-center gap-3">
           <img src={mascot} alt="" className="size-14" width={1024} height={1024} />

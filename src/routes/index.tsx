@@ -117,7 +117,7 @@ function Landing() {
         </Button>
       </header>
 
-      <main className="mx-auto max-w-5xl px-5 pb-20">
+      <main id="main-content" tabIndex={-1} className="mx-auto max-w-5xl px-5 pb-20">
         <section className="flex flex-col items-center gap-8 pt-6 pb-16 text-center md:flex-row md:gap-12 md:text-left">
           <img
             src={mascot}
@@ -180,6 +180,13 @@ function Landing() {
           </Button>
         </section>
       </main>
+      <footer className="pb-8 text-center text-sm text-muted-foreground">
+        <Link to="/help" className="underline underline-offset-4">Help</Link>
+        {" · "}
+        <Link to="/privacy" className="underline underline-offset-4">Privacy Policy</Link>
+        {" · "}
+        <Link to="/terms" className="underline underline-offset-4">Terms of Use</Link>
+      </footer>
     </div>
   );
 }
