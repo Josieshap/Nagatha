@@ -55,17 +55,19 @@ function HelpPage() {
     <div className="flex h-dvh flex-col bg-paper">
       <header className="mx-auto flex w-full max-w-2xl items-center gap-3 px-4 pt-[max(1rem,env(safe-area-inset-top))] pb-3">
         <Link to="/" className="flex items-center gap-2">
-          <img src={mascot} alt="Nagatha" className="size-10" width={1024} height={1024} />
+          <img src={mascot} alt="" className="size-10" width={1024} height={1024} />
           <span className="font-display text-lg font-bold">Nagatha Help Desk</span>
         </Link>
       </header>
 
+      <main id="main-content" tabIndex={-1} className="flex min-h-0 flex-1 flex-col focus:outline-none">
+      <h1 className="sr-only">Nagatha Help Desk</h1>
       <Conversation className="mx-auto w-full max-w-2xl flex-1 min-h-0">
         <ConversationContent className="px-4">
           {messages.length === 0 && (
             <div className="flex flex-col items-center gap-4 py-6 text-center">
               <img src={mascot} alt="Nagatha behind the help desk" className="size-32" width={1024} height={1024} />
-              <h1 className="font-display text-2xl font-semibold">Something broken? Or just confusing?</h1>
+              <h2 className="font-display text-2xl font-semibold">Something broken? Or just confusing?</h2>
               <p className="max-w-md text-sm text-muted-foreground">
                 Ask me about signing in, nags, lessons or your account. I'll fix it or tell you who can.
               </p>
