@@ -62,6 +62,7 @@ function HelpPage() {
 
       <main id="main-content" tabIndex={-1} className="flex min-h-0 flex-1 flex-col focus:outline-none">
       <h1 className="sr-only">Nagatha Help Desk</h1>
+      <ChatAnnouncer status={status} lastAssistantText={([...messages].reverse().find((m) => m.role === "assistant")?.parts ?? []).map((p) => (p.type === "text" ? p.text : "")).join("")} />
       <Conversation className="mx-auto w-full max-w-2xl flex-1 min-h-0">
         <ConversationContent className="px-4">
           {messages.length === 0 && (
