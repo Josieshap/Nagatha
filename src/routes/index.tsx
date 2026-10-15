@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { ThemeToggle } from "@/lib/theme";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import mascot from "@/assets/nagatha-idle.png";
@@ -110,11 +111,14 @@ function Landing() {
 
   return (
     <div className="bg-paper min-h-screen">
-      <header className="mx-auto flex max-w-5xl items-center justify-between px-5 py-5">
+      <header className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-5 py-5">
         <span className="font-display text-xl font-semibold tracking-tight">Nagatha</span>
-        <Button asChild variant="ghost" size="sm">
-          <Link to="/auth">Sign in</Link>
-        </Button>
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <ThemeToggle />
+          <Button asChild variant="ghost" size="sm">
+            <Link to="/auth">Sign in</Link>
+          </Button>
+        </div>
       </header>
 
       <main id="main-content" tabIndex={-1} className="mx-auto max-w-5xl px-5 pb-20">

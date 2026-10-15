@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { listThreads, deleteThread } from "@/lib/chat.functions";
 import { deleteAccount } from "@/lib/account.functions";
+import { ThemeToggle } from "@/lib/theme";
 import { checkIsAdmin } from "@/lib/admin.functions";
 import { ReminderToggle } from "@/components/reminder-toggle";
 import { Button } from "@/components/ui/button";
@@ -148,6 +149,7 @@ function ThreadSidebar({ onNavigate }: { onNavigate?: () => void }) {
       </nav>
 
       <div className="border-t border-sidebar-border px-3 py-3">
+        <ThemeToggle className="mb-2 w-full" />
         {email && <p className="truncate px-2 pb-2 text-xs text-muted-foreground">{email}</p>}
         <ReminderToggle />
         <Button
