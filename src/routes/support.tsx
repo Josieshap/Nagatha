@@ -21,7 +21,7 @@ export const Route = createFileRoute("/support")({
 function SupportPage() {
   return (
     <div className="min-h-screen bg-paper px-4 py-10">
-      <main className="mx-auto max-w-2xl">
+      <main id="main-content" tabIndex={-1} className="mx-auto max-w-2xl">
         <Link to="/" className="flex items-center gap-3">
           <img src={mascot} alt="Nagatha" className="size-14" width={1024} height={1024} />
           <span className="font-display text-xl font-bold">Nagatha</span>

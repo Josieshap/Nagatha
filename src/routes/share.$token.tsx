@@ -56,7 +56,7 @@ function SharePage() {
         <div className="mt-6">{cta}</div>
       </header>
 
-      <main className="mx-auto mt-10 w-full max-w-2xl px-3 pb-16 sm:px-4">
+      <main id="main-content" tabIndex={-1} className="mx-auto mt-10 w-full max-w-2xl px-3 pb-16 sm:px-4">
         <div className="flex flex-col gap-6 rounded-2xl border bg-card/70 p-4 sm:p-6">
           {isLoading && <Shimmer className="text-sm">Fetching the receipts…</Shimmer>}
           {!isLoading && !data && (

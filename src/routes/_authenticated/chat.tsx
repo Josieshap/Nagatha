@@ -241,7 +241,7 @@ function ChatLayout() {
         </div>
         <Button asChild type="button" size="icon" variant="ghost" className="size-11"><Link to="/chat" aria-label="New chat" title="New chat"><Plus className="size-5" /></Link></Button>
       </header>
-      <main className="flex min-h-0 min-w-0 flex-1"><Outlet /></main>
+      <main id="main-content" tabIndex={-1} className="flex min-h-0 min-w-0 flex-1 focus:outline-none"><Outlet /></main>
     </div>
   );
 }

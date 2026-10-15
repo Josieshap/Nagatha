@@ -117,7 +117,7 @@ function Landing() {
         </Button>
       </header>
 
-      <main className="mx-auto max-w-5xl px-5 pb-20">
+      <main id="main-content" tabIndex={-1} className="mx-auto max-w-5xl px-5 pb-20">
         <section className="flex flex-col items-center gap-8 pt-6 pb-16 text-center md:flex-row md:gap-12 md:text-left">
           <img
             src={mascot}

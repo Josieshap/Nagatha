@@ -29,7 +29,7 @@ function LessonsPage() {
   const overall = Math.round((completed / total) * 100);
 
   return (
-    <main className="flex-1 overflow-y-auto bg-paper">
+    <div className="flex-1 overflow-y-auto bg-paper">
       <div className="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6">
         <header className="flex items-center gap-5">
           <img src={mascot} alt="Nagatha reading and ready to tutor" className="size-24 shrink-0 object-contain sm:size-32" width={1024} height={1024} />
@@ -66,6 +66,6 @@ function LessonsPage() {
           })}
         </div>
       </div>
-    </main>
+    </div>
   );
 }

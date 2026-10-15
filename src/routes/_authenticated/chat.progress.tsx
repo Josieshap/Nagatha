@@ -82,7 +82,7 @@ function ProgressPage() {
   const mood = total > 0 && done === total ? NAGATHA_MOODS.cheer : NAGATHA_MOODS.checklist;
 
   return (
-    <main className="flex-1 overflow-y-auto bg-paper">
+    <div className="flex-1 overflow-y-auto bg-paper">
       <div className="mx-auto w-full max-w-2xl px-4 py-8">
         <header className="flex items-center gap-4">
           <img
@@ -182,6 +182,6 @@ function ProgressPage() {
           ))}
         </ul>
       </div>
-    </main>
+    </div>
   );
 }

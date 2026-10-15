@@ -16,7 +16,7 @@ export const Route = createFileRoute("/_authenticated/chat/course/$subjectId")({
     return { meta: [{ title }, { name: "description", content: description }, { property: "og:title", content: title }, { property: "og:description", content: description }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }] };
   },
   component: SubjectPage,
-  notFoundComponent: () => <main className="p-8">That course wandered off. Very educational of it.</main>,
+  notFoundComponent: () => <div className="p-8"><h1 className="font-display text-2xl font-bold">Course not found</h1><p className="mt-2">That course does not exist. Go back to Lessons and pick another one.</p></div>,
 });
 
 function SubjectPage() {
@@ -29,7 +29,7 @@ function SubjectPage() {
   const percent = Math.round((completed.length / subject.lessons.length) * 100);
 
   return (
-    <main className="flex-1 overflow-y-auto bg-paper">
+    <div className="flex-1 overflow-y-auto bg-paper">
       <div className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6">
         <Button asChild variant="ghost" size="sm"><Link to="/chat/lessons"><ArrowLeft />All subjects</Link></Button>
         <header className="mt-5 border-b pb-6">
@@ -55,6 +55,6 @@ function SubjectPage() {
           })}
         </ol>
       </div>
-    </main>
+    </div>
   );
 }
