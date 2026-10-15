@@ -41,3 +41,5 @@
 - [ ] Connect Apple in-app subscriptions to Nagatha Pro
 - [x] Free limit 10/day as one setting, lifetime plan, usage counter, Apple-required paywall links
 - [ ] Connect Apple payments via RevenueCat
+- [x] WCAG 2.2 AA audit and fixes across all pages
+- [ ] Manual VoiceOver test on iPhone
