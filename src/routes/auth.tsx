@@ -65,7 +65,7 @@ function AuthPage() {
         }
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
+      setError(err instanceof Error ? err.message : "Sign-in failed. Please try again.");
     } finally {
       setBusy(false);
     }
@@ -105,21 +105,25 @@ function AuthPage() {
         </div>
 
         <div className="rounded-2xl border bg-card p-6 shadow-sm">
+          <h2 className="mb-1 font-display text-xl font-bold">{mode === "signin" ? "Sign in" : "Create an account"}</h2>
+          <p className="mb-4 text-xs text-muted-foreground">All fields are required.</p>
           <form onSubmit={handleEmailAuth} className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">Email (required)</Label>
               <Input
                 id="email"
                 type="email"
                 required
                 autoComplete="email"
+                aria-invalid={error ? true : undefined}
+                aria-describedby={error ? "auth-error" : undefined}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Password (required)</Label>
               <Input
                 id="password"
                 type="password"
@@ -128,12 +132,14 @@ function AuthPage() {
                 autoComplete={mode === "signin" ? "current-password" : "new-password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
+                aria-invalid={error ? true : undefined}
+                aria-describedby={error ? "password-hint auth-error" : "password-hint"}
               />
+              <p id="password-hint" className="text-xs text-muted-foreground">At least 6 characters. Paste and password managers work here.</p>
             </div>
 
-            {error && <p className="text-sm font-medium text-destructive">{error}</p>}
-            {notice && <p className="text-sm font-medium text-muted-foreground">{notice}</p>}
+            {error && <p id="auth-error" role="alert" className="text-sm font-medium text-destructive">Error: {error}{/password|credentials/i.test(error) ? " Check your email and password, then try again." : ""}</p>}
+            {notice && <p role="status" className="text-sm font-medium text-foreground">{notice}</p>}
 
             <Button type="submit" disabled={busy} className="w-full">
               {busy ? "Hold on…" : mode === "signin" ? "Sign in" : "Create account"}
@@ -172,7 +178,7 @@ function AuthPage() {
 
           <button
             type="button"
-            className="mt-4 w-full text-center text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+            className="mt-4 min-h-11 w-full text-center text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground"
             onClick={() => {
               setMode(mode === "signin" ? "signup" : "signin");
               setError(null);
@@ -182,7 +188,11 @@ function AuthPage() {
             {mode === "signin" ? "New here? Create an account" : "Already have an account? Sign in"}
           </button>
         </div>
-        <p className="mt-6 text-center text-xs text-muted-foreground">
+        <footer className="mt-6 text-center text-xs text-muted-foreground">
+          <Link to="/help" className="underline underline-offset-4 hover:text-foreground">
+            Help
+          </Link>
+          {" · "}
           <Link to="/privacy" className="underline underline-offset-4 hover:text-foreground">
             Privacy policy
           </Link>
@@ -190,7 +200,7 @@ function AuthPage() {
           <Link to="/terms" className="underline underline-offset-4 hover:text-foreground">
             Terms of Use
           </Link>
-        </p>
+        </footer>
       </div>
     </main>
   );
