@@ -186,6 +186,10 @@ function AuthPage() {
           <Link to="/privacy" className="underline underline-offset-4 hover:text-foreground">
             Privacy policy
           </Link>
+          {" · "}
+          <Link to="/terms" className="underline underline-offset-4 hover:text-foreground">
+            Terms of Use
+          </Link>
         </p>
       </div>
     </div>

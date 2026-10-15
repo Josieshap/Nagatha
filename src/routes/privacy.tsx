@@ -111,6 +111,8 @@ function PrivacyPage() {
           </section>
         ))}
         <footer className="mt-10 border-t border-border pt-6 text-sm text-muted-foreground">
+          <Link to="/terms" className="underline underline-offset-4">Terms of Use</Link>
+          {" · "}
           <Link to="/support" className="underline underline-offset-4">Contact support</Link>
           {" · "}
           <Link to="/help" className="underline underline-offset-4">Ask Nagatha</Link>

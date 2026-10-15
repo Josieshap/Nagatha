@@ -39,6 +39,7 @@ function SupportPage() {
           <h2 className="font-display text-2xl font-semibold">Privacy and account deletion</h2>
           <p className="mt-3 leading-relaxed">Use the same email for privacy questions or deletion requests. You can also delete your account from the account controls in the app’s menu.</p>
           <Link to="/privacy" className="mt-4 inline-block text-primary underline underline-offset-4">Privacy Policy</Link>
+          <Link to="/terms" className="mt-4 ml-4 inline-block text-primary underline underline-offset-4">Terms of Use</Link>
         </section>
         <footer className="mt-10 border-t border-border pt-6 text-sm text-muted-foreground">© 2026 Nagatha. All rights reserved.</footer>
       </main>
