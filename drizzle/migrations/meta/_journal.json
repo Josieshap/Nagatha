@@ -22,6 +22,13 @@
       "when": 1792047441363,
       "tag": "0002_daily_message_limit",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792048008719,
+      "tag": "0003_usage_status",
+      "breakpoints": true
     }
   ]
 }
