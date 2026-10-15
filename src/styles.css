@@ -63,32 +63,32 @@
   --card-foreground: oklch(0.35 0.019 38.2);
   --popover: oklch(0.98 0.015 70);
   --popover-foreground: oklch(0.35 0.019 38.2);
-  --primary: oklch(0.636 0.134 25.4);
+  --primary: oklch(0.52 0.14 28);
   --primary-foreground: oklch(0.98 0.015 70);
   --secondary: oklch(0.909 0.03 55);
   --secondary-foreground: oklch(0.35 0.019 38.2);
   --muted: oklch(0.929 0.025 55);
-  --muted-foreground: oklch(0.508 0.031 37.6);
+  --muted-foreground: oklch(0.48 0.031 37.6);
   --accent: oklch(0.909 0.03 55);
   --accent-foreground: oklch(0.35 0.019 38.2);
-  --destructive: oklch(0.55 0.19 25);
+  --destructive: oklch(0.52 0.19 25);
   --destructive-foreground: oklch(0.98 0.015 70);
   --border: oklch(0.875 0.028 55);
-  --input: oklch(0.875 0.028 55);
-  --ring: oklch(0.636 0.134 25.4);
-  --chart-1: oklch(0.636 0.134 25.4);
+  --input: oklch(0.6 0.03 45);
+  --ring: oklch(0.52 0.14 28);
+  --chart-1: oklch(0.52 0.14 28);
   --chart-2: oklch(0.65 0.08 150);
   --chart-3: oklch(0.55 0.06 60);
   --chart-4: oklch(0.75 0.12 80);
   --chart-5: oklch(0.6 0.1 10);
   --sidebar: oklch(0.945 0.022 60);
   --sidebar-foreground: oklch(0.35 0.019 38.2);
-  --sidebar-primary: oklch(0.636 0.134 25.4);
+  --sidebar-primary: oklch(0.52 0.14 28);
   --sidebar-primary-foreground: oklch(0.98 0.015 70);
   --sidebar-accent: oklch(0.909 0.03 55);
   --sidebar-accent-foreground: oklch(0.35 0.019 38.2);
   --sidebar-border: oklch(0.875 0.028 55);
-  --sidebar-ring: oklch(0.636 0.134 25.4);
+  --sidebar-ring: oklch(0.52 0.14 28);
 }
 
 .dark {
@@ -106,10 +106,10 @@
   --muted-foreground: oklch(0.72 0.025 55);
   --accent: oklch(0.325 0.022 45);
   --accent-foreground: oklch(0.94 0.015 65);
-  --destructive: oklch(0.62 0.18 25);
-  --destructive-foreground: oklch(0.98 0.015 70);
+  --destructive: oklch(0.68 0.18 25);
+  --destructive-foreground: oklch(0.2 0.02 45);
   --border: oklch(0.37 0.022 45);
-  --input: oklch(0.37 0.022 45);
+  --input: oklch(0.58 0.02 45);
   --ring: oklch(0.68 0.13 28);
   --chart-1: oklch(0.68 0.13 28);
   --chart-2: oklch(0.7 0.09 150);
@@ -204,5 +204,66 @@
   .chat-markdown pre {
     max-width: 100%;
     overflow-x: auto;
+  }
+}
+
+/* Accessibility (WCAG 2.2 AA) */
+@layer base {
+  :where(a, button, input, select, textarea, summary, [tabindex], [role="button"], [role="tab"], [role="menuitem"]):focus-visible {
+    outline: 3px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+  /* Keep focused elements clear of sticky headers and bottom bars (2.4.11). */
+  :focus-visible {
+    scroll-margin-block: 6rem;
+  }
+  html {
+    scroll-padding-block: 6rem;
+  }
+  /* Form controls need a 3:1 boundary against the page (1.4.11). */
+  input:not([type="checkbox"]):not([type="radio"]),
+  textarea,
+  select,
+  [data-slot="select-trigger"] {
+    border-color: var(--color-input);
+  }
+}
+
+@utility skip-link {
+  position: absolute;
+  left: 0.75rem;
+  top: 0.75rem;
+  z-index: 100;
+  transform: translateY(-200%);
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: var(--color-primary-foreground);
+  padding: 0.75rem 1rem;
+  font-weight: 700;
+  &:focus,
+  &:focus-visible {
+    transform: translateY(env(safe-area-inset-top));
+  }
+}
+
+/* Comfortable touch targets for icon buttons on touch screens (2.5.8, aim 44px). */
+@media (pointer: coarse) {
+  button[class*="size-8"],
+  button[class*="h-8 w-8"],
+  button[class*="h-9 w-9"],
+  a[class*="h-9 w-9"] {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
