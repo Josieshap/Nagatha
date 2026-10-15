@@ -2,11 +2,12 @@ import { createFileRoute, Link, Outlet, useNavigate, useParams, useRouterState }
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { BookOpen, History, ListChecks, LogOut, Menu, MessageSquare, Plus, Route as RouteIcon, Timer, Trash2, UserX } from "lucide-react";
+import { BarChart3, BookOpen, History, ListChecks, LogOut, Menu, MessageSquare, Plus, Route as RouteIcon, Timer, Trash2, UserX } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { listThreads, deleteThread } from "@/lib/chat.functions";
 import { deleteAccount } from "@/lib/account.functions";
+import { checkIsAdmin } from "@/lib/admin.functions";
 import { ReminderToggle } from "@/components/reminder-toggle";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -191,6 +192,8 @@ function ThreadSidebar({ onNavigate }: { onNavigate?: () => void }) {
 function ChatLayout() {
   const pathname = useRouterState({ select: (router) => router.location.pathname });
   const [menuOpen, setMenuOpen] = useState(false);
+  const checkAdmin = useServerFn(checkIsAdmin);
+  const isAdmin = useQuery({ queryKey: ["is-admin"], queryFn: () => checkAdmin(), staleTime: 300_000 });
   const navigation = [
     { to: "/chat", label: "New chat", icon: Plus },
     { to: "/chat/reality-check", label: "Reality check", icon: Timer },
@@ -222,6 +225,11 @@ function ChatLayout() {
                     </Button>
                   );
                 })}
+                {isAdmin.data?.isAdmin && (
+                  <Button asChild variant="ghost" className={cn("h-11 w-full justify-start gap-3 px-3 text-base", pathname === "/chat/admin" && "bg-sidebar-accent text-sidebar-accent-foreground")}>
+                    <Link to="/chat/admin" onClick={() => setMenuOpen(false)}><BarChart3 className="size-5" />Admin</Link>
+                  </Button>
+                )}
               </nav>
               <h2 className="mt-4 flex shrink-0 items-center gap-2 px-3 text-sm font-semibold text-muted-foreground"><History className="size-4" />Chat history</h2>
               <div className="min-h-0 flex-1"><ThreadSidebar onNavigate={() => setMenuOpen(false)} /></div>

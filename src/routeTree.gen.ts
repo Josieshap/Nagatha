@@ -20,6 +20,7 @@ import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ShareTokenRouteImport } from './routes/share.$token'
 import { Route as AuthenticatedChatIndexRouteImport } from './routes/_authenticated/chat.index'
 import { Route as AuthenticatedChatThreadIdRouteImport } from './routes/_authenticated/chat.$threadId'
+import { Route as AuthenticatedChatAdminRouteImport } from './routes/_authenticated/chat.admin'
 import { Route as AuthenticatedChatLessonsRouteImport } from './routes/_authenticated/chat.lessons'
 import { Route as AuthenticatedChatPlannerRouteImport } from './routes/_authenticated/chat.planner'
 import { Route as AuthenticatedChatProgressRouteImport } from './routes/_authenticated/chat.progress'
@@ -83,6 +84,11 @@ const AuthenticatedChatThreadIdRoute =
     path: '/$threadId',
     getParentRoute: () => AuthenticatedChatRoute,
   } as any)
+const AuthenticatedChatAdminRoute = AuthenticatedChatAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedChatRoute,
+} as any)
 const AuthenticatedChatLessonsRoute =
   AuthenticatedChatLessonsRouteImport.update({
     id: '/lessons',
@@ -135,6 +141,7 @@ export interface FileRoutesByFullPath {
   '/api/chat': typeof ApiChatRoute
   '/share/$token': typeof ShareTokenRoute
   '/chat/$threadId': typeof AuthenticatedChatThreadIdRoute
+  '/chat/admin': typeof AuthenticatedChatAdminRoute
   '/chat/lessons': typeof AuthenticatedChatLessonsRoute
   '/chat/planner': typeof AuthenticatedChatPlannerRoute
   '/chat/progress': typeof AuthenticatedChatProgressRoute
@@ -153,6 +160,7 @@ export interface FileRoutesByTo {
   '/api/chat': typeof ApiChatRoute
   '/share/$token': typeof ShareTokenRoute
   '/chat/$threadId': typeof AuthenticatedChatThreadIdRoute
+  '/chat/admin': typeof AuthenticatedChatAdminRoute
   '/chat/lessons': typeof AuthenticatedChatLessonsRoute
   '/chat/planner': typeof AuthenticatedChatPlannerRoute
   '/chat/progress': typeof AuthenticatedChatProgressRoute
@@ -174,6 +182,7 @@ export interface FileRoutesById {
   '/api/chat': typeof ApiChatRoute
   '/share/$token': typeof ShareTokenRoute
   '/_authenticated/chat/$threadId': typeof AuthenticatedChatThreadIdRoute
+  '/_authenticated/chat/admin': typeof AuthenticatedChatAdminRoute
   '/_authenticated/chat/lessons': typeof AuthenticatedChatLessonsRoute
   '/_authenticated/chat/planner': typeof AuthenticatedChatPlannerRoute
   '/_authenticated/chat/progress': typeof AuthenticatedChatProgressRoute
@@ -195,6 +204,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/share/$token'
     | '/chat/$threadId'
+    | '/chat/admin'
     | '/chat/lessons'
     | '/chat/planner'
     | '/chat/progress'
@@ -213,6 +223,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/share/$token'
     | '/chat/$threadId'
+    | '/chat/admin'
     | '/chat/lessons'
     | '/chat/planner'
     | '/chat/progress'
@@ -233,6 +244,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/share/$token'
     | '/_authenticated/chat/$threadId'
+    | '/_authenticated/chat/admin'
     | '/_authenticated/chat/lessons'
     | '/_authenticated/chat/planner'
     | '/_authenticated/chat/progress'
@@ -334,6 +346,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedChatThreadIdRouteImport
       parentRoute: typeof AuthenticatedChatRoute
     }
+    '/_authenticated/chat/admin': {
+      id: '/_authenticated/chat/admin'
+      path: '/admin'
+      fullPath: '/chat/admin'
+      preLoaderRoute: typeof AuthenticatedChatAdminRouteImport
+      parentRoute: typeof AuthenticatedChatRoute
+    }
     '/_authenticated/chat/lessons': {
       id: '/_authenticated/chat/lessons'
       path: '/lessons'
@@ -388,6 +407,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedChatRouteChildren {
   AuthenticatedChatThreadIdRoute: typeof AuthenticatedChatThreadIdRoute
+  AuthenticatedChatAdminRoute: typeof AuthenticatedChatAdminRoute
   AuthenticatedChatLessonsRoute: typeof AuthenticatedChatLessonsRoute
   AuthenticatedChatPlannerRoute: typeof AuthenticatedChatPlannerRoute
   AuthenticatedChatProgressRoute: typeof AuthenticatedChatProgressRoute
@@ -399,6 +419,7 @@ interface AuthenticatedChatRouteChildren {
 
 const AuthenticatedChatRouteChildren: AuthenticatedChatRouteChildren = {
   AuthenticatedChatThreadIdRoute: AuthenticatedChatThreadIdRoute,
+  AuthenticatedChatAdminRoute: AuthenticatedChatAdminRoute,
   AuthenticatedChatLessonsRoute: AuthenticatedChatLessonsRoute,
   AuthenticatedChatPlannerRoute: AuthenticatedChatPlannerRoute,
   AuthenticatedChatProgressRoute: AuthenticatedChatProgressRoute,
