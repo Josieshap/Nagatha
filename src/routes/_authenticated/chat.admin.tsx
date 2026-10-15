@@ -24,10 +24,16 @@ function AdminPage() {
   const role = useQuery({ queryKey: ["is-admin"], queryFn: () => check() });
   const q = useQuery({ queryKey: ["admin-stats"], queryFn: () => stats(), enabled: role.data?.isAdmin === true });
 
-  if (role.isLoading) return <p className="p-6 text-muted-foreground">Checking your clearance…</p>;
-  if (!role.data?.isAdmin) return <p className="p-6 text-muted-foreground">Nice try. This page is for the admin only.</p>;
-  if (q.isLoading) return <p className="p-6 text-muted-foreground">Counting everyone's procrastination…</p>;
-  if (q.error || !q.data) return <p className="p-6 text-destructive">Couldn't load stats.</p>;
+  const state = (text: string, error = false) => (
+    <div className="p-6">
+      <h1 className="font-display text-2xl">Admin</h1>
+      <p role={error ? "alert" : "status"} className={error ? "mt-2 font-medium text-destructive" : "mt-2 text-muted-foreground"}>{text}</p>
+    </div>
+  );
+  if (role.isLoading) return state("Checking your access…");
+  if (!role.data?.isAdmin) return state("This page is only available to the admin account.");
+  if (q.isLoading) return state("Loading usage stats…");
+  if (q.error || !q.data) return state("Error: usage stats could not be loaded. Please refresh the page.", true);
 
   const { totals, subjects, users } = q.data;
   const cards: [string, number][] = [
