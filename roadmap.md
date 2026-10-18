@@ -1,5 +1,8 @@
 # Roadmap
 
+- [ ] Repair hamburger menu layout and clarify/restore daily nag settings.
+- [ ] Assess “Hey Nagatha” activation for the next iPhone build.
+
 - [x] Restore super-snarky, never-mean Nagatha across coaching and learning; verified signed-in motivation, tutoring follow-up, saved reply reload, task estimate, and sleep nag; 12 tests pass.
 
 - [x] Add user-provided privacy/support contact and copyright details, with a public support page.
