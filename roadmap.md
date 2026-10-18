@@ -1,8 +1,10 @@
 # Roadmap
 
-- [ ] Repair hamburger menu layout and clarify/restore daily nag settings.
-- [ ] Assess “Hey Nagatha” activation for the next iPhone build.
-- [ ] Enlarge Nagatha and add a pausable impatient foot tap while chats await a reply.
+- [x] Repair hamburger menu layout and clarify/restore daily nag settings; verified saved settings and immediate nag coaching.
+- [ ] Verify scheduled nag delivery and cold-launch taps on iPhone (requires a real device).
+- [x] Assess “Hey Nagatha” activation; user chose Siri shortcut, with Open App setup documented.
+- [ ] Set up and verify the personal Siri shortcut on the user’s iPhone (requires the installed app and Apple Shortcuts).
+- [x] Enlarge Nagatha and add a pausable impatient foot tap while chats await a reply; verified pause, typing, reload, and reduced motion.
 
 - [x] Restore super-snarky, never-mean Nagatha across coaching and learning; verified signed-in motivation, tutoring follow-up, saved reply reload, task estimate, and sleep nag; 12 tests pass.
 

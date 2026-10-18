@@ -87,6 +87,22 @@ Features Apple reviewers will see: native camera, daily local reminder
 notifications (History panel → "Daily nag"), haptics, native share sheet,
 Sign in with Apple, in-app account deletion, launch screen, offline screen.
 
+## Siri shortcut: “Hey Nagatha”
+
+The existing installed app can be opened with a personal Siri shortcut; this
+does not require microphone access or a new native build:
+
+1. On the iPhone, open Apple's **Shortcuts** app and tap **+**.
+2. Add the **Open App** action and select **Nagatha**.
+3. Rename the shortcut **Hey Nagatha** and save it.
+4. Say **“Hey Siri, Hey Nagatha.”** Siri opens the installed app; normal sign-in
+   and device-unlock requirements still apply.
+
+“Hey Nagatha” by itself is not an iOS wake word. This shortcut opens Nagatha;
+it does not record a message or start coaching automatically. Automatic
+app-provided Siri actions would require App Intents added to the real Mac/Xcode
+project and tested on iPhone; no generated iOS files are present here.
+
 ## App icon and launch screen
 
 The `assets/` folder holds the app icon (1024×1024, no transparency, as Apple
