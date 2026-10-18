@@ -1,6 +1,6 @@
 # Roadmap
 
-- [ ] Provide a complete modern SwiftUI RevenueCat setup guide with SPM, nagatha_pro, paywall, restoration, and Customer Center; actual native installation requires Mac/Xcode.
+- [x] Provide a modern SwiftUI RevenueCat setup guide with SPM, nagatha_pro, paywall, restoration, and Customer Center; actual native installation and compilation require Mac/Xcode.
 - [x] Provide a ready-to-paste RevenueCat setup description for a new account, including Apple product types and entitlement mapping.
 - [ ] Connect RevenueCat purchases/restoration and verified Pro access for monthly, yearly, and Lifetime on iPhone.
 - [ ] Configure App Store products and RevenueCat credentials; verify real-device purchases (requires owner account access and Apple approval).
