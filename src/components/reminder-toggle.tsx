@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { isNativeApp, REMINDER_KEY, REMINDER_MODE_KEY, setDailyReminder, type ReminderMode } from "@/lib/native";
 
-export function ReminderToggle({ onNavigate }: { onNavigate?: () => void }) {
+export function ReminderToggle({ onNavigate }: { onNavigate?: (() => void) | undefined }) {
   const [native, setNative] = useState(false);
   const [time, setTime] = useState("off");
   const [draftTime, setDraftTime] = useState("09:00");
@@ -88,16 +88,16 @@ export function ReminderToggle({ onNavigate }: { onNavigate?: () => void }) {
           <Button type="button" size="icon" variant="outline" className="size-11 shrink-0" title="Save nag time" aria-label="Save nag time" disabled={disabled || !native || !parseNagTime(draftTime)} onClick={() => void update(draftTime)}><Check aria-hidden="true" /></Button>
         </div>
       </div>
-      <label className="block text-sm font-semibold">Theme
-        <select value={theme} disabled={disabled} onChange={(e) => void update(time, mode, parseNagTheme(e.target.value))} className="mt-1 min-h-11 w-full rounded-md border bg-background px-3 text-sm text-foreground">
+      <div><label htmlFor="nag-theme" className="block text-sm font-semibold">Theme</label>
+        <select id="nag-theme" value={theme} disabled={disabled} onChange={(e) => void update(time, mode, parseNagTheme(e.target.value))} className="mt-1 min-h-11 w-full rounded-md border bg-background px-3 text-sm text-foreground">
           <option value="productivity">Productivity</option><option value="anxiety">Anxiety</option><option value="sleep">Sleep</option>
         </select>
-      </label>
-      <label className="block text-sm font-semibold">Style
-        <select value={mode} disabled={disabled || !native} onChange={(e) => void update(time, e.target.value === "nuke" ? "nuke" : "gentle")} className="mt-1 min-h-11 w-full rounded-md border bg-background px-3 text-sm text-foreground">
+      </div>
+      <div><label htmlFor="nag-style" className="block text-sm font-semibold">Style</label>
+        <select id="nag-style" value={mode} disabled={disabled || !native} onChange={(e) => void update(time, e.target.value === "nuke" ? "nuke" : "gentle")} className="mt-1 min-h-11 w-full rounded-md border bg-background px-3 text-sm text-foreground">
           <option value="gentle">Gentle · one nag</option><option value="nuke">Persistent · three nags</option>
         </select>
-      </label>
+      </div>
       {notice && <p role="alert" className="text-sm text-destructive">{notice}</p>}
       {nagRequest && <Button asChild variant="outline" className="min-h-11 w-full"><Link to="/chat" search={{ nag: nagRequest }} onClick={onNavigate}><MessageSquare aria-hidden="true" />Give me a nag now</Link></Button>}
     </div>
