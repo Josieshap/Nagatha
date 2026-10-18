@@ -250,6 +250,7 @@ export function ChatWindow({
 
   return (
     <div className="flex min-h-0 min-w-0 flex-1 overflow-hidden">
+      <h1 className="sr-only">Conversation with Nagatha</h1>
       <ProPaywall open={paywallOpen} onOpenChange={setPaywallOpen} />
       {messages.length > 0 && (
         <aside className="hidden w-64 shrink-0 flex-col items-center border-r bg-card/40 px-4 py-8 text-center lg:flex">

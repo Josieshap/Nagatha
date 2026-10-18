@@ -87,8 +87,6 @@ Features Apple reviewers will see: native camera, daily local reminder
 notifications (History panel → "Daily nag"), haptics, native share sheet,
 Sign in with Apple, in-app account deletion, launch screen, offline screen.
 
-## App icon and launch screen
-
 ## Siri shortcut: “Hey Nagatha”
 
 The existing installed app can be opened with a personal Siri shortcut; this
