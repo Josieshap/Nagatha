@@ -10,6 +10,11 @@ your published site, and the needed Capacitor packages are in `package.json`.
 
 ## What you need on the Mac
 
+RevenueCat SwiftUI installation instructions are separate from this Capacitor
+shell: do not replace its app entry point or install a second native purchase
+SDK alongside the RevenueCat Capacitor plugin. SwiftUI examples apply to a
+native SwiftUI target or a deliberately integrated native screen on the Mac.
+
 1. **Xcode** — free, from the Mac App Store (big download, install it first).
 2. **Node.js** — install via [nodejs.org](https://nodejs.org) (LTS version).
 3. **Apple Developer account** — $99/year at
