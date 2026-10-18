@@ -2,6 +2,7 @@
 
 - [ ] Repair hamburger menu layout and clarify/restore daily nag settings.
 - [ ] Assess “Hey Nagatha” activation for the next iPhone build.
+- [ ] Enlarge Nagatha and add a pausable impatient foot tap while chats await a reply.
 
 - [x] Restore super-snarky, never-mean Nagatha across coaching and learning; verified signed-in motivation, tutoring follow-up, saved reply reload, task estimate, and sleep nag; 12 tests pass.
 
