@@ -10,6 +10,8 @@
 <!-- LOVABLE:END -->
 - Native-app wrapper (Capacitor) uses src/lib/native.ts bridge; web fallbacks keep the site working without it.
 - Chat navigation lives in a single hamburger sheet with labeled destinations, history, and account controls; the shared header respects device safe areas to remain readable in the native shell.
+- The hamburger sheet scrolls as one content area with collapsible history, so nag settings and account controls remain reachable on small screens.
+- Waiting mascot motion uses a separate component with pause and reduced-motion support; completed assistant turns determine reply-waiting state, never loading/error turns.
 - Local nag notifications use the Capacitor LocalNotifications module; validated notification IDs route through the new-chat search state into a saved coaching conversation, so taps work from both a running app and a cold launch.
 - The native notification bridge uses same-origin document navigation, not router hooks, so native launch callbacks stay independent of React router context and survive cold starts.
 - Nag themes and coaching prompts are centralized in src/lib/nags.ts; notification taps show a theme confirmation before starting a conversation, and the local preference also determines notification wording.
