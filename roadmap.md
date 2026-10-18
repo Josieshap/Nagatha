@@ -1,5 +1,8 @@
 # Roadmap
 
+- [ ] Connect RevenueCat purchases/restoration and verified Pro access for monthly, yearly, and Lifetime on iPhone.
+- [ ] Configure App Store products and RevenueCat credentials; verify real-device purchases (requires owner account access and Apple approval).
+
 - [x] Repair hamburger menu layout and clarify/restore daily nag settings; verified saved settings and immediate nag coaching.
 - [ ] Verify scheduled nag delivery and cold-launch taps on iPhone (requires a real device).
 - [x] Assess “Hey Nagatha” activation; user chose Siri shortcut, with Open App setup documented.
