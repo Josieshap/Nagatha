@@ -126,7 +126,7 @@ export async function setDailyReminder(value: string | number | null, mode: Remi
         title: "Your daily nag",
         body: NAG_NOTIFICATION_TEXT[theme],
         schedule: { on: time, repeats: true, allowWhileIdle: true },
-        sound: mode === "nuke" ? "default" : undefined,
+        ...(mode === "nuke" ? { sound: "default" } : {}),
       },
       ...(mode === "nuke"
         ? [
