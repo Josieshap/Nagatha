@@ -107,7 +107,7 @@ export async function nukeBuzz(): Promise<void> {
   navigator.vibrate?.([400, 150, 400, 150, 400]);
 }
 
-export async function setDailyReminder(value: string | number | null, mode: ReminderMode = "gentle", theme: NagTheme = parseNagTheme(typeof localStorage === "undefined" ? null : localStorage.getItem(NAG_THEME_KEY))): Promise<boolean> {
+export async function setDailyReminder(value: string | number | null, mode: ReminderMode = "gentle", theme: NagTheme = parseNagTheme(typeof localStorage === "undefined" ? null : localStorage.getItem(NAG_THEME_KEY)), requestPermission = true): Promise<boolean> {
   if (!isNativeApp()) return false;
   const time = parseNagTime(typeof value === "number" ? `${String(value).padStart(2, "0")}:00` : value);
   if (value !== null && !time) return false;
@@ -117,7 +117,7 @@ export async function setDailyReminder(value: string | number | null, mode: Remi
     return true;
   }
   if (!time) return false;
-  const perm = await ln.requestPermissions();
+  const perm = await (requestPermission ? ln.requestPermissions() : ln.checkPermissions());
   if (perm?.display !== "granted") return false;
   await ln.cancel({ notifications: NAG_IDS.map((id) => ({ id })) });
   const notifications: LocalNotificationSchema[] = [
@@ -126,7 +126,7 @@ export async function setDailyReminder(value: string | number | null, mode: Remi
         title: "Your daily nag",
         body: NAG_NOTIFICATION_TEXT[theme],
         schedule: { on: time, repeats: true, allowWhileIdle: true },
-        ...(mode === "nuke" ? { sound: "default" } : {}),
+        sound: mode === "nuke" ? "default" : undefined,
       },
       ...(mode === "nuke"
         ? [
