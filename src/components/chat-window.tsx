@@ -52,6 +52,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { NAGATHA_MOODS, detectMood } from "@/lib/nagatha-mood";
+import { WaitingNagatha } from "@/components/waiting-nagatha";
+import { isAwaitingReply } from "@/lib/chat-waiting";
 
 export const PENDING_MESSAGE_KEY = (threadId: string) => `nagatha:pending:${threadId}`;
 
@@ -156,6 +158,8 @@ export function ChatWindow({
   });
 
   const isLoading = status === "submitted" || status === "streaming";
+  const [typing, setTyping] = useState(false);
+  useEffect(() => { setTyping(false); }, [messages]);
 
   // Nagatha changes her pose based on what the conversation is about.
   const mood = useMemo(
@@ -163,6 +167,8 @@ export function ChatWindow({
     [messages],
   );
   const moodInfo = NAGATHA_MOODS[mood];
+  const waiting = isAwaitingReply(status, messages.at(-1)?.role) && !typing && mood !== "calm" && mood !== "sleepy";
+  const caption = waiting ? "Take your time. I've only aged three knit rows." : moodInfo.caption;
 
   // Send the first message carried over from the new-chat screen.
   const sentPending = useRef(false);
@@ -246,25 +252,25 @@ export function ChatWindow({
     <div className="flex min-h-0 min-w-0 flex-1 overflow-hidden">
       <ProPaywall open={paywallOpen} onOpenChange={setPaywallOpen} />
       {messages.length > 0 && (
-        <aside className="hidden w-48 shrink-0 flex-col items-center border-r bg-card/40 px-4 py-8 text-center lg:flex">
-          <img key={mood} src={moodInfo.src} alt={moodInfo.alt} className="w-full max-w-44 animate-in object-contain fade-in zoom-in-75 duration-300" width={1024} height={1024} />
-          <p className="mt-3 font-display text-sm italic text-muted-foreground">{moodInfo.caption}</p>
+        <aside className="hidden w-64 shrink-0 flex-col items-center border-r bg-card/40 px-4 py-8 text-center lg:flex">
+          <div className="flex aspect-square w-full items-center justify-center">{waiting ? <WaitingNagatha /> : <img key={mood} src={moodInfo.src} alt={moodInfo.alt} className="w-44 object-contain" width={1024} height={1024} />}</div>
+          <p className="mt-3 font-display text-sm italic text-muted-foreground">{caption}</p>
         </aside>
       )}
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
       {messages.length > 0 && (
         <div className="shrink-0 border-b bg-card/70 px-3 py-2 backdrop-blur lg:hidden sm:px-4">
           <div className="mx-auto grid w-full max-w-2xl grid-cols-[auto_minmax(0,1fr)] items-center gap-3 overflow-hidden">
-            <img
+            <div className="flex size-32 shrink-0 items-center justify-center sm:size-40">{waiting ? <WaitingNagatha /> : <img
               key={mood}
               src={moodInfo.src}
               alt={moodInfo.alt}
               className="size-20 shrink-0 animate-in object-contain fade-in zoom-in-75 duration-300 min-[430px]:size-24 sm:size-28"
               width={1024}
               height={1024}
-            />
+            />}</div>
             <div className="min-w-0 flex-1">
-              <p className="line-clamp-2 font-display text-sm italic text-muted-foreground">{moodInfo.caption}</p>
+              <p className="font-display text-sm italic text-muted-foreground">{caption}</p>
               <div className="mt-2 flex gap-1">
                 <Button type="button" size="icon-sm" variant="ghost" aria-label="Share this chat" title="Share this chat" onClick={() => void shareConversation()}>
                   <Share2 />
@@ -354,7 +360,7 @@ export function ChatWindow({
         <ConversationScrollButton />
       </Conversation>
 
-      <div className="shrink-0 border-t bg-background px-3 py-3 sm:px-4">
+      <div className="shrink-0 border-t bg-background px-3 py-3 sm:px-4" onInputCapture={(event) => { if (event.target instanceof HTMLTextAreaElement) setTyping(event.target.value.length > 0); }}>
         <div className="mx-auto w-full min-w-0 max-w-2xl overflow-hidden">
           <PromptInput
             accept="image/jpeg,image/png,image/webp,image/gif"

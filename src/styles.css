@@ -208,6 +208,24 @@
 }
 
 /* Accessibility (WCAG 2.2 AA) */
+.nagatha-waiting-body {
+  clip-path: polygon(0 0, 100% 0, 100% 86%, 57% 86%, 57% 100%, 0 100%);
+}
+.nagatha-tapping-foot {
+  clip-path: polygon(57% 86%, 100% 86%, 100% 100%, 57% 100%);
+  transform-origin: 64% 88%;
+  animation: nagatha-foot-tap 0.85s ease-in-out infinite;
+}
+[data-paused="true"] .nagatha-tapping-foot { animation-play-state: paused; }
+@keyframes nagatha-foot-tap {
+  0%, 55%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-8deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nagatha-tapping-foot { animation: none !important; }
+  .nagatha-motion-control { display: none; }
+}
+
 @layer base {
   :where(a, button, input, select, textarea, summary, [tabindex], [role="button"], [role="tab"], [role="menuitem"]):focus-visible {
     outline: 3px solid var(--color-ring);

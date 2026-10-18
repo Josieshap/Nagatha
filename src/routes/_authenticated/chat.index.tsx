@@ -131,14 +131,14 @@ function NewChat() {
     setNagTheme(parseNagTheme(localStorage.getItem(NAG_THEME_KEY)));
     void loadNagSettings().then((s) => {
       if (s) setNagTheme(parseNagTheme(s.nag_theme));
-    });
+    }).catch(() => toast.error("Your saved nag theme could not be loaded. Please choose a theme below."));
   }, [nag]);
 
   const startNag = async () => {
     const prompt = nagPrompt(nagRequest, nagTheme);
     if (!prompt) return;
     localStorage.setItem(NAG_THEME_KEY, nagTheme);
-    void saveNagSettings({ nag_theme: nagTheme });
+    void saveNagSettings({ nag_theme: nagTheme }).catch(() => toast.error("Your nag theme could not be saved for next time."));
     await startThread(prompt);
     sessionStorage.removeItem("nagatha:pending-nag");
   };

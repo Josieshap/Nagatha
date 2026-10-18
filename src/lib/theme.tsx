@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ComponentType, type ReactNode } from "react";
 import { Monitor, Moon, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 export type Theme = "light" | "dark" | "system";
 
@@ -90,13 +91,14 @@ export function ThemeToggle({ className }: { className?: string }) {
       {OPTIONS.map((option) => {
         const active = theme === option.value;
         return (
-          <button
+          <Button
+            variant="ghost"
             key={option.value}
             type="button"
             aria-pressed={active}
             onClick={() => setTheme(option.value)}
             className={cn(
-              "flex h-9 min-w-11 items-center justify-center gap-1.5 rounded-md px-2.5 text-sm font-medium transition-colors",
+              "flex h-11 min-w-0 flex-1 flex-wrap items-center justify-center gap-1 rounded-md px-1.5 text-sm font-medium transition-colors",
               active
                 ? "bg-primary text-primary-foreground"
                 : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
@@ -104,7 +106,7 @@ export function ThemeToggle({ className }: { className?: string }) {
           >
             <option.icon className="size-4" aria-hidden="true" />
             <span>{option.label}</span>
-          </button>
+          </Button>
         );
       })}
     </div>

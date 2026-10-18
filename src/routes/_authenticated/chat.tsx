@@ -90,8 +90,10 @@ function ThreadSidebar({ onNavigate }: { onNavigate?: () => void }) {
   };
 
   return (
-    <div className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden">
-      <nav className="mt-4 min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain pb-3" aria-label="Chat history">
+    <div className="min-w-0">
+      <details className="border-b border-sidebar-border py-3">
+      <summary className="flex min-h-11 cursor-pointer items-center gap-2 px-3 text-sm font-semibold"><History className="size-4" aria-hidden="true" />Chat history</summary>
+      <nav className="mt-2 min-w-0 pb-3" aria-label="Chat history">
         {threads && threads.length > 0 ? (
           <ul className="flex flex-col gap-1">
             {threads.map((thread) => {
@@ -147,11 +149,16 @@ function ThreadSidebar({ onNavigate }: { onNavigate?: () => void }) {
           </p>
         )}
       </nav>
+      </details>
 
-      <div className="border-t border-sidebar-border px-3 py-3">
+      <section aria-labelledby="nag-settings-title" className="py-4">
+        <h2 id="nag-settings-title" className="mb-3 px-3 font-display text-lg font-semibold">Daily nags</h2>
+        <ReminderToggle onNavigate={onNavigate} />
+      </section>
+      <div className="border-t border-sidebar-border py-3">
+        <h2 className="mb-2 px-3 text-sm font-semibold">Appearance</h2>
         <ThemeToggle className="mb-2 w-full" />
         {email && <p className="truncate px-2 pb-2 text-xs text-muted-foreground">{email}</p>}
-        <ReminderToggle />
         <Button
           variant="ghost"
           className="w-full justify-start gap-2 text-muted-foreground"
@@ -217,7 +224,8 @@ function ChatLayout() {
             </SheetTrigger>
             <SheetContent side="left" className="flex h-dvh min-h-0 w-[min(90vw,24rem)] flex-col gap-0 overflow-hidden px-4 pt-[max(1.5rem,env(safe-area-inset-top))] pb-[max(0.75rem,env(safe-area-inset-bottom))] [&>button]:top-[max(1rem,env(safe-area-inset-top))] [&>button]:flex [&>button]:size-11 [&>button]:items-center [&>button]:justify-center">
               <SheetHeader className="px-3 pr-12 text-left"><SheetTitle className="font-display text-2xl">Nagatha</SheetTitle><SheetDescription className="sr-only">Navigation, saved chats, and account settings.</SheetDescription></SheetHeader>
-              <nav aria-label="Main navigation" className="mt-5 flex shrink-0 flex-col gap-1 border-b border-sidebar-border pb-4">
+               <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pt-5 pb-3">
+               <nav aria-label="Main navigation" className="flex flex-col gap-1 border-b border-sidebar-border pb-4">
                 {navigation.map((item) => {
                   const active = item.to === "/chat/lessons"
                     ? currentPage === "Lessons"
@@ -234,8 +242,8 @@ function ChatLayout() {
                   </Button>
                 )}
               </nav>
-              <h2 className="mt-4 flex shrink-0 items-center gap-2 px-3 text-sm font-semibold text-muted-foreground"><History className="size-4" />Chat history</h2>
-              <div className="min-h-0 flex-1"><ThreadSidebar onNavigate={() => setMenuOpen(false)} /></div>
+               <ThreadSidebar onNavigate={() => setMenuOpen(false)} />
+               </div>
             </SheetContent>
           </Sheet>
         <div className="min-w-0 text-center">
