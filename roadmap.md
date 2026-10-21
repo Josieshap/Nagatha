@@ -1,9 +1,13 @@
 # Roadmap
 
+- [x] Build and deliver an installable Android tester APK; Gradle compilation and APK signature/configuration verified; email signup/sign-in, AI reply, and saved reload verified in browser.
+- [ ] Verify Android installation, email sign-in, saved chat, back navigation, and TalkBack on a real Android phone (requires device).
+
 - [x] Set the landing headline to two lines: “Meet Nagatha.” and “She’s not here to be nice.”
 - [x] Hide Apple/Google browser flows, enable immediate email signup, add password recovery; new signup, sign-in, refresh and signed-in chat verified.
 - [x] Give all testers unlimited access, hide pricing/tier screens, and retain usage reporting; request 11 and a subsequent saved AI reply verified.
-- [ ] Publish updated sign-in and hidden pricing to reach installed app (awaiting owner publish request); then verify recovery-email return on iPhone (requires device and inbox).
+- [x] Publish updated email-only sign-in and hidden pricing; published /auth verified without Google sign-in. Existing native shells load this published site.
+- [ ] Verify updated TestFlight email sign-in and recovery-email return on iPhone (requires device and inbox); any new iPhone binary upload requires owner Mac/Xcode and App Store Connect.
 - [x] Provide a modern SwiftUI RevenueCat setup guide with SPM, nagatha_pro, paywall, restoration, and Customer Center; actual native installation and compilation require Mac/Xcode.
 - [x] Provide a ready-to-paste RevenueCat setup description for a new account, including Apple product types and entitlement mapping.
 - [ ] Connect RevenueCat purchases/restoration and verified Pro access for monthly, yearly, and Lifetime on iPhone.

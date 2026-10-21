@@ -17,6 +17,7 @@
 - Nag themes and coaching prompts are centralized in src/lib/nags.ts; notification taps show a theme confirmation before starting a conversation, and the local preference also determines notification wording.
 - Capacitor shell loads the live published site (`server.url` in capacitor.config.ts), not a bundled SPA build; `capacitor-www/` is only a fallback page. Why: the TanStack Start build targets Cloudflare SSR, so there is no static bundle to embed, and site updates then need no new app build.
 - The iOS `ios/` folder is generated on a Mac with `npx cap add ios` (see IOS-SETUP.md); never commit hand-made iOS stubs from the sandbox.
+- Android uses the generated Capacitor `android/` project and the same published HTTPS site; distribute debug APKs only to testers, and keep SDK paths, signing keys, and compiled output out of source control. Why: Android testers need direct installation without a separate website or auth flow.
 - Support and privacy pages are public leaf routes with their own metadata, so App Store visitors can access contact information without signing in.
 - All AI system prompts use the shared server-only voice composer in src/lib/nagatha-voice.server.ts; mode instructions add domain rules without replacing the persona, preventing chat and estimates from drifting apart.
 - Static lesson personality and exercise reactions live in src/lib/lesson-voice.ts, separate from curriculum facts and answer keys so tone changes cannot alter teaching correctness.
