@@ -1,15 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
+import { authErrorMessage } from "@/lib/auth-errors";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import mascot from "@/assets/nagatha-idle.png";
 import { ThemeToggle } from "@/lib/theme";
-
-// Apple/Google sign-in; accounts share the same saved progress and nag settings as email sign-in.
-const SHOW_SOCIAL_SIGN_IN = true;
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -33,7 +30,7 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -41,8 +38,8 @@ function AuthPage() {
   const [notice, setNotice] = useState<string | null>(null);
 
   useEffect(() => {
-    void supabase.auth.getSession().then(({ data }) => {
-      if (data.session) void navigate({ to: "/chat", replace: true });
+    void supabase.auth.getUser().then(({ data }) => {
+      if (data.user) void navigate({ to: "/chat", replace: true });
     });
   }, [navigate]);
 
@@ -52,12 +49,20 @@ function AuthPage() {
     setError(null);
     setNotice(null);
     try {
-      if (mode === "signin") {
-        const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+      if (mode === "forgot") {
+        const { error: resetError } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+          redirectTo: `${window.location.origin}/reset-password`,
+        });
+        if (resetError) throw resetError;
+        setNotice("If an account uses this email, a password-reset link is on its way. Open the newest link to set your password.");
+      } else if (mode === "signin") {
+        const { error: signInError } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
         if (signInError) throw signInError;
         void navigate({ to: "/chat" });
       } else {
-        const { data, error: signUpError } = await supabase.auth.signUp({ email, password });
+        const { data, error: signUpError } = await supabase.auth.signUp({ email: email.trim(), password,
+          options: { emailRedirectTo: window.location.origin },
+        });
         if (signUpError) throw signUpError;
         if (data.session) {
           void navigate({ to: "/chat" });
@@ -66,25 +71,10 @@ function AuthPage() {
         }
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Sign-in failed. Please try again.");
+      setError(authErrorMessage(err));
     } finally {
       setBusy(false);
     }
-  };
-
-  const handleOAuth = async (provider: "google" | "apple") => {
-    setBusy(true);
-    setError(null);
-    const result = await lovable.auth.signInWithOAuth(provider, {
-      redirect_uri: window.location.origin,
-    });
-    if (result.error) {
-      setError(result.error.message ?? `${provider === "apple" ? "Apple" : "Google"} sign-in failed`);
-      setBusy(false);
-      return;
-    }
-    if (result.redirected) return; // Browser is heading to Google
-    void navigate({ to: "/chat" });
   };
 
   return (
@@ -109,7 +99,7 @@ function AuthPage() {
         </div>
 
         <div className="rounded-2xl border bg-card p-6 shadow-sm">
-          <h2 className="mb-1 font-display text-xl font-bold">{mode === "signin" ? "Sign in" : "Create an account"}</h2>
+          <h2 className="mb-1 font-display text-xl font-bold">{mode === "signin" ? "Sign in" : mode === "signup" ? "Create an account" : "Reset your password"}</h2>
           <p className="mb-4 text-xs text-muted-foreground">All fields are required.</p>
           <form onSubmit={handleEmailAuth} className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
@@ -126,7 +116,7 @@ function AuthPage() {
                 placeholder="you@example.com"
               />
             </div>
-            <div className="flex flex-col gap-1.5">
+            {mode !== "forgot" && <div className="flex flex-col gap-1.5">
               <Label htmlFor="password">Password (required)</Label>
               <Input
                 id="password"
@@ -140,57 +130,30 @@ function AuthPage() {
                 aria-describedby={error ? "password-hint auth-error" : "password-hint"}
               />
               <p id="password-hint" className="text-xs text-muted-foreground">At least 6 characters. Paste and password managers work here.</p>
-            </div>
+            </div>}
 
-            {error && <p id="auth-error" role="alert" className="text-sm font-medium text-destructive">Error: {error}{/password|credentials/i.test(error) ? " Check your email and password, then try again." : ""}</p>}
+            {error && <p id="auth-error" role="alert" className="text-sm font-medium text-destructive">Error: {error}</p>}
             {notice && <p role="status" className="text-sm font-medium text-foreground">{notice}</p>}
 
             <Button type="submit" disabled={busy} className="w-full">
-              {busy ? "Hold on…" : mode === "signin" ? "Sign in" : "Create account"}
+              {busy ? "Please wait…" : mode === "signin" ? "Sign in" : mode === "signup" ? "Create account" : "Send password-reset email"}
             </Button>
           </form>
 
-          {SHOW_SOCIAL_SIGN_IN && (
-            <>
-              <div className="my-4 flex items-center gap-3 text-xs text-muted-foreground">
-                <div className="h-px flex-1 bg-border" />
-                or
-                <div className="h-px flex-1 bg-border" />
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <Button
-                  type="button"
-                  className="w-full bg-foreground text-background hover:bg-foreground/90"
-                  disabled={busy}
-                  onClick={() => void handleOAuth("apple")}
-                >
-                  Continue with Apple
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full"
-                  disabled={busy}
-                  onClick={() => void handleOAuth("google")}
-                >
-                  Continue with Google
-                </Button>
-              </div>
-            </>
-          )}
-
-          <button
+          {mode === "signin" && <Button type="button" variant="link" disabled={busy} className="mt-2 min-h-11 w-full whitespace-normal" onClick={() => { setMode("forgot"); setError(null); setNotice(null); }}>Forgot password?</Button>}
+          <Button
             type="button"
-            className="mt-4 min-h-11 w-full text-center text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground"
+            variant="link"
+            disabled={busy}
+            className="mt-2 min-h-11 w-full whitespace-normal text-center text-sm"
             onClick={() => {
               setMode(mode === "signin" ? "signup" : "signin");
               setError(null);
               setNotice(null);
             }}
           >
-            {mode === "signin" ? "New here? Create an account" : "Already have an account? Sign in"}
-          </button>
+            {mode === "signin" ? "New here? Create an account" : "Back to sign in"}
+          </Button>
         </div>
         <footer className="mt-6 text-center text-xs text-muted-foreground">
           <Link to="/help" className="underline underline-offset-4 hover:text-foreground">
