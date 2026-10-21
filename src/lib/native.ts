@@ -161,7 +161,10 @@ export async function initNativeShell(): Promise<void> {
     await plugin("StatusBar")?.["setStyle"]?.({ style: "LIGHT" });
     await plugin("SplashScreen")?.["hide"]?.({ fadeOutDuration: 250 });
     const app = plugin("App");
-    await app?.["addListener"]?.("backButton", () => window.history.back());
+    await app?.["addListener"]?.("backButton", (event: { canGoBack: boolean }) => {
+      if (event.canGoBack) window.history.back();
+      else void app?.["exitApp"]?.({});
+    });
   } catch {
     // Native polish only.
   }
