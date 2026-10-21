@@ -3,7 +3,7 @@ import mascot from "@/assets/nagatha-idle.png";
 
 const TITLE = "Terms of Use — Nagatha";
 const DESC =
-  "The plain-language rules for using Nagatha: AI content, the free tier, Nagatha Pro subscriptions, Nagatha Lifetime, fair use and your account.";
+  "The plain-language rules for testing Nagatha: unlimited access, AI content, fair use and your account.";
 
 export const Route = createFileRoute("/terms")({
   head: () => ({
@@ -35,37 +35,29 @@ const SECTIONS: { h: string; p: string[] }[] = [
     ],
   },
   {
-    h: "Free tier and Nagatha Pro",
+    h: "Tester access",
     p: [
-      "Free accounts get a daily message allowance with Nagatha. It resets each day.",
-      "Nagatha Pro is available as a monthly or yearly subscription billed through your Apple ID. Subscriptions renew automatically unless canceled at least 24 hours before the end of the current period. You can manage or cancel them anytime in your Apple ID account settings.",
-      "Payments and refunds are handled by Apple under Apple's policies. We cannot issue refunds ourselves.",
-    ],
-  },
-  {
-    h: "Nagatha Lifetime",
-    p: [
-      "Nagatha Lifetime is a one-time purchase that gives you Pro access for the lifetime of the Nagatha app and service. That means for as long as Nagatha is offered and supported, not the lifetime of the purchaser.",
+      "During testing, every signed-in tester has unlimited access at no charge. There are no paid tiers or daily message caps during this period.",
     ],
   },
   {
     h: "Fair use",
     p: [
-      "Unlimited plans are subject to reasonable use limits to prevent abuse, automated use or excessive usage.",
+      "Testing access is for personal use, not automated requests, resale or abuse of the service.",
       "We may limit or suspend accounts that abuse the service, try to break it, or use it to harm others.",
     ],
   },
   {
     h: "Changes and discontinuation",
     p: [
-      "We may change Nagatha's features or pricing, or discontinue Nagatha.",
+      "We may change Nagatha's features or discontinue Nagatha. Any future paid access will be announced separately; testing does not enroll you in a paid plan.",
       "If we discontinue the service, we will give you at least 30 days' notice in the app or by email.",
     ],
   },
   {
     h: "Account deletion",
     p: [
-      "You can delete your account anytime from the app: open the menu and choose Delete account. This permanently removes your account and data. Deleting your account does not cancel an Apple subscription, so cancel that in your Apple ID settings first.",
+      "You can delete your account anytime from the app: open the menu and choose Delete my account. This permanently removes your account and data.",
     ],
   },
   {
@@ -96,7 +88,7 @@ function TermsPage() {
           <span className="font-display text-xl font-bold">Nagatha</span>
         </Link>
         <h1 className="font-display mt-8 text-4xl font-bold">Terms of Use</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Last updated October 15, 2026</p>
+        <p className="mt-2 text-sm text-muted-foreground">Last updated October 21, 2026</p>
         <p className="mt-6">
           The rules, in plain language. Nagatha bosses you around, but these terms keep things fair for both of you.
         </p>

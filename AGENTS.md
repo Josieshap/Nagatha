@@ -21,4 +21,6 @@
 - All AI system prompts use the shared server-only voice composer in src/lib/nagatha-voice.server.ts; mode instructions add domain rules without replacing the persona, preventing chat and estimates from drifting apart.
 - Static lesson personality and exercise reactions live in src/lib/lesson-voice.ts, separate from curriculum facts and answer keys so tone changes cannot alter teaching correctness.
 - Free-tier limit and Pro plan list live in src/lib/plans.ts and are passed to the database quota functions; why: one place to change the limit and paywall copy.
+- Testing access is enforced in the quota database functions while retaining daily request counts; paid entitlement rows remain unchanged so temporary access cannot become permanent paid access.
+- Email account recovery uses a public reset-password page; social sign-in remains out of the auth screen until native return navigation is verified.
 - Accessibility: every page has one <main id="main-content"> (the chat layout owns it for signed-in pages; child routes use div), the root skip link targets it, and contrast/focus/reduced-motion rules live as tokens and base CSS in src/styles.css; why: WCAG 2.2 AA is a hard requirement and shared rules keep new screens compliant.

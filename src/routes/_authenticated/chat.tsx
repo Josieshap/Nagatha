@@ -71,8 +71,10 @@ function ThreadSidebar({ onNavigate }: { onNavigate?: () => void }) {
   };
 
   const handleSignOut = async () => {
+    await queryClient.cancelQueries();
+    queryClient.clear();
     await supabase.auth.signOut();
-    void navigate({ to: "/auth" });
+    void navigate({ to: "/auth", replace: true });
   };
 
   const handleDeleteAccount = async () => {
@@ -153,7 +155,7 @@ function ThreadSidebar({ onNavigate }: { onNavigate?: () => void }) {
 
       <section aria-labelledby="nag-settings-title" className="py-4">
         <h2 id="nag-settings-title" className="mb-3 px-3 font-display text-lg font-semibold">Daily nags</h2>
-        <ReminderToggle onNavigate={onNavigate} />
+        <ReminderToggle {...(onNavigate ? { onNavigate } : {})} />
       </section>
       <div className="border-t border-sidebar-border py-3">
         <h2 className="mb-2 px-3 text-sm font-semibold">Appearance</h2>
