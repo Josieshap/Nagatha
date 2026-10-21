@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Nagatha</string>
+    <string name="title_activity_main">Nagatha</string>
+    <string name="package_name">com.nagatha.coach</string>
+    <string name="custom_url_scheme">com.nagatha.coach</string>
+</resources>

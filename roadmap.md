@@ -6,7 +6,7 @@
 - [x] Set the landing headline to two lines: “Meet Nagatha.” and “She’s not here to be nice.”
 - [x] Hide Apple/Google browser flows, enable immediate email signup, add password recovery; new signup, sign-in, refresh and signed-in chat verified.
 - [x] Give all testers unlimited access, hide pricing/tier screens, and retain usage reporting; request 11 and a subsequent saved AI reply verified.
-- [ ] Publish updated sign-in and hidden pricing to reach installed app (awaiting owner publish request); then verify recovery-email return on iPhone (requires device and inbox).
+- [ ] Publish updated sign-in and hidden pricing to reach installed TestFlight app (owner requested); then verify recovery-email return on iPhone (requires device and inbox).
 - [x] Provide a modern SwiftUI RevenueCat setup guide with SPM, nagatha_pro, paywall, restoration, and Customer Center; actual native installation and compilation require Mac/Xcode.
 - [x] Provide a ready-to-paste RevenueCat setup description for a new account, including Apple product types and entitlement mapping.
 - [ ] Connect RevenueCat purchases/restoration and verified Pro access for monthly, yearly, and Lifetime on iPhone.
