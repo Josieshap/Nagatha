@@ -1,8 +1,5 @@
 import { haptic, nativeShare, takePhoto } from "@/lib/native";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ProPaywall } from "@/components/pro-paywall";
-import { useQuery } from "@tanstack/react-query";
-import { getDailyUsage } from "@/lib/usage.functions";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, type FileUIPart, type UIMessage } from "ai";
 import { useQueryClient } from "@tanstack/react-query";
@@ -121,9 +118,6 @@ export function ChatWindow({
 }) {
   const queryClient = useQueryClient();
   const makeShareLink = useServerFn(createShareLink);
-  const [paywallOpen, setPaywallOpen] = useState(false);
-  const fetchUsage = useServerFn(getDailyUsage);
-  const usage = useQuery({ queryKey: ["daily-usage"], queryFn: () => fetchUsage() });
 
   const transport = useMemo(
     () =>
@@ -144,14 +138,8 @@ export function ChatWindow({
     transport,
     onFinish: () => {
       void queryClient.invalidateQueries({ queryKey: ["threads"] });
-      void queryClient.invalidateQueries({ queryKey: ["daily-usage"] });
     },
     onError: (err) => {
-      if (err.message.includes("DAILY_LIMIT_REACHED")) {
-        setPaywallOpen(true);
-        void queryClient.invalidateQueries({ queryKey: ["daily-usage"] });
-        return;
-      }
       console.error(err);
       toast.error("Your message could not be sent. Please try again.");
     },
@@ -251,7 +239,6 @@ export function ChatWindow({
   return (
     <div className="flex min-h-0 min-w-0 flex-1 overflow-hidden">
       <h1 className="sr-only">Conversation with Nagatha</h1>
-      <ProPaywall open={paywallOpen} onOpenChange={setPaywallOpen} />
       {messages.length > 0 && (
         <aside className="hidden w-64 shrink-0 flex-col items-center border-r bg-card/40 px-4 py-8 text-center lg:flex">
           <div className="flex aspect-square w-full items-center justify-center">{waiting ? <WaitingNagatha /> : <img key={mood} src={moodInfo.src} alt={moodInfo.alt} className="w-44 object-contain" width={1024} height={1024} />}</div>
@@ -352,7 +339,7 @@ export function ChatWindow({
             </Message>
           )}
 
-          {status === "error" && error && !error.message.includes("DAILY_LIMIT_REACHED") && (
+          {status === "error" && error && (
             <p role="alert" className="text-center text-sm font-medium text-destructive">
               Error: your message was not sent. Please try sending it again.
             </p>
@@ -390,11 +377,6 @@ export function ChatWindow({
               <PromptInputSubmit status={status} disabled={isLoading} />
             </PromptInputFooter>
           </PromptInput>
-          {usage.data && !usage.data.pro && (
-            <button type="button" onClick={() => setPaywallOpen(true)} className="mt-2 block w-full text-center text-xs font-semibold text-primary">
-              {usage.data.left} of {usage.data.limit} free messages left today
-            </button>
-          )}
           <p className="mt-2 text-center text-xs text-muted-foreground">
             Nagatha roasts with love. Your chores fear her.
           </p>
