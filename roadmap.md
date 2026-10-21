@@ -1,5 +1,8 @@
 # Roadmap
 
+- [ ] Build and deliver an installable Android tester APK with direct email sign-in and chat.
+- [ ] Verify Android installation, email sign-in, saved chat, back navigation, and TalkBack on a real Android phone (requires device).
+
 - [x] Set the landing headline to two lines: “Meet Nagatha.” and “She’s not here to be nice.”
 - [x] Hide Apple/Google browser flows, enable immediate email signup, add password recovery; new signup, sign-in, refresh and signed-in chat verified.
 - [x] Give all testers unlimited access, hide pricing/tier screens, and retain usage reporting; request 11 and a subsequent saved AI reply verified.
