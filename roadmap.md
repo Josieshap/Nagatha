@@ -1,5 +1,7 @@
 # Roadmap
 
+- [ ] Repair tester sign-in: hide Apple/Google browser flows, verify email account creation and recovery.
+- [ ] Give all testers unlimited access, hide pricing/tier screens, and retain usage reporting.
 - [x] Provide a modern SwiftUI RevenueCat setup guide with SPM, nagatha_pro, paywall, restoration, and Customer Center; actual native installation and compilation require Mac/Xcode.
 - [x] Provide a ready-to-paste RevenueCat setup description for a new account, including Apple product types and entitlement mapping.
 - [ ] Connect RevenueCat purchases/restoration and verified Pro access for monthly, yearly, and Lifetime on iPhone.
