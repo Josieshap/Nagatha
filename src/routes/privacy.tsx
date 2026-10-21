@@ -41,6 +41,7 @@ const SECTIONS: { h: string; p: string[] }[] = [
     h: "How we use it",
     p: [
       "Only to run Nagatha: to sign you in, show your history, track your progress, and generate Nagatha's replies.",
+      "During testing, the app owner can review account-level activity counts and lesson subjects to understand which parts of Nagatha testers use. We do not collect your physical location.",
       "To write a reply, the conversation (including any attached photo) is sent to an AI model provider for processing. They process it on our behalf to produce the reply and do not use it for advertising.",
       "We never sell your data and never use it for ads.",
     ],
@@ -95,7 +96,7 @@ function PrivacyPage() {
           <span className="font-display text-xl font-bold">Nagatha</span>
         </Link>
         <h1 className="font-display mt-8 text-4xl font-bold">Privacy Policy</h1>
-        <p className="mt-2 text-sm text-muted-foreground">Last updated October 13, 2026</p>
+        <p className="mt-2 text-sm text-muted-foreground">Last updated October 21, 2026</p>
         <p className="mt-6">
           Nagatha is nosy about your to-do list, not your personal life. Here's exactly what we keep
           and why.

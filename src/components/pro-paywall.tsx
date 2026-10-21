@@ -18,6 +18,11 @@ const comingSoon = (what: string) =>
   });
 
 export function ProPaywall({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+  // Pricing is unavailable during testing, including any stale caller.
+  return null;
+}
+
+function PaidPaywall({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90dvh] max-w-sm overflow-y-auto">
