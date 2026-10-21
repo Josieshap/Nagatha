@@ -132,7 +132,8 @@ function Landing() {
           />
           <div className="flex flex-col items-center gap-5 md:items-start">
             <h1 className="font-display text-4xl leading-tight font-semibold text-balance md:text-5xl">
-              Meet Nagatha. She is not here to be nice.
+              <span className="block">Meet Nagatha.</span>
+              <span className="block">She’s not here to be nice.</span>
             </h1>
             <p className="max-w-xl text-lg text-muted-foreground text-pretty">
               Your tough-love AI buddy for the work, chores, and workouts you keep putting off.

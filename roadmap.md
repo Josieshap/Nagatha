@@ -1,5 +1,6 @@
 # Roadmap
 
+- [ ] Set the landing headline to two lines: “Meet Nagatha.” and “She’s not here to be nice.”
 - [ ] Repair tester sign-in: hide Apple/Google browser flows, verify email account creation and recovery.
 - [ ] Give all testers unlimited access, hide pricing/tier screens, and retain usage reporting.
 - [x] Provide a modern SwiftUI RevenueCat setup guide with SPM, nagatha_pro, paywall, restoration, and Customer Center; actual native installation and compilation require Mac/Xcode.
