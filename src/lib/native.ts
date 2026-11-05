@@ -1,7 +1,7 @@
 // Thin bridge for phone features. Uses the native app shell's plugins when Nagatha
 // runs inside a wrapped iOS/Android app, and falls back to web APIs otherwise.
 import { LocalNotifications, type LocalNotificationSchema } from "@capacitor/local-notifications";
-import { NAG_IDS, NAG_NOTIFICATION_TEXT, NAG_THEME_KEY, parseNagTheme, nagRequestForNotification, parseNagTime, nagTimeAfter, type NagTheme } from "./nags";
+import { NAG_IDS, nagLineForDay, dayNumber, NAG_THEME_KEY, parseNagTheme, nagRequestForNotification, parseNagTime, nagTimeAfter, type NagTheme } from "./nags";
 
 type CapacitorGlobal = {
   isNativePlatform?: () => boolean;
@@ -119,24 +119,30 @@ export async function setDailyReminder(value: string | number | null, mode: Remi
   if (!time) return false;
   const perm = await (requestPermission ? ln.requestPermissions() : ln.checkPermissions());
   if (perm?.display !== "granted") return false;
-  await ln.cancel({ notifications: NAG_IDS.map((id) => ({ id })) });
-  const notifications: LocalNotificationSchema[] = [
-      {
-        id: REMINDER_ID,
-        title: "Your daily nag",
-        body: NAG_NOTIFICATION_TEXT[theme],
-        schedule: { on: time, repeats: true, allowWhileIdle: true },
+  const pending = await ln.getPending().catch(() => ({ notifications: [] as { id: number }[] }));
+  const stale = new Set([...NAG_IDS, ...pending.notifications.map((n) => n.id).filter((id) => NAG_IDS.includes(id))]);
+  await ln.cancel({ notifications: [...stale].map((id) => ({ id })) });
+  // Repeating notifications can't change text, so schedule each day individually with a new line.
+  const offsets = mode === "nuke" ? [0, 10, 20] : [0];
+  const days = Math.floor(NAG_IDS.length / offsets.length);
+  const titles = ["Your daily nag", "A nag, not a lecture", "One tiny step"];
+  const now = new Date();
+  const notifications: LocalNotificationSchema[] = [];
+  let id = NAG_IDS[0]!;
+  for (let d = 0; notifications.length < days * offsets.length && d < days + 1; d++) {
+    offsets.forEach((offset, k) => {
+      const t = nagTimeAfter(time, offset);
+      const at = new Date(now.getFullYear(), now.getMonth(), now.getDate() + d, t.hour, t.minute);
+      if (at <= now || notifications.length >= days * offsets.length) return;
+      notifications.push({
+        id: id++,
+        title: titles[k]!,
+        body: nagLineForDay(theme, dayNumber(at), k * 5),
+        schedule: { at, allowWhileIdle: true },
         ...(mode === "nuke" ? { sound: "default" } : {}),
-      },
-      ...(mode === "nuke"
-        ? [
-             { id: REMINDER_ID + 1, title: "A nag, not a lecture", body: NAG_NOTIFICATION_TEXT[theme], sound: "default",
-               schedule: { on: nagTimeAfter(time, 10), repeats: true, allowWhileIdle: true } },
-             { id: REMINDER_ID + 2, title: "One tiny step", body: NAG_NOTIFICATION_TEXT[theme], sound: "default",
-               schedule: { on: nagTimeAfter(time, 20), repeats: true, allowWhileIdle: true } },
-          ]
-        : []),
-    ];
+      });
+    });
+  }
   await ln.schedule({ notifications });
   return true;
 }
