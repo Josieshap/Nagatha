@@ -1,6 +1,6 @@
 import { describe, it as test } from "node:test";
 import assert from "node:assert/strict";
-import { nagPrompt, nagRequestForNotification, parseNagTheme, parseNagTime, normalizeNagTime, nagTimeAfter } from "./nags";
+import { nagLineForDay, nagPrompt, nagRequestForNotification, parseNagTheme, parseNagTime, normalizeNagTime, nagTimeAfter } from "./nags";
 
 describe("helpful nag destinations", () => {
   test("custom daily nag time preserves any hour and minute", () => {
@@ -57,4 +57,10 @@ t2("custom nag uses the user's topic", () => {
   const p = nagPrompt("4242:1", "custom", "  drink   water ");
   if (!p || !p.includes('"drink water"')) throw new Error("topic missing");
   if (parseNagTheme("custom") !== "custom") throw new Error("custom theme not parsed");
+});
+
+t2("daily nag text changes from one day to the next", () => {
+  for (const theme of ["productivity", "anxiety", "sleep", "custom"] as const) {
+    for (let d = 0; d < 30; d++) assert.notEqual(nagLineForDay(theme, d), nagLineForDay(theme, d + 1));
+  }
 });

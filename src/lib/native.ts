@@ -150,6 +150,11 @@ export async function setDailyReminder(value: string | number | null, mode: Remi
 /** Registers early so notification taps also work when launching the app. */
 export async function listenForNagTaps(onNag: (request: string) => void): Promise<() => void> {
   if (!isNativeApp()) return () => {};
+  // Top up the next batch of daily nags so each day keeps getting a fresh line.
+  try {
+    const saved = localStorage.getItem(REMINDER_KEY);
+    if (saved && saved !== "off") void setDailyReminder(saved, localStorage.getItem(REMINDER_MODE_KEY) === "nuke" ? "nuke" : "gentle", undefined, false).catch(() => {});
+  } catch { /* storage unavailable */ }
   const listener = await LocalNotifications.addListener("localNotificationActionPerformed", (action) => {
     const request = nagRequestForNotification(action.notification.id);
     if (!request) return;
