@@ -23,7 +23,7 @@ import { Attachment, AttachmentPreview, AttachmentRemove, Attachments } from "@/
 import mascot from "@/assets/nagatha-idle.png";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { nagPrompt, NAG_THEME_KEY, parseNagTheme, type NagTheme } from "@/lib/nags";
+import { nagPrompt, NAG_THEME_KEY, NAG_CUSTOM_KEY, NAG_CUSTOM_MAX, cleanNagTopic, parseNagTheme, type NagTheme } from "@/lib/nags";
 import { loadNagSettings, saveNagSettings } from "@/lib/nag-settings";
 
 export const Route = createFileRoute("/_authenticated/chat/")({
@@ -87,6 +87,7 @@ function NewChat() {
   const { nag } = Route.useSearch();
   const [nagRequest, setNagRequest] = useState<string | undefined>();
   const [nagTheme, setNagTheme] = useState<NagTheme>("productivity");
+  const [customTopic, setCustomTopic] = useState("");
   const navigate = useNavigate();
   const makeThread = useServerFn(createThread);
   const [busy, setBusy] = useState(false);
@@ -129,15 +130,19 @@ function NewChat() {
     const request = nag ?? sessionStorage.getItem("nagatha:pending-nag") ?? undefined;
     if (nagPrompt(request)) setNagRequest(request);
     setNagTheme(parseNagTheme(localStorage.getItem(NAG_THEME_KEY)));
+    setCustomTopic(cleanNagTopic(localStorage.getItem(NAG_CUSTOM_KEY)));
     void loadNagSettings().then((s) => {
       if (s) setNagTheme(parseNagTheme(s.nag_theme));
     }).catch(() => toast.error("Your saved nag theme could not be loaded. Please choose a theme below."));
   }, [nag]);
 
   const startNag = async () => {
-    const prompt = nagPrompt(nagRequest, nagTheme);
+    const topic = cleanNagTopic(customTopic);
+    if (nagTheme === "custom" && !topic) { toast.error("Error: type what you want to be nagged about first."); return; }
+    const prompt = nagPrompt(nagRequest, nagTheme, topic);
     if (!prompt) return;
     localStorage.setItem(NAG_THEME_KEY, nagTheme);
+    if (topic) localStorage.setItem(NAG_CUSTOM_KEY, topic);
     void saveNagSettings({ nag_theme: nagTheme }).catch(() => toast.error("Your nag theme could not be saved for next time."));
     await startThread(prompt);
     sessionStorage.removeItem("nagatha:pending-nag");
@@ -161,12 +166,16 @@ function NewChat() {
           {nagRequest ? "What kind of nag do you need?" : "What should Nagatha help with today?"}
         </h1>
         {nagRequest ? <div className="mt-5 w-full">
-          <div className="grid grid-cols-3 gap-2" role="group" aria-label="Choose your nag theme">
-            {(["productivity", "anxiety", "sleep"] as const).map((theme) => <Button key={theme} variant={nagTheme === theme ? "default" : "outline"} aria-pressed={nagTheme === theme} disabled={busy} onClick={() => setNagTheme(theme)} className="px-2">
-              {theme === "productivity" ? "Productivity" : theme === "anxiety" ? "Anxiety" : "Sleep"}
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4" role="group" aria-label="Choose your nag theme">
+            {(["productivity", "anxiety", "sleep", "custom"] as const).map((theme) => <Button key={theme} variant={nagTheme === theme ? "default" : "outline"} aria-pressed={nagTheme === theme} disabled={busy} onClick={() => setNagTheme(theme)} className="px-2">
+              {theme === "productivity" ? "Productivity" : theme === "anxiety" ? "Anxiety" : theme === "sleep" ? "Sleep" : "Something else"}
             </Button>)}
           </div>
-          <p className="mt-4 text-center text-sm text-muted-foreground">{nagTheme === "productivity" ? "One tiny step. Not a complete personality renovation." : nagTheme === "anxiety" ? "Less mental noise. No lectures about trying harder." : "Permission to clock out. Even your brain needs office hours."}</p>
+          {nagTheme === "custom" && <div className="mt-4">
+            <label htmlFor="nag-custom-topic" className="block text-sm font-semibold">What should she nag you about? (required)</label>
+            <input id="nag-custom-topic" value={customTopic} maxLength={NAG_CUSTOM_MAX} disabled={busy} onChange={(e) => setCustomTopic(e.target.value)} placeholder="e.g. drink water, call Mom, practice guitar" className="mt-1 min-h-11 w-full rounded-md border bg-background px-3 text-sm text-foreground" />
+          </div>}
+          <p className="mt-4 text-center text-sm text-muted-foreground">{nagTheme === "productivity" ? "One tiny step. Not a complete personality renovation." : nagTheme === "anxiety" ? "Less mental noise. No lectures about trying harder." : nagTheme === "sleep" ? "Permission to clock out. Even your brain needs office hours." : "Name it. She'll handle the nagging part."}</p>
           <Button className="mt-5 w-full" disabled={busy} onClick={() => void startNag()}>{busy ? "Warming up the whistle…" : "Give me my nag"}</Button>
         </div> : <>
         <p className="mt-2 max-w-md text-center text-sm text-muted-foreground">
