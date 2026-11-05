@@ -52,3 +52,9 @@ describe("helpful nag destinations", () => {
     assert.equal(parseNagTheme("unknown"), "productivity");
   });
 });
+import { test as t2 } from "node:test";
+t2("custom nag uses the user's topic", () => {
+  const p = nagPrompt("4242:1", "custom", "  drink   water ");
+  if (!p || !p.includes('"drink water"')) throw new Error("topic missing");
+  if (parseNagTheme("custom") !== "custom") throw new Error("custom theme not parsed");
+});

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { BellRing, Check, MessageSquare } from "lucide-react";
-import { NAG_THEME_KEY, parseNagTheme, parseNagTime, normalizeNagTime, nagRequestForNotification, type NagTheme } from "@/lib/nags";
+import { NAG_THEME_KEY, NAG_CUSTOM_KEY, NAG_CUSTOM_MAX, cleanNagTopic, parseNagTheme, parseNagTime, normalizeNagTime, nagRequestForNotification, type NagTheme } from "@/lib/nags";
 import { loadNagSettings, saveNagSettings } from "@/lib/nag-settings";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
@@ -19,12 +19,14 @@ export function ReminderToggle({ onNavigate }: { onNavigate?: (() => void) | und
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState("");
   const [nagRequest, setNagRequest] = useState<string>();
+  const [customTopic, setCustomTopic] = useState("");
 
   useEffect(() => {
     let disposed = false;
     const phone = isNativeApp();
     setNative(phone);
     setNagRequest(nagRequestForNotification(4242) ?? undefined);
+    setCustomTopic(cleanNagTopic(localStorage.getItem(NAG_CUSTOM_KEY)));
     async function restore() {
       try {
         const account = await loadNagSettings();
@@ -90,9 +92,13 @@ export function ReminderToggle({ onNavigate }: { onNavigate?: (() => void) | und
       </div>
       <div><label htmlFor="nag-theme" className="block text-sm font-semibold">Theme</label>
         <select id="nag-theme" value={theme} disabled={disabled} onChange={(e) => void update(time, mode, parseNagTheme(e.target.value))} className="mt-1 min-h-11 w-full rounded-md border bg-background px-3 text-sm text-foreground">
-          <option value="productivity">Productivity</option><option value="anxiety">Anxiety</option><option value="sleep">Sleep</option>
+          <option value="productivity">Productivity</option><option value="anxiety">Anxiety</option><option value="sleep">Sleep</option><option value="custom">Something else</option>
         </select>
       </div>
+      {theme === "custom" && <div>
+        <label htmlFor="nag-custom-topic-menu" className="block text-sm font-semibold">Nag me about</label>
+        <Input id="nag-custom-topic-menu" value={customTopic} maxLength={NAG_CUSTOM_MAX} disabled={disabled} placeholder="e.g. drink water, practice guitar" onChange={(e) => setCustomTopic(e.target.value)} onBlur={() => { const t = cleanNagTopic(customTopic); localStorage.setItem(NAG_CUSTOM_KEY, t); }} className="mt-1 h-11" />
+      </div>}
       <div><label htmlFor="nag-style" className="block text-sm font-semibold">Style</label>
         <select id="nag-style" value={mode} disabled={disabled || !native} onChange={(e) => void update(time, e.target.value === "nuke" ? "nuke" : "gentle")} className="mt-1 min-h-11 w-full rounded-md border bg-background px-3 text-sm text-foreground">
           <option value="gentle">Gentle · one nag</option><option value="nuke">Persistent · three nags</option>
