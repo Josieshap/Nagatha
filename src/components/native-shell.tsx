@@ -1,9 +1,11 @@
 import { useEffect } from "react";
+import { enforceRememberChoice } from "@/lib/remember-device";
 import { initNativeShell, listenForNagTaps } from "@/lib/native";
 
 export function NativeShell() {
   useEffect(() => {
     let disposed = false;
+    void enforceRememberChoice();
     let cleanup: (() => void) | undefined;
     void listenForNagTaps((nag) => {
       sessionStorage.setItem("nagatha:pending-nag", nag);

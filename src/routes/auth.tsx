@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
+import { applyRememberChoice, REMEMBERED_EMAIL_KEY } from "@/lib/remember-device";
 import { supabase } from "@/integrations/supabase/client";
 import { authErrorMessage } from "@/lib/auth-errors";
 import { Button } from "@/components/ui/button";
@@ -36,8 +37,10 @@ function AuthPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [remember, setRemember] = useState(true);
 
   useEffect(() => {
+    try { const saved = localStorage.getItem(REMEMBERED_EMAIL_KEY); if (saved) setEmail(saved); } catch { /* ignore */ }
     void supabase.auth.getUser().then(({ data }) => {
       if (data.user) void navigate({ to: "/chat", replace: true });
     });
@@ -58,6 +61,7 @@ function AuthPage() {
       } else if (mode === "signin") {
         const { error: signInError } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
         if (signInError) throw signInError;
+        applyRememberChoice(remember, email.trim());
         void navigate({ to: "/chat" });
       } else {
         const { data, error: signUpError } = await supabase.auth.signUp({ email: email.trim(), password,
@@ -65,6 +69,7 @@ function AuthPage() {
         });
         if (signUpError) throw signUpError;
         if (data.session) {
+          applyRememberChoice(remember, email.trim());
           void navigate({ to: "/chat" });
         } else {
           setNotice("Check your inbox to confirm your email, then come back and sign in.");
@@ -130,6 +135,11 @@ function AuthPage() {
                 aria-describedby={error ? "password-hint auth-error" : "password-hint"}
               />
               <p id="password-hint" className="text-xs text-muted-foreground">At least 6 characters. Paste and password managers work here.</p>
+            </div>}
+
+            {mode !== "forgot" && <div className="flex min-h-11 items-center gap-3">
+              <input id="remember-me" type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} className="size-5 accent-primary" />
+              <Label htmlFor="remember-me" className="cursor-pointer">Remember me on this device</Label>
             </div>}
 
             {error && <p id="auth-error" role="alert" className="text-sm font-medium text-destructive">Error: {error}</p>}
